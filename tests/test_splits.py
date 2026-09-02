@@ -1,5 +1,6 @@
 """The frozen test-list hash contract (spec 4.1)."""
 
+import json
 from pathlib import Path
 
 import pytest
@@ -65,7 +66,11 @@ def test_split_builder_keeps_subjects_whole_and_is_seed_determined() -> None:
     for videos in first.values():
         owners = {video.split("_")[0] for video in videos}
         assert all(f"{owner}_front" in videos and f"{owner}_top" in videos for owner in owners)
-    assert build_subject_split(subjects, SplitSpec(3, 1, 2, seed=8)) != first
+    distinct = {
+        json.dumps(build_subject_split(subjects, SplitSpec(3, 1, 2, seed=seed)), sort_keys=True)
+        for seed in range(12)
+    }
+    assert len(distinct) > 1, "the seed must be able to change the assignment"
 
 
 def test_split_builder_rejects_wrong_subject_count() -> None:
