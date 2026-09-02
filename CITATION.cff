@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use sop-video-monitor, cite this software."
+title: "sop-video-monitor"
+type: software
+version: 0.0.1
+license: Apache-2.0
+authors:
+  - name: "kuotunyu"

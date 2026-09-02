@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-312:
+    name: Python 3.12 lint + tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # Action SHAs reused from the owner's WoundScope ci.yml (same pins, same versions).
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --all-extras --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+      # TODO(W1): add the ignored-directory scan (no source code under data/, artifacts/) per spec 3.3.
+      # TODO(W1): add `sop-monitor verify-splits` so CI recomputes splits/test_sha256.txt (spec 4.1).

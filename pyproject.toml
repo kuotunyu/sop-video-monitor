@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sop-video-monitor"
+version = "0.0.1"
+description = "Multi-camera SOP sequence monitoring on HA-ViD: streaming decode, online step segmentation, precedence-graph checks, human review. W0 skeleton."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { file = "LICENSE" }
+authors = [{ name = "kuotunyu" }]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "numpy>=1.26,<3",
+  "pydantic>=2.7,<3",
+  "PyYAML>=6,<7",
+  "typer>=0.12,<1",
+]
+# Planned dependencies (deliberately NOT installed in the W0 skeleton; each lands with its
+# milestone and is pinned through uv.lock at that point):
+#   W1 data / splits  : pandas, rdflib          (HR-SAT parser, OWL precedence graph -> sop/graph.json)
+#   W1-W2 features    : torch, torchvision, transformers   (DINOv2 frame + VideoMAE-V2 clip, fp16)
+#   W2-W3 heads       : torch                   (causal MS-TCN++, ASFormer, late fusion)
+#   W4 streaming      : av (PyAV; D3D11VA on Windows, CPU on WSL2); mediamtx is a binary, not pip
+#   W5 review / VLM   : fastapi, uvicorn, python-multipart; vllm or transformers for Qwen3-VL-8B
+#   W6 reports        : matplotlib, scipy
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<10",
+  "pytest-cov>=5,<8",
+  "ruff>=0.8,<1",
+]
+
+[project.scripts]
+sop-monitor = "sop_monitor.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sop_monitor"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["data", "artifacts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["E501", "RUF001"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

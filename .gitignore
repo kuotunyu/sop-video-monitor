@@ -1,0 +1,63 @@
+# Secrets and local configuration (request-form content, Dropbox/Drive links, tokens never enter git)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.worktrees/
+.DS_Store
+Thumbs.db
+
+# Datasets: raw videos, annotations, frame caches, features never enter the repo (spec 3.3 / 8.2).
+# Only the two metadata files below are tracked. data/external/ha-vid-public/ stays ignored.
+data/**
+!data/README.md
+!data/manifest.json
+data/external/ha-vid-public/
+
+# Training / streaming artifacts, feature caches, weights, checkpoints
+artifacts/
+checkpoints/
+runs/
+features/
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.npy
+*.memmap
+events.out.tfevents.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.partial
+
+# Local maintainer and agent workflow (kept outside the public repository)
+AGENTS.md
+.agents/
+.claude/
+CLAUDE.md
+PLAN.md
+PROGRESS.md
+PROJECT_PLAN.md
+interview*.md
+*.private.md
+docs/superpowers/
