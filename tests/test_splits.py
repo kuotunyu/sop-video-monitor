@@ -52,8 +52,22 @@ def test_write_and_read_roundtrip(tmp_path: Path) -> None:
     assert read_test_sha256(path) == FROZEN_DIGEST
 
 
-def test_split_builder_is_w1_work() -> None:
+def test_split_builder_keeps_subjects_whole_and_is_seed_determined() -> None:
     assert SPLIT_NAMES == ("train", "val", "test")
-    assert SplitSpec().n_train + SplitSpec().n_val + SplitSpec().n_test == 30
-    with pytest.raises(NotImplementedError):
-        build_subject_split({"S01": ["S01_front_001"]})
+    subjects = {f"S{i:02d}": [f"S{i:02d}_front", f"S{i:02d}_top"] for i in range(1, 7)}
+    spec = SplitSpec(n_train=3, n_val=1, n_test=2, seed=7)
+    first = build_subject_split(subjects, spec)
+    second = build_subject_split(dict(reversed(list(subjects.items()))), spec)
+    assert first == second
+    assert sorted(len(first[name]) for name in SPLIT_NAMES) == [2, 4, 6]
+    all_videos = sorted(v for videos in first.values() for v in videos)
+    assert all_videos == sorted(v for videos in subjects.values() for v in videos)
+    for videos in first.values():
+        owners = {video.split("_")[0] for video in videos}
+        assert all(f"{owner}_front" in videos and f"{owner}_top" in videos for owner in owners)
+    assert build_subject_split(subjects, SplitSpec(3, 1, 2, seed=8)) != first
+
+
+def test_split_builder_rejects_wrong_subject_count() -> None:
+    with pytest.raises(ValueError):
+        build_subject_split({"S01": ["S01_front_001"]}, SplitSpec(n_train=1, n_val=1, n_test=1))

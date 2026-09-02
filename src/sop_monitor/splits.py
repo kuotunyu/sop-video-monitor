@@ -11,6 +11,7 @@ subject metadata and is stubbed until W1.
 
 from __future__ import annotations
 
+import random
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
@@ -70,7 +71,28 @@ def build_subject_split(
 ) -> dict[str, list[str]]:
     """Assign whole subjects to train/val/test and return ``{split: sorted video ids}``.
 
-    W1 work: needs the HR-SAT metadata to group the three views of one assembly and
-    to confirm that subject ids are recoverable (spec 3.4 item 5).
+    Subjects are shuffled with ``random.Random(spec.seed)`` over their sorted ids, so the
+    assignment depends only on the subject set and the seed, never on dictionary order.
+    Every video of a subject lands in that subject's split. The subject count must equal
+    ``n_train + n_val + n_test`` so a changed dataset cannot silently shift the split.
+    Grouping the three HA-ViD views of one assembly under one subject is the caller's job
+    (HR-SAT metadata, spec 3.4 item 5).
     """
-    raise NotImplementedError("W1: subject-wise split builder needs HA-ViD metadata (spec 4.1)")
+    spec = spec or SplitSpec()
+    subjects = sorted(subject_to_videos)
+    expected = spec.n_train + spec.n_val + spec.n_test
+    if len(subjects) != expected:
+        raise ValueError(f"expected {expected} subjects, got {len(subjects)}")
+    if any(not subject_to_videos[subject] for subject in subjects):
+        raise ValueError("every subject needs at least one video")
+    shuffled = list(subjects)
+    random.Random(spec.seed).shuffle(shuffled)
+    assignment = {
+        "train": shuffled[: spec.n_train],
+        "val": shuffled[spec.n_train : spec.n_train + spec.n_val],
+        "test": shuffled[spec.n_train + spec.n_val :],
+    }
+    return {
+        split: sorted(video for subject in members for video in subject_to_videos[subject])
+        for split, members in assignment.items()
+    }

@@ -1,0 +1,68 @@
+{
+  "action_classes": 74,
+  "dataset": "IndustReal",
+  "license": "Apache-2.0",
+  "sources": {
+    "test": {
+      "file": "test.csv",
+      "sha256": "03641fb2927cdc5a5efb606a105b852d80087a94b88569ec001b74decd109f16"
+    },
+    "train": {
+      "file": "train.csv",
+      "sha256": "2f36ea1964d9255079c014457215a1e6fc7500e3323837dcb924010879654af4"
+    },
+    "val": {
+      "file": "val.csv",
+      "sha256": "010e66a0fdb04fc481e489a71fbb662ebaf3099a0e7987d6c2996daf05f58002"
+    }
+  },
+  "split_rule": "official participant-disjoint split regenerated from the raw label CSVs",
+  "splits": {
+    "test": {
+      "participants": [
+        "03",
+        "08",
+        "09",
+        "10",
+        "12",
+        "13",
+        "17",
+        "18",
+        "19",
+        "23"
+      ],
+      "rows": 3678,
+      "videos": 32
+    },
+    "train": {
+      "participants": [
+        "01",
+        "02",
+        "04",
+        "06",
+        "07",
+        "11",
+        "15",
+        "16",
+        "21",
+        "22",
+        "25",
+        "27"
+      ],
+      "rows": 3667,
+      "videos": 36
+    },
+    "val": {
+      "participants": [
+        "05",
+        "14",
+        "20",
+        "24",
+        "26"
+      ],
+      "rows": 1928,
+      "videos": 16
+    }
+  },
+  "test_sha256": "5f119fed852125a215fdba059fa8697f614104c5343991e61537c1b34173b1a7"
+}

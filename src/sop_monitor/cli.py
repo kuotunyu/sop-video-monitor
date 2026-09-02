@@ -18,12 +18,29 @@ NOT_YET_EXIT_CODE = 2
 
 @app.command("freeze-splits")
 def freeze_splits(
-    metadata: Annotated[Path | None, typer.Option(help="HA-ViD metadata root")] = None,
+    dataset: Annotated[str, typer.Option(help="industreal | ha-vid")] = "industreal",
+    labels_dir: Annotated[
+        Path | None, typer.Option(help="IndustReal label CSV directory (train/val/test.csv)")
+    ] = None,
     out_dir: Annotated[str, typer.Option(help="Where train/val/test.csv land")] = "splits",
     seed: Annotated[int, typer.Option()] = 0,
 ) -> None:
-    """Rebuild the subject-wise split and write splits/*.csv + test_sha256.txt (W1)."""
-    typer.echo("not yet: freeze-splits lands in W1 (needs HA-ViD subject metadata; spec 4.1)")
+    """Rebuild the subject-wise split and write splits/*.csv + test_sha256.txt (spec 4.1)."""
+    if dataset == "industreal":
+        if labels_dir is None:
+            typer.echo("--labels-dir is required for industreal")
+            raise typer.Exit(code=1)
+        from sop_monitor.industreal import freeze_industreal_splits
+
+        manifest = freeze_industreal_splits(labels_dir, Path(out_dir))
+        for name, info in manifest["splits"].items():  # type: ignore[union-attr]
+            typer.echo(
+                f"{name}: {info['videos']} videos, {info['rows']} segments, "
+                f"{len(info['participants'])} participants"
+            )
+        typer.echo(f"test_sha256: {manifest['test_sha256']}")
+        return
+    typer.echo("not yet: HA-ViD freeze-splits waits for the access request (spec 3.2)")
     raise typer.Exit(code=NOT_YET_EXIT_CODE)
 
 
