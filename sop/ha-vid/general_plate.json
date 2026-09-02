@@ -1,0 +1,462 @@
+{
+  "edges": {
+    "decomposeToAA": [
+      [
+        "PT1",
+        "AA1_PT1"
+      ],
+      [
+        "PT1",
+        "AA2_PT1"
+      ],
+      [
+        "PT1",
+        "AA3_PT1"
+      ],
+      [
+        "PT1",
+        "AA4_PT1"
+      ],
+      [
+        "PT10",
+        "AA1_PT10"
+      ],
+      [
+        "PT10",
+        "AA2_PT10"
+      ],
+      [
+        "PT10",
+        "AA3_PT10"
+      ],
+      [
+        "PT11",
+        "AA1_PT11"
+      ],
+      [
+        "PT11",
+        "AA2_PT11"
+      ],
+      [
+        "PT11",
+        "AA3_PT11"
+      ],
+      [
+        "PT11",
+        "AA4_PT11"
+      ],
+      [
+        "PT2",
+        "AA1_PT2"
+      ],
+      [
+        "PT2",
+        "AA2_PT2"
+      ],
+      [
+        "PT2",
+        "AA3_PT2"
+      ],
+      [
+        "PT2",
+        "AA4_PT2"
+      ],
+      [
+        "PT3",
+        "AA1_PT3"
+      ],
+      [
+        "PT3",
+        "AA2_PT3"
+      ],
+      [
+        "PT3",
+        "AA3_PT3"
+      ],
+      [
+        "PT3",
+        "AA4_PT3"
+      ],
+      [
+        "PT4",
+        "AA1_PT4"
+      ],
+      [
+        "PT4",
+        "AA2_PT4"
+      ],
+      [
+        "PT4",
+        "AA3_PT4"
+      ],
+      [
+        "PT4",
+        "AA4_PT4"
+      ],
+      [
+        "PT5",
+        "AA1_PT5"
+      ],
+      [
+        "PT5",
+        "AA2_PT5"
+      ],
+      [
+        "PT5",
+        "AA3_PT5"
+      ],
+      [
+        "PT5",
+        "AA4_PT5"
+      ],
+      [
+        "PT6",
+        "AA1_PT6"
+      ],
+      [
+        "PT6",
+        "AA2_PT6"
+      ],
+      [
+        "PT6",
+        "AA3_PT6"
+      ],
+      [
+        "PT6",
+        "AA4_PT6"
+      ],
+      [
+        "PT7",
+        "AA1_PT7"
+      ],
+      [
+        "PT7",
+        "AA2_PT7"
+      ],
+      [
+        "PT7",
+        "AA3_PT7"
+      ],
+      [
+        "PT8",
+        "AA1_PT8"
+      ],
+      [
+        "PT8",
+        "AA2_PT8"
+      ],
+      [
+        "PT8",
+        "AA3_PT8"
+      ],
+      [
+        "PT9",
+        "AA1_PT9"
+      ],
+      [
+        "PT9",
+        "AA2_PT9"
+      ],
+      [
+        "PT9",
+        "AA3_PT9"
+      ]
+    ],
+    "decomposeToPT": [
+      [
+        "BoxAssembly",
+        "PT1"
+      ],
+      [
+        "BoxAssembly",
+        "PT10"
+      ],
+      [
+        "BoxAssembly",
+        "PT11"
+      ],
+      [
+        "BoxAssembly",
+        "PT2"
+      ],
+      [
+        "BoxAssembly",
+        "PT3"
+      ],
+      [
+        "BoxAssembly",
+        "PT4"
+      ],
+      [
+        "BoxAssembly",
+        "PT5"
+      ],
+      [
+        "BoxAssembly",
+        "PT6"
+      ],
+      [
+        "BoxAssembly",
+        "PT7"
+      ],
+      [
+        "BoxAssembly",
+        "PT8"
+      ],
+      [
+        "BoxAssembly",
+        "PT9"
+      ]
+    ],
+    "precedesAA": [
+      [
+        "AA1_PT1",
+        "AA2_PT1"
+      ],
+      [
+        "AA1_PT10",
+        "AA2_PT10"
+      ],
+      [
+        "AA1_PT11",
+        "AA2_PT11"
+      ],
+      [
+        "AA1_PT2",
+        "AA2_PT2"
+      ],
+      [
+        "AA1_PT4",
+        "AA2_PT4"
+      ],
+      [
+        "AA1_PT5",
+        "AA2_PT5"
+      ],
+      [
+        "AA1_PT6",
+        "AA2_PT6"
+      ],
+      [
+        "AA1_PT7",
+        "AA2_PT7"
+      ],
+      [
+        "AA1_PT8",
+        "AA2_PT8"
+      ],
+      [
+        "AA1_PT9",
+        "AA2_PT9"
+      ],
+      [
+        "AA2_PT1",
+        "AA3_PT1"
+      ],
+      [
+        "AA2_PT10",
+        "AA3_PT10"
+      ],
+      [
+        "AA2_PT11",
+        "AA3_PT11"
+      ],
+      [
+        "AA2_PT2",
+        "AA3_PT2"
+      ],
+      [
+        "AA2_PT4",
+        "AA3_PT4"
+      ],
+      [
+        "AA2_PT5",
+        "AA3_PT5"
+      ],
+      [
+        "AA2_PT6",
+        "AA3_PT6"
+      ],
+      [
+        "AA2_PT7",
+        "AA3_PT7"
+      ],
+      [
+        "AA2_PT8",
+        "AA3_PT8"
+      ],
+      [
+        "AA2_PT9",
+        "AA3_PT9"
+      ],
+      [
+        "AA3_PT1",
+        "AA4_PT1"
+      ],
+      [
+        "AA3_PT11",
+        "AA4_PT11"
+      ],
+      [
+        "AA3_PT2",
+        "AA4_PT2"
+      ],
+      [
+        "AA3_PT4",
+        "AA4_PT4"
+      ],
+      [
+        "AA3_PT5",
+        "AA4_PT5"
+      ],
+      [
+        "AA3_PT6",
+        "AA4_PT6"
+      ]
+    ],
+    "precedesPT": [
+      [
+        "PT3",
+        "PT4"
+      ]
+    ]
+  },
+  "nodes": {
+    "AA1_PT1": "AtomicAction",
+    "AA1_PT10": "AtomicAction",
+    "AA1_PT11": "AtomicAction",
+    "AA1_PT2": "AtomicAction",
+    "AA1_PT3": "AtomicAction",
+    "AA1_PT4": "AtomicAction",
+    "AA1_PT5": "AtomicAction",
+    "AA1_PT6": "AtomicAction",
+    "AA1_PT7": "AtomicAction",
+    "AA1_PT8": "AtomicAction",
+    "AA1_PT9": "AtomicAction",
+    "AA2_PT1": "AtomicAction",
+    "AA2_PT10": "AtomicAction",
+    "AA2_PT11": "AtomicAction",
+    "AA2_PT2": "AtomicAction",
+    "AA2_PT3": "AtomicAction",
+    "AA2_PT4": "AtomicAction",
+    "AA2_PT5": "AtomicAction",
+    "AA2_PT6": "AtomicAction",
+    "AA2_PT7": "AtomicAction",
+    "AA2_PT8": "AtomicAction",
+    "AA2_PT9": "AtomicAction",
+    "AA3_PT1": "AtomicAction",
+    "AA3_PT10": "AtomicAction",
+    "AA3_PT11": "AtomicAction",
+    "AA3_PT2": "AtomicAction",
+    "AA3_PT3": "AtomicAction",
+    "AA3_PT4": "AtomicAction",
+    "AA3_PT5": "AtomicAction",
+    "AA3_PT6": "AtomicAction",
+    "AA3_PT7": "AtomicAction",
+    "AA3_PT8": "AtomicAction",
+    "AA3_PT9": "AtomicAction",
+    "AA4_PT1": "AtomicAction",
+    "AA4_PT11": "AtomicAction",
+    "AA4_PT2": "AtomicAction",
+    "AA4_PT3": "AtomicAction",
+    "AA4_PT4": "AtomicAction",
+    "AA4_PT5": "AtomicAction",
+    "AA4_PT6": "AtomicAction",
+    "Approach_AA1_PT1": "Approach",
+    "Approach_AA1_PT10": "Approach",
+    "Approach_AA1_PT11": "Approach",
+    "Approach_AA1_PT12": "Approach",
+    "Approach_AA1_PT13": "Approach",
+    "Approach_AA1_PT2": "Approach",
+    "Approach_AA1_PT3": "Approach",
+    "Approach_AA1_PT4": "Approach",
+    "Approach_AA1_PT5": "Approach",
+    "Approach_AA1_PT6": "Approach",
+    "Approach_AA1_PT7": "Approach",
+    "Approach_AA1_PT8": "Approach",
+    "Approach_AA1_PT9": "Approach",
+    "Bar": "Part",
+    "Bolt": "Part",
+    "BoxAssembly": "Task",
+    "BoxBase": "Part",
+    "GeneralPlate": "Product",
+    "GeneralPlateAssembly": "Assembly",
+    "Grasp_AA2_PT1": "Grasp",
+    "Grasp_AA2_PT10": "Grasp",
+    "Grasp_AA2_PT11": "Grasp",
+    "Grasp_AA2_PT12": "Grasp",
+    "Grasp_AA2_PT2": "Grasp",
+    "Grasp_AA2_PT3": "Grasp",
+    "Grasp_AA2_PT4": "Grasp",
+    "Grasp_AA2_PT5": "Grasp",
+    "Grasp_AA2_PT6": "Grasp",
+    "Grasp_AA2_PT7": "Grasp",
+    "Grasp_AA2_PT8": "Grasp",
+    "Grasp_AA2_PT9": "Grasp",
+    "HandDial": "Part",
+    "HandWheel": "Part",
+    "Handle": "Part",
+    "Hole1": "AssemblableFeature",
+    "Hole2": "AssemblableFeature",
+    "Hole3": "AssemblableFeature",
+    "Hole4": "AssemblableFeature",
+    "Insert_PT1": "Insert",
+    "Insert_PT2": "Insert",
+    "Insert_PT3": "Insert",
+    "Insert_PT6": "Insert",
+    "LinearBearing": "Part",
+    "MO_PT1": "ManipulatedObject",
+    "MO_PT10": "ManipulatedObject",
+    "MO_PT11": "ManipulatedObject",
+    "MO_PT2": "ManipulatedObject",
+    "MO_PT3": "ManipulatedObject",
+    "MO_PT4": "ManipulatedObject",
+    "MO_PT5": "ManipulatedObject",
+    "MO_PT6": "ManipulatedObject",
+    "MO_PT7": "ManipulatedObject",
+    "MO_PT8": "ManipulatedObject",
+    "MO_PT9": "ManipulatedObject",
+    "Move_AA3_PT1": "Move",
+    "Move_AA3_PT11": "Move",
+    "Move_AA3_PT2": "Move",
+    "Move_AA3_PT3": "Move",
+    "Move_AA3_PT4": "Move",
+    "Move_AA3_PT5": "Move",
+    "Move_AA3_PT6": "Move",
+    "Nut1": "Part",
+    "Nut2": "Part",
+    "PT1": "PrimitiveTask",
+    "PT10": "PrimitiveTask",
+    "PT11": "PrimitiveTask",
+    "PT2": "PrimitiveTask",
+    "PT3": "PrimitiveTask",
+    "PT4": "PrimitiveTask",
+    "PT5": "PrimitiveTask",
+    "PT6": "PrimitiveTask",
+    "PT7": "PrimitiveTask",
+    "PT8": "PrimitiveTask",
+    "PT9": "PrimitiveTask",
+    "Rod": "Part",
+    "Rotate_PT10": "Rotate",
+    "Rotate_PT8": "Rotate",
+    "Rotate_PT9": "Rotate",
+    "ScrewPhillips": "Part",
+    "Screw_PT11": "Screw",
+    "Screw_PT4": "Screw",
+    "Screw_PT5": "Screw",
+    "ScrewdriverPhillips": "Tool",
+    "Slide_PT7": "Slide",
+    "Stud": "AssemblableFeature",
+    "TO_PT1": "TargetObject",
+    "TO_PT11": "TargetObject",
+    "TO_PT2": "TargetObject",
+    "TO_PT3": "TargetObject",
+    "TO_PT4": "TargetObject",
+    "TO_PT5": "TargetObject",
+    "TO_PT6": "TargetObject",
+    "USBfemale": "AssemblableFeature",
+    "USBmale": "Part",
+    "WrenchS": "Tool"
+  },
+  "source": "Subject_agnostic_task_precedence_graph_general_plate.owl"
+}

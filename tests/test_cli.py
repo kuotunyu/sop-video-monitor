@@ -21,13 +21,39 @@ def test_reproduce_lite_refuses_until_regeneration_exists(tmp_path: Path) -> Non
     assert result.exit_code == NOT_YET_EXIT_CODE
 
 
-def test_w3_placeholder_and_ha_vid_split_exit_not_yet() -> None:
-    result = runner.invoke(app, ["check-sop"])
-    assert result.exit_code == NOT_YET_EXIT_CODE
-    assert "not yet" in result.output
+def test_ha_vid_split_exits_not_yet() -> None:
     result = runner.invoke(app, ["freeze-splits", "--dataset", "ha-vid"])
     assert result.exit_code == NOT_YET_EXIT_CODE
     assert "not yet" in result.output
+
+
+def test_check_sop_exports_and_judges_a_sequence(tmp_path: Path) -> None:
+    ns = "http://example.org/onto#"
+    owl = tmp_path / "graph.owl"
+    owl.write_text(
+        f'<?xml version="1.0"?><rdf:RDF xmlns="{ns}" xmlns:owl="http://www.w3.org/2002/07/owl#"'
+        ' xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">'
+        f'<owl:NamedIndividual rdf:about="{ns}PT1"><rdf:type rdf:resource="{ns}PrimitiveTask"/>'
+        f'<precedesPT rdf:resource="{ns}PT2"/></owl:NamedIndividual>'
+        f'<owl:NamedIndividual rdf:about="{ns}PT2"><rdf:type rdf:resource="{ns}PrimitiveTask"/>'
+        "</owl:NamedIndividual></rdf:RDF>",
+        encoding="utf-8",
+    )
+    exported = tmp_path / "graph.json"
+    result = runner.invoke(app, ["export-sop", "--owl", str(owl), "--out", str(exported)])
+    assert result.exit_code == 0, result.output
+    assert exported.is_file()
+    good = tmp_path / "good.txt"
+    good.write_text("PT1\nPT2\n", encoding="utf-8")
+    bad = tmp_path / "bad.txt"
+    bad.write_text("PT2\n", encoding="utf-8")
+    assert (
+        runner.invoke(app, ["check-sop", "--graph", str(exported), "--steps", str(good)]).exit_code
+        == 0
+    )
+    result = runner.invoke(app, ["check-sop", "--graph", str(exported), "--steps", str(bad)])
+    assert result.exit_code == 1
+    assert '"omissions": ["PT1"]' in result.output
 
 
 def test_freeze_splits_industreal_needs_labels_dir_and_freezes(tmp_path: Path) -> None:
