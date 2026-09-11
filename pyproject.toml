@@ -23,12 +23,10 @@ dependencies = [
   "PyYAML>=6,<7",
   "typer>=0.12,<1",
 ]
-# Planned dependencies (deliberately NOT installed in the W0 skeleton; each lands with its
-# milestone and is pinned through uv.lock at that point):
-#   W1 data / splits  : pandas, rdflib          (HR-SAT parser, OWL precedence graph -> sop/graph.json)
-#   W1-W2 features    : torch, torchvision, transformers   (DINOv2 frame + VideoMAE-V2 clip, fp16)
-#   W2-W3 heads       : torch                   (causal MS-TCN++, ASFormer, late fusion)
-#   W4 streaming      : av (PyAV; D3D11VA on Windows, CPU on WSL2); mediamtx is a binary, not pip
+# Heavy, data-path-only dependencies live in the `baseline` dependency group below so that
+# CI (`uv sync --all-extras --frozen`) never installs torch. Still planned, not yet added:
+#   W2-W3 heads       : causal MS-TCN++, ASFormer, late fusion (torch, already in `baseline`)
+#   W4 streaming      : mediamtx is a binary, not pip; PyAV is already in `baseline`
 #   W5 review / VLM   : fastapi, uvicorn, python-multipart; vllm or transformers for Qwen3-VL-8B
 #   W6 reports        : matplotlib, scipy
 
@@ -41,6 +39,29 @@ dev = [
 
 [project.scripts]
 sop-monitor = "sop_monitor.cli:app"
+
+# Video decode + frozen DINOv2 frame features + linear head (IndustReal development baseline).
+# Install with `uv sync --all-extras --group baseline`; torch/torchvision come from the CUDA 13.0
+# index on Linux/Windows (same pins as mvtec-ad2-inspection-platform) and from PyPI elsewhere.
+[dependency-groups]
+baseline = [
+  "av>=18.1,<19",
+  "torch==2.13.0",
+  "torchvision==0.28.0",
+]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sop_monitor"]

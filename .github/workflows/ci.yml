@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   python-312:
-    name: Python 3.12 lint + tests
+    name: Python 3.12 lint + tests + reproduce-lite
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -24,9 +24,13 @@ jobs:
         with:
           python-version: "3.12"
           enable-cache: true
+      # The `baseline` dependency group (torch, PyAV) is deliberately not installed here:
+      # CI must stay data-free and GPU-free. Tests needing PyAV skip themselves.
       - run: uv sync --all-extras --frozen
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -q
-      # TODO(W1): add the ignored-directory scan (no source code under data/, artifacts/) per spec 3.3.
-      # TODO(W1): add `sop-monitor verify-splits` so CI recomputes splits/test_sha256.txt (spec 4.1).
+      # Recompute every committed run's metrics from its prediction table and check tables.md.
+      - run: uv run sop-monitor reproduce-lite
+      # TODO: add the ignored-directory scan (no source code under data/, artifacts/) per spec 3.3.
+      # TODO: add `sop-monitor verify-splits` so CI recomputes splits/test_sha256.txt (spec 4.1).
