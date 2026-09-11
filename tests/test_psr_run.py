@@ -181,3 +181,25 @@ def test_nested_selection_and_multiple_seeds(dataset: tuple[Path, Path], tmp_pat
         run_psr_baseline(
             features, psr, tmp_path / "bad", TINY, heads=("linear",), selection="oracle"
         )
+
+
+def test_delay_caps_produce_one_run_per_budget(dataset: tuple[Path, Path], tmp_path: Path) -> None:
+    from dataclasses import replace
+
+    features, psr = dataset
+    result = run_psr_baseline(
+        features,
+        psr,
+        tmp_path / "caps",
+        replace(TINY, delay_caps_s=(0.5, 30.0)),
+        heads=("linear",),
+        decoders=("plain",),
+        train_ids={"01_assy_0_1", "02_assy_0_1", "03_assy_0_1"},
+        eval_ids={"04_assy_0_1"},
+        selection="nested",
+    )
+    assert set(result["metrics"]["runs"]) == {"linear_plain_cap0.5", "linear_plain_cap30"}
+    fold = result["config"]["folds"]["train->eval"]
+    assert fold["decoders"]["linear_plain_cap30"]["delay_cap_s"] == 30.0
+    assert fold["pareto"]["linear_plain"], "the out-of-fold Pareto front is recorded"
+    assert all("delay_s" in p and "f1" in p for p in fold["pareto"]["linear_plain"])

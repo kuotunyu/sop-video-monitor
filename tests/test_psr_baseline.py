@@ -212,3 +212,25 @@ def test_learn_prior_uses_recordings_of_the_same_kind() -> None:
     main = learn_prior(train, "main")
     assert main.active.tolist() == [False] * 4 + [True] + [False] * 5 + [True]
     assert main.initial_installed.all()
+
+
+def test_pareto_front_and_delay_capped_choice() -> None:
+    from sop_monitor.psr_baseline import GridPoint, choose_decoder, pareto_front
+
+    def point(f1: float, delay_s: float, dwell: int = 0) -> GridPoint:
+        return GridPoint(DecoderConfig(0.9, 0.7, 0.3, dwell), f1, 0.5, delay_s * 10.0)
+
+    points = [point(0.5, 10), point(0.7, 30), point(0.6, 40), point(0.8, 60), point(0.4, 5)]
+    front = pareto_front(points)
+    assert [(p.f1, p.delay_frames / 10) for p in front] == [
+        (0.4, 5),
+        (0.5, 10),
+        (0.7, 30),
+        (0.8, 60),
+    ]
+    assert choose_decoder(points).f1 == 0.8  # best F1 regardless of delay
+    assert choose_decoder(points, delay_cap_s=35).f1 == 0.7  # best within the budget
+    assert choose_decoder(points, delay_cap_s=1).delay_frames == 50.0  # nothing fits: fastest
+    never = [GridPoint(DecoderConfig(), 0.0, 0.0, float("inf"))]
+    assert choose_decoder(never, delay_cap_s=10).delay_frames == float("inf")
+    assert never[0].to_dict()["delay_s"] == -1.0

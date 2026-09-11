@@ -361,6 +361,10 @@ class PSRSpec:
     theta_offs: tuple[float, ...] = (0.1, 0.2, 0.3, 0.4)
     min_dwells: tuple[int, ...] = (0, 10, 30, 60)  # frames at 10 fps; used by prior_dwell only
     selection_metric: str = "f1"
+    # Latency budgets in seconds: when given, every decoder is chosen once per budget as the
+    # best-F1 setting whose mean delay on the selection videos stays within it (runs are
+    # suffixed ``_cap<seconds>``); when empty, plain best F1.
+    delay_caps_s: tuple[float, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -547,32 +551,85 @@ def train_state_mstcn(
 # Decoder selection and the leave-one-participant-out run
 
 
-def _select_decoder(
+@dataclass(frozen=True)
+class GridPoint:
+    """One decoder setting scored on the selection videos (means over videos)."""
+
+    config: DecoderConfig
+    f1: float
+    pos: float
+    delay_frames: float  # mean over videos that had a delay; inf when nothing was detected
+
+    def to_dict(self) -> dict[str, float | int]:
+        return {
+            **asdict(self.config),
+            "f1": self.f1,
+            "pos": self.pos,
+            "delay_s": self.delay_frames / 10.0 if np.isfinite(self.delay_frames) else -1.0,
+        }
+
+
+def evaluate_grid(
     videos: Sequence[PSRVideo],
     probs: Sequence[np.ndarray],
     spec: PSRSpec,
     priors: Sequence[ProcedurePrior | None],
     dwells: Sequence[int],
-) -> tuple[DecoderConfig, dict[str, float]]:
-    """Grid-search the decoder on ``videos`` (one prior per video) by mean per-video ``selection_metric``."""
-    grid: dict[str, float] = {}
-    best: tuple[float, DecoderConfig] | None = None
+) -> list[GridPoint]:
+    """Score every decoder setting on ``videos`` (one prior per video): mean F1, POS and delay."""
+    points: list[GridPoint] = []
     for ema in spec.emas:
         averages = [ema_filter(p, ema) for p in probs]
         for on, off, dwell in product(spec.theta_ons, spec.theta_offs, dwells):
             if off >= on:
                 continue
             config = DecoderConfig(ema, on, off, dwell)
-            scores = []
+            f1s, poss, delays = [], [], []
             for v, avg, prior in zip(videos, averages, priors, strict=True):
-                pred = decode_from_average(avg, v.frames, config, prior)
-                scores.append(psr_performance(v.gt, pred)[spec.selection_metric])
-            score = float(np.mean([s for s in scores if s is not None]))  # type: ignore[arg-type]
-            grid[f"ema={ema},on={on},off={off},dwell={dwell}"] = score
-            if best is None or score > best[0]:
-                best = (score, config)
-    assert best is not None
-    return best[1], grid
+                result = psr_performance(v.gt, decode_from_average(avg, v.frames, config, prior))
+                f1s.append(float(result["f1"]))  # type: ignore[arg-type]
+                poss.append(float(result["pos"]))  # type: ignore[arg-type]
+                if result["mean_delay_frames"] is not None:
+                    delays.append(float(result["mean_delay_frames"]))  # type: ignore[arg-type]
+            points.append(
+                GridPoint(
+                    config,
+                    float(np.mean(f1s)),
+                    float(np.mean(poss)),
+                    float(np.mean(delays)) if delays else float("inf"),
+                )
+            )
+    return points
+
+
+def pareto_front(points: Sequence[GridPoint]) -> list[GridPoint]:
+    """Settings not dominated on (higher F1, lower delay), sorted by delay."""
+    front = [
+        p
+        for p in points
+        if not any(
+            (q.f1 >= p.f1 and q.delay_frames < p.delay_frames)
+            or (q.f1 > p.f1 and q.delay_frames <= p.delay_frames)
+            for q in points
+        )
+    ]
+    return sorted(front, key=lambda p: (p.delay_frames, -p.f1))
+
+
+def choose_decoder(points: Sequence[GridPoint], delay_cap_s: float | None = None) -> GridPoint:
+    """Best F1 (ties: lower delay); with ``delay_cap_s`` only among settings whose mean delay on
+    the selection videos is within the cap — if none is, the fastest setting."""
+    candidates = list(points)
+    if delay_cap_s is not None:
+        within = [p for p in candidates if p.delay_frames <= delay_cap_s * 10.0]
+        if not within:
+            return min(candidates, key=lambda p: (p.delay_frames, -p.f1))
+        candidates = within
+    return max(candidates, key=lambda p: (p.f1, -p.delay_frames))
+
+
+def _cap_tag(cap: float | None) -> str:
+    return "" if cap is None else f"_cap{cap:g}"
 
 
 def _fit_heads(
@@ -634,7 +691,7 @@ def _select_nested(
             fold_priors[position[v.video_id]] = priors
             for head, predictor in predictors.items():
                 oof[head][position[v.video_id]] = predictor.predict_proba(v.features)  # type: ignore[attr-defined]
-    selected: dict[str, tuple[DecoderConfig, float]] = {}
+    selected: dict[str, list[GridPoint]] = {}
     for head in heads:
         probs = [p for p in oof[head]]
         assert all(p is not None for p in probs) and all(fp is not None for fp in fold_priors)
@@ -644,14 +701,13 @@ def _select_nested(
                 fp[v.kind] if with_prior else None  # type: ignore[index]
                 for v, fp in zip(train, fold_priors, strict=True)
             ]
-            config, grid = _select_decoder(
+            selected[f"{head}_{decoder}"] = evaluate_grid(
                 train,
                 probs,  # type: ignore[arg-type]
                 spec,
                 priors_per_video,
                 spec.min_dwells if with_prior else (0,),
             )
-            selected[f"{head}_{decoder}"] = (config, max(grid.values()))
     return selected, logs
 
 
@@ -698,6 +754,8 @@ def _fit_and_decode(
             CompletionRow(v.video_id, v.participant, "gt", c.frame, c.step, fold_name, "")
             for c in v.gt
         )
+    caps: list[float | None] = list(spec.delay_caps_s) if spec.delay_caps_s else [None]
+    fold["pareto"] = {}
     for head, predictor in predictors.items():
         test_probs = [predictor.predict_proba(v.features) for v in test]  # type: ignore[attr-defined]
         train_probs = (
@@ -708,28 +766,35 @@ def _fit_and_decode(
         for decoder in decoders:
             with_prior = decoder == "prior_dwell"
             if selection == "nested":
-                config, grid_best = nested[f"{head}_{decoder}"]
+                points = nested[f"{head}_{decoder}"]
             else:
-                config, grid = _select_decoder(
+                points = evaluate_grid(
                     train,
                     train_probs,
                     spec,
                     [priors[v.kind] if with_prior else None for v in train],
                     spec.min_dwells if with_prior else (0,),
                 )
-                grid_best = max(grid.values())
-            run = f"{head}_{decoder}{run_suffix}"
-            fold["decoders"][run] = {"decoder": asdict(config), "grid_best": grid_best}  # type: ignore[index]
-            for v, p in zip(test, test_probs, strict=True):
-                pred = decode_completions(
-                    p, v.frames, config, priors[v.kind] if with_prior else None
-                )
-                rows.extend(
-                    CompletionRow(
-                        v.video_id, v.participant, "pred", c.frame, c.step, fold_name, run
+            fold["pareto"][f"{head}_{decoder}"] = [p.to_dict() for p in pareto_front(points)]  # type: ignore[index]
+            for cap in caps:
+                chosen = choose_decoder(points, cap)
+                run = f"{head}_{decoder}{_cap_tag(cap)}{run_suffix}"
+                fold["decoders"][run] = {  # type: ignore[index]
+                    "decoder": asdict(chosen.config),
+                    "grid_best": chosen.f1,
+                    "selected": chosen.to_dict(),
+                    "delay_cap_s": cap,
+                }
+                for v, p in zip(test, test_probs, strict=True):
+                    pred = decode_completions(
+                        p, v.frames, chosen.config, priors[v.kind] if with_prior else None
                     )
-                    for c in pred
-                )
+                    rows.extend(
+                        CompletionRow(
+                            v.video_id, v.participant, "pred", c.frame, c.step, fold_name, run
+                        )
+                        for c in pred
+                    )
     return rows, fold, training_logs
 
 

@@ -300,6 +300,10 @@ def train_psr_cmd(
         str,
         typer.Option(help="in_sample | nested (decoder chosen on out-of-fold train predictions)"),
     ] = "in_sample",
+    delay_cap: Annotated[
+        list[float] | None,
+        typer.Option(help="Latency budget(s) in seconds for decoder selection (repeatable)"),
+    ] = None,
     out: Annotated[Path, typer.Option()] = Path("reports/industreal_dev_v3_psr"),
     device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
     epochs: Annotated[int, typer.Option()] = 300,
@@ -318,7 +322,12 @@ def train_psr_cmd(
         run_psr_baseline,
     )
 
-    spec = PSRSpec(epochs=epochs, mstcn_epochs=mstcn_epochs, n_boot=n_boot)
+    spec = PSRSpec(
+        epochs=epochs,
+        mstcn_epochs=mstcn_epochs,
+        n_boot=n_boot,
+        delay_caps_s=tuple(delay_cap or ()),
+    )
     result = run_psr_baseline(
         features,
         psr_dir,
