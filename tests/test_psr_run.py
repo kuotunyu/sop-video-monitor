@@ -18,7 +18,7 @@ from sop_monitor.psr_baseline import (
 )
 
 TINY = PSRSpec(
-    epochs=20,
+    epochs=40,
     mstcn_epochs=1,
     n_boot=5,
     emas=(0.0, 0.5),
@@ -122,3 +122,62 @@ def test_train_eval_mode_fits_once_and_refuses_shared_participants(
         )
     with pytest.raises(ValueError, match="given together"):
         run_psr_baseline(features, psr, tmp_path / "bad2", TINY, train_ids={"01_assy_0_1"})
+
+
+def test_nested_selection_and_multiple_seeds(dataset: tuple[Path, Path], tmp_path: Path) -> None:
+    from sop_monitor.psr_baseline import inner_folds, load_psr_videos, seed_summary
+
+    features, psr = dataset
+    videos = load_psr_videos(features, psr)
+    folds = inner_folds(videos, n_folds=4)
+    assert len(folds) == 4
+    held = sorted(v.participant for _, test in folds for v in test)
+    assert held == ["01", "02", "03", "04"]
+    assert all(len(train) == 3 and len(test) == 1 for train, test in folds)
+    assert all(
+        {v.participant for v in train}.isdisjoint({v.participant for v in test})
+        for train, test in folds
+    )
+    out = tmp_path / "nested"
+    result = run_psr_baseline(
+        features,
+        psr,
+        out,
+        TINY,
+        heads=("linear",),
+        decoders=("prior_dwell",),
+        train_ids={"01_assy_0_1", "02_assy_0_1", "03_assy_0_1"},
+        eval_ids={"04_assy_0_1"},
+        selection="nested",
+        seeds=(0, 1),
+    )
+    metrics = result["metrics"]
+    assert set(metrics["runs"]) == {"linear_prior_dwell_s0", "linear_prior_dwell_s1"}
+    assert metrics["seed_summary"]["linear_prior_dwell"]["n_seeds"] == 2
+    assert "out-of-fold" in result["config"]["protocol"]
+    assert result["config"]["folds"]["train->eval"]["selection"] == "nested"
+    assert set(result["config"]["folds"]["train->eval"]["decoders"]) == {
+        "linear_prior_dwell_s0",
+        "linear_prior_dwell_s1",
+    }
+    rows = read_completions(out / "completions_val.csv")
+    assert sum(1 for r in rows if r.source == "gt") == 1  # ground truth written once per video
+    assert "Across seeds" in result["tables"]
+    fake = {
+        "x_s0": {
+            "summary": {k: {"mean_over_videos": 1.0} for k in ("pos", "f1", "mean_delay_frames")},
+            "totals": {"system_tp": 1, "system_fp": 0, "system_fn": 0},
+        },
+        "x_s1": {
+            "summary": {k: {"mean_over_videos": 0.0} for k in ("pos", "f1", "mean_delay_frames")},
+            "totals": {"system_tp": 3, "system_fp": 0, "system_fn": 0},
+        },
+        "y": {"summary": {}, "totals": {}},
+    }
+    summary = seed_summary(fake)
+    assert summary["x"]["pos"] == {"mean": 0.5, "std": 0.5} and summary["x"]["system_tp"] == 2.0
+    assert "y" not in summary
+    with pytest.raises(ValueError, match="selection"):
+        run_psr_baseline(
+            features, psr, tmp_path / "bad", TINY, heads=("linear",), selection="oracle"
+        )

@@ -296,11 +296,17 @@ def train_psr_cmd(
     eval_split: Annotated[
         Path | None, typer.Option(help="Split CSV of evaluated recordings (with --train-split)")
     ] = None,
+    selection: Annotated[
+        str,
+        typer.Option(help="in_sample | nested (decoder chosen on out-of-fold train predictions)"),
+    ] = "in_sample",
     out: Annotated[Path, typer.Option()] = Path("reports/industreal_dev_v3_psr"),
     device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
     epochs: Annotated[int, typer.Option()] = 300,
     n_boot: Annotated[int, typer.Option()] = 2000,
-    seed: Annotated[int, typer.Option()] = 0,
+    seed: Annotated[
+        list[int] | None, typer.Option(help="Repeatable; several seeds become <run>_s<seed>")
+    ] = None,
 ) -> None:
     """Step-completion baselines: leave-one-participant-out over psr-dir, or train-split -> eval-split."""
     from sop_monitor.features import resolve_device
@@ -312,7 +318,7 @@ def train_psr_cmd(
         run_psr_baseline,
     )
 
-    spec = PSRSpec(epochs=epochs, mstcn_epochs=mstcn_epochs, seed=seed, n_boot=n_boot)
+    spec = PSRSpec(epochs=epochs, mstcn_epochs=mstcn_epochs, n_boot=n_boot)
     result = run_psr_baseline(
         features,
         psr_dir,
@@ -323,6 +329,8 @@ def train_psr_cmd(
         decoders=tuple(decoder or DECODERS),
         train_ids=read_split_ids(train_split) if train_split else None,
         eval_ids=read_split_ids(eval_split) if eval_split else None,
+        selection=selection,
+        seeds=tuple(seed or [0]),
     )
     typer.echo(result["tables"])
     typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
@@ -336,14 +344,18 @@ def _check_psr_run(run_dir: Path, write: bool) -> list[str]:
     committed = load_metrics(run_dir)
     boot = committed.get("bootstrap", {})
     rows = read_completions(sorted(run_dir.glob("completions_*.csv"))[0])
+    run_names = (
+        list(committed["runs"]) if "runs" in committed else [str(committed.get("run", "pred"))]
+    )  # type: ignore[arg-type]
     recomputed = score_completions(
         rows,
         n_boot=int(boot.get("n_boot", 2000)),  # type: ignore[union-attr]
         seed=int(boot.get("seed", 0)),  # type: ignore[union-attr]
+        run_names=run_names,
     )
     mismatches: list[str] = []
     scored_keys = ("summary", "per_video", "totals")
-    for key in (*scored_keys, "gt_sanity", "n_videos", "n_participants"):
+    for key in (*scored_keys, "gt_sanity", "seed_summary", "n_videos", "n_participants"):
         if key in recomputed and json.dumps(recomputed[key], sort_keys=True) != json.dumps(
             committed.get(key), sort_keys=True
         ):

@@ -1,14 +1,15 @@
 """Online procedure-step baselines on IndustReal val (spec 4.3 sanity run, development tier).
 
-Only the *val* recordings' PSR labels are on disk (the train and test archives were not
-downloaded), so every head is trained leave-one-participant-out inside val: for each of the 5 val
-participants a state head ("component k is correctly installed", 11 sigmoid outputs) is fitted on
-the frozen DINOv2 features of the other 4 participants' videos, decoded causally on the held-out
-participant, and scored with :func:`sop_monitor.metrics.online.psr_performance` against
-``PSR_labels.csv``. Decoder settings are chosen on the fold's own training videos, never on the
-held-out participant. Every completion the decoders emit — and every ground-truth completion — is
-written to ``completions_val.csv`` (one ``run`` column per head x decoder) so the metrics can be
-recomputed without features.
+A state head ("component k is correctly installed", 11 sigmoid outputs) is fitted on frozen
+DINOv2 features, decoded causally into step completions and scored per video with
+:func:`sop_monitor.metrics.online.psr_performance` against ``PSR_labels.csv``. Two protocols:
+leave-one-participant-out over the recordings in ``psr_dir`` (used when only the val labels were
+on disk) and train-split -> eval-split (36 train recordings -> 16 val recordings). Decoder settings
+are chosen either in-sample on the training recordings or, with ``selection="nested"``, on
+out-of-fold predictions of those recordings (grouped 4-fold by participant); never on the evaluated
+participants. Every completion the decoders emit — and every ground-truth completion — is written
+to ``completions_val.csv`` (one ``run`` column per head x decoder, ``_s<seed>`` suffixed when
+several seeds run) so the metrics can be recomputed without features.
 
 Heads: ``linear`` (multi-label logistic regression per frame) and ``mstcn`` (causal MS-TCN++ with
 sigmoid outputs, :mod:`sop_monitor.mstcn`). Decoders: ``plain`` (causal EMA + hysteresis, as in
@@ -26,7 +27,7 @@ import json
 import time
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from itertools import product
 from pathlib import Path
 
@@ -51,6 +52,7 @@ from sop_monitor.metrics.online import Completion, psr_performance
 
 HEADS: tuple[str, ...] = ("linear", "mstcn")
 DECODERS: tuple[str, ...] = ("plain", "prior_dwell")
+SELECTIONS: tuple[str, ...] = ("in_sample", "nested")
 
 # ---------------------------------------------------------------------------------------------
 # Targets and decoding (numpy only)
@@ -234,7 +236,10 @@ def _score_run(
 
 
 def score_completions(
-    rows: Sequence[CompletionRow], n_boot: int = 2000, seed: int = 0
+    rows: Sequence[CompletionRow],
+    n_boot: int = 2000,
+    seed: int = 0,
+    run_names: Sequence[str] | None = None,
 ) -> dict[str, object]:
     """Per-video PSR metrics, their mean over videos (the reference's aggregation), participant CIs.
 
@@ -243,6 +248,8 @@ def score_completions(
     """
     gts: dict[str, list[Completion]] = defaultdict(list)
     preds: dict[str, dict[str, list[Completion]]] = defaultdict(lambda: defaultdict(list))
+    for name in run_names or ():  # a run that emitted nothing must still be scored (all FN)
+        preds[name] = defaultdict(list)
     participants: dict[str, str] = {}
     for r in rows:
         participants[r.video_id] = r.participant
@@ -266,6 +273,30 @@ def score_completions(
         out["run"] = run
     else:
         out["runs"] = scored
+        seeds = seed_summary(scored)
+        if seeds:
+            out["seed_summary"] = seeds
+    return out
+
+
+def seed_summary(scored: Mapping[str, Mapping[str, object]]) -> dict[str, dict[str, object]]:
+    """Mean and standard deviation over seeds of runs named ``<base>_s<seed>``."""
+    groups: dict[str, list[Mapping[str, object]]] = defaultdict(list)
+    for run, result in scored.items():
+        base, sep, suffix = run.rpartition("_s")
+        if sep and suffix.isdigit():
+            groups[base].append(result)
+    out: dict[str, dict[str, object]] = {}
+    for base, results in sorted(groups.items()):
+        if len(results) < 2:
+            continue
+        entry: dict[str, object] = {"n_seeds": len(results)}
+        for key in ("pos", "f1", "mean_delay_frames"):
+            values = [float(r["summary"][key]["mean_over_videos"]) for r in results]  # type: ignore[index]
+            entry[key] = {"mean": float(np.mean(values)), "std": float(np.std(values))}
+        for key in ("system_tp", "system_fp", "system_fn"):
+            entry[key] = float(np.mean([float(r["totals"][key]) for r in results]))  # type: ignore[index]
+        out[base] = entry
     return out
 
 
@@ -520,10 +551,10 @@ def _select_decoder(
     videos: Sequence[PSRVideo],
     probs: Sequence[np.ndarray],
     spec: PSRSpec,
-    priors: Mapping[str, ProcedurePrior] | None,
+    priors: Sequence[ProcedurePrior | None],
     dwells: Sequence[int],
 ) -> tuple[DecoderConfig, dict[str, float]]:
-    """Grid-search the decoder on the given (training) videos by mean per-video ``selection_metric``."""
+    """Grid-search the decoder on ``videos`` (one prior per video) by mean per-video ``selection_metric``."""
     grid: dict[str, float] = {}
     best: tuple[float, DecoderConfig] | None = None
     for ema in spec.emas:
@@ -533,8 +564,7 @@ def _select_decoder(
                 continue
             config = DecoderConfig(ema, on, off, dwell)
             scores = []
-            for v, avg in zip(videos, averages, strict=True):
-                prior = priors[v.kind] if priors is not None else None
+            for v, avg, prior in zip(videos, averages, priors, strict=True):
                 pred = decode_from_average(avg, v.frames, config, prior)
                 scores.append(psr_performance(v.gt, pred)[spec.selection_metric])
             score = float(np.mean([s for s in scores if s is not None]))  # type: ignore[arg-type]
@@ -545,20 +575,11 @@ def _select_decoder(
     return best[1], grid
 
 
-def _fit_and_decode(
-    train: Sequence[PSRVideo],
-    test: Sequence[PSRVideo],
-    fold_name: str,
-    spec: PSRSpec,
-    device: str,
-    heads: Sequence[str],
-    decoders: Sequence[str],
-) -> tuple[list[CompletionRow], dict[str, object], dict[str, object]]:
-    """Fit every head on ``train``, select every decoder on ``train``, decode ``test``."""
-    rows: list[CompletionRow] = []
-    training_logs: dict[str, object] = {}
-    priors = {kind: learn_prior(train, kind) for kind in ("assy", "main")}
+def _fit_heads(
+    train: Sequence[PSRVideo], spec: PSRSpec, device: str, heads: Sequence[str], log_key: str
+) -> tuple[dict[str, object], dict[str, object]]:
     predictors: dict[str, object] = {}
+    logs: dict[str, object] = {}
     if "linear" in heads:
         predictors["linear"] = train_state_head(
             np.concatenate([v.features for v in train]).astype(np.float32),
@@ -567,13 +588,102 @@ def _fit_and_decode(
             device,
         )
     if "mstcn" in heads:
-        predictors["mstcn"], training_logs[f"mstcn/{fold_name}"] = train_state_mstcn(
-            train, spec, device
+        predictors["mstcn"], logs[f"mstcn/{log_key}"] = train_state_mstcn(train, spec, device)
+    return predictors, logs
+
+
+def inner_folds(
+    train: Sequence[PSRVideo], n_folds: int = 4
+) -> list[tuple[list[PSRVideo], list[PSRVideo]]]:
+    """Deterministic grouped folds over the training participants (sorted ids, round-robin)."""
+    participants = sorted({v.participant for v in train})
+    groups = [set(participants[i::n_folds]) for i in range(n_folds)]
+    return [
+        (
+            [v for v in train if v.participant not in group],
+            [v for v in train if v.participant in group],
         )
+        for group in groups
+        if group
+    ]
+
+
+def _select_nested(
+    train: Sequence[PSRVideo],
+    spec: PSRSpec,
+    device: str,
+    heads: Sequence[str],
+    decoders: Sequence[str],
+    log_key: str,
+) -> tuple[dict[str, tuple[DecoderConfig, float]], dict[str, object]]:
+    """Select every decoder on out-of-fold probabilities of the training recordings.
+
+    Each inner fold fits the heads on the other training participants and predicts its own;
+    the prior used while scoring a video is learned from that video's inner-train fold, so no
+    label of a video influences the settings it is decoded with.
+    """
+    oof: dict[str, list[np.ndarray | None]] = {head: [None] * len(train) for head in heads}
+    fold_priors: list[dict[str, ProcedurePrior] | None] = [None] * len(train)
+    logs: dict[str, object] = {}
+    position = {v.video_id: i for i, v in enumerate(train)}
+    for k, (inner_train, inner_held) in enumerate(inner_folds(train)):
+        predictors, fold_logs = _fit_heads(inner_train, spec, device, heads, f"{log_key}/inner{k}")
+        logs.update(fold_logs)
+        priors = {kind: learn_prior(inner_train, kind) for kind in ("assy", "main")}
+        for v in inner_held:
+            fold_priors[position[v.video_id]] = priors
+            for head, predictor in predictors.items():
+                oof[head][position[v.video_id]] = predictor.predict_proba(v.features)  # type: ignore[attr-defined]
+    selected: dict[str, tuple[DecoderConfig, float]] = {}
+    for head in heads:
+        probs = [p for p in oof[head]]
+        assert all(p is not None for p in probs) and all(fp is not None for fp in fold_priors)
+        for decoder in decoders:
+            with_prior = decoder == "prior_dwell"
+            priors_per_video = [
+                fp[v.kind] if with_prior else None  # type: ignore[index]
+                for v, fp in zip(train, fold_priors, strict=True)
+            ]
+            config, grid = _select_decoder(
+                train,
+                probs,  # type: ignore[arg-type]
+                spec,
+                priors_per_video,
+                spec.min_dwells if with_prior else (0,),
+            )
+            selected[f"{head}_{decoder}"] = (config, max(grid.values()))
+    return selected, logs
+
+
+def _fit_and_decode(
+    train: Sequence[PSRVideo],
+    test: Sequence[PSRVideo],
+    fold_name: str,
+    spec: PSRSpec,
+    device: str,
+    heads: Sequence[str],
+    decoders: Sequence[str],
+    selection: str = "in_sample",
+    run_suffix: str = "",
+) -> tuple[list[CompletionRow], dict[str, object], dict[str, object]]:
+    """Fit every head on ``train``, select every decoder (in-sample or nested), decode ``test``."""
+    if selection not in SELECTIONS:
+        raise ValueError(f"selection must be one of {SELECTIONS}")
+    rows: list[CompletionRow] = []
+    training_logs: dict[str, object] = {}
+    priors = {kind: learn_prior(train, kind) for kind in ("assy", "main")}
+    nested: dict[str, tuple[DecoderConfig, float]] = {}
+    if selection == "nested":
+        nested, training_logs = _select_nested(
+            train, spec, device, heads, decoders, f"{fold_name}{run_suffix}"
+        )
+    predictors, final_logs = _fit_heads(train, spec, device, heads, f"{fold_name}{run_suffix}")
+    training_logs.update(final_logs)
     fold: dict[str, object] = {
         "train_videos": len(train),
         "train_participants": sorted({v.participant for v in train}),
         "eval_videos": len(test),
+        "selection": selection,
         "prior": {
             kind: {
                 "active": prior.active.tolist(),
@@ -589,19 +699,27 @@ def _fit_and_decode(
             for c in v.gt
         )
     for head, predictor in predictors.items():
-        train_probs = [predictor.predict_proba(v.features) for v in train]  # type: ignore[attr-defined]
         test_probs = [predictor.predict_proba(v.features) for v in test]  # type: ignore[attr-defined]
+        train_probs = (
+            [predictor.predict_proba(v.features) for v in train]  # type: ignore[attr-defined]
+            if selection == "in_sample"
+            else []
+        )
         for decoder in decoders:
             with_prior = decoder == "prior_dwell"
-            config, grid = _select_decoder(
-                train,
-                train_probs,
-                spec,
-                priors if with_prior else None,
-                spec.min_dwells if with_prior else (0,),
-            )
-            run = f"{head}_{decoder}"
-            fold["decoders"][run] = {"decoder": asdict(config), "grid_best": max(grid.values())}  # type: ignore[index]
+            if selection == "nested":
+                config, grid_best = nested[f"{head}_{decoder}"]
+            else:
+                config, grid = _select_decoder(
+                    train,
+                    train_probs,
+                    spec,
+                    [priors[v.kind] if with_prior else None for v in train],
+                    spec.min_dwells if with_prior else (0,),
+                )
+                grid_best = max(grid.values())
+            run = f"{head}_{decoder}{run_suffix}"
+            fold["decoders"][run] = {"decoder": asdict(config), "grid_best": grid_best}  # type: ignore[index]
             for v, p in zip(test, test_probs, strict=True):
                 pred = decode_completions(
                     p, v.frames, config, priors[v.kind] if with_prior else None
@@ -632,14 +750,26 @@ def run_psr_baseline(
     decoders: Sequence[str] = DECODERS,
     train_ids: set[str] | None = None,
     eval_ids: set[str] | None = None,
+    selection: str = "in_sample",
+    seeds: Sequence[int] = (0,),
 ) -> dict[str, object]:
     """Leave-one-participant-out over every recording in ``psr_dir``, or — when ``train_ids`` and
-    ``eval_ids`` are given — one fit on the train recordings evaluated on the eval recordings."""
+    ``eval_ids`` are given — one fit on the train recordings evaluated on the eval recordings.
+
+    ``selection`` is how every decoder is chosen: ``in_sample`` on the same recordings the head
+    was fitted on, ``nested`` on out-of-fold predictions of the training recordings. With several
+    ``seeds`` every head x decoder is repeated per seed as ``<head>_<decoder>_s<seed>`` and
+    ``metrics.json`` gains a ``seed_summary``.
+    """
     spec = spec or PSRSpec()
     if any(h not in HEADS for h in heads) or any(d not in DECODERS for d in decoders):
         raise ValueError(f"heads must be in {HEADS} and decoders in {DECODERS}")
+    if selection not in SELECTIONS:
+        raise ValueError(f"selection must be one of {SELECTIONS}")
     if (train_ids is None) != (eval_ids is None):
         raise ValueError("train_ids and eval_ids must be given together")
+    if not seeds:
+        raise ValueError("at least one seed is needed")
     started = time.perf_counter()
     videos = load_psr_videos(features_dir, psr_dir)
     steps = load_procedure_info(PROCEDURE_INFO)
@@ -657,36 +787,63 @@ def run_psr_baseline(
             raise ValueError(f"split videos without PSR labels/features: {sorted(missing)}")
         if {v.participant for v in train} & {v.participant for v in test}:
             raise ValueError("train and eval splits share a participant")
+        how = (
+            "decoder selected on those same recordings"
+            if selection == "in_sample"
+            else "decoder selected on out-of-fold predictions of those recordings (grouped 4-fold by participant)"
+        )
         protocol = (
             f"fit once on the {len(train)} train-split recordings ({len({v.participant for v in train})} "
-            f"participants), decoder selected on those same recordings, evaluated on the "
-            f"{len(test)} eval-split recordings"
+            f"participants), {how}, evaluated on the {len(test)} eval-split recordings"
         )
-        rows, folds["train->eval"], training_logs = _fit_and_decode(
-            train, test, "train->eval", spec, device, heads, decoders
-        )
+        splits = [(train, test, "train->eval")]
         evaluated = test
     else:
         participants = sorted({v.participant for v in videos})
         if len(participants) < 2:
             raise ValueError("leave-one-participant-out needs at least two participants")
-        protocol = "leave-one-participant-out over the val participants; decoder selected on each fold's training videos"
-        for held_out in participants:
-            train = [v for v in videos if v.participant != held_out]
-            test = [v for v in videos if v.participant == held_out]
-            fold_rows, folds[held_out], logs = _fit_and_decode(
-                train, test, held_out, spec, device, heads, decoders
+        how = (
+            "decoder selected on each fold's training videos"
+            if selection == "in_sample"
+            else "decoder selected on out-of-fold predictions of each fold's training videos"
+        )
+        protocol = f"leave-one-participant-out over the val participants; {how}"
+        splits = [
+            (
+                [v for v in videos if v.participant != held_out],
+                [v for v in videos if v.participant == held_out],
+                held_out,
             )
+            for held_out in participants
+        ]
+        evaluated = videos
+    if len(seeds) > 1:
+        protocol += f"; seeds {list(seeds)} reported as separate runs"
+    for train, test, fold_name in splits:
+        gt_written = False
+        for seed in seeds:
+            seeded = replace(spec, seed=seed)
+            suffix = f"_s{seed}" if len(seeds) > 1 else ""
+            fold_rows, fold, logs = _fit_and_decode(
+                train, test, fold_name, seeded, device, heads, decoders, selection, suffix
+            )
+            if gt_written:
+                fold_rows = [r for r in fold_rows if r.source != "gt"]
+            gt_written = True
             rows.extend(fold_rows)
             training_logs.update(logs)
-        evaluated = videos
+            if fold_name in folds:
+                folds[fold_name]["decoders"].update(fold["decoders"])  # type: ignore[index]
+            else:
+                folds[fold_name] = fold
     videos = evaluated
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "psr_audit.json").write_text(
         json.dumps(audits, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     write_completions(out_dir / "completions_val.csv", rows)
-    metrics = score_completions(rows, n_boot=spec.n_boot, seed=spec.seed)
+    run_names = sorted({run for fold in folds.values() for run in fold["decoders"]})  # type: ignore[index]
+    metrics = score_completions(rows, n_boot=spec.n_boot, seed=spec.seed, run_names=run_names)
     error_videos = sorted(v.video_id for v in videos if v.has_errors)
     metrics["videos_with_error_steps"] = error_videos
     clean_videos = [v.video_id for v in videos if not v.has_errors]
@@ -695,7 +852,10 @@ def run_psr_baseline(
         if not subset:
             continue
         sub = score_completions(
-            [r for r in rows if r.video_id in set(subset)], n_boot=spec.n_boot, seed=spec.seed
+            [r for r in rows if r.video_id in set(subset)],
+            n_boot=spec.n_boot,
+            seed=spec.seed,
+            run_names=run_names,
         )
         if "runs" in metrics:
             for run, scored in sub["runs"].items():  # type: ignore[union-attr]
@@ -802,6 +962,24 @@ def render_psr_tables(metrics: Mapping[str, object], config: Mapping[str, object
             "|---|---|---|---|---|---|",
         ]
         lines += _per_video_rows(scored["per_video"])  # type: ignore[arg-type]
+    seeds: Mapping[str, Mapping[str, object]] = metrics.get("seed_summary", {})  # type: ignore[assignment]
+    if seeds:
+        lines += [
+            "",
+            "Across seeds (mean ± std of the per-seed means over videos):",
+            "",
+            "| run | seeds | POS | F1 (system) | mean delay (s) | TP / FP / FN (mean) |",
+            "|---|---|---|---|---|---|",
+        ]
+        for base, entry in seeds.items():
+            pos: Mapping[str, float] = entry["pos"]  # type: ignore[assignment]
+            f1: Mapping[str, float] = entry["f1"]  # type: ignore[assignment]
+            delay: Mapping[str, float] = entry["mean_delay_frames"]  # type: ignore[assignment]
+            lines.append(
+                f"| {base} | {entry['n_seeds']} | {pos['mean']:.3f} ± {pos['std']:.3f} | "
+                f"{f1['mean']:.3f} ± {f1['std']:.3f} | {delay['mean'] / 10:.1f} ± {delay['std'] / 10:.1f} | "
+                f"{entry['system_tp']:.1f} / {entry['system_fp']:.1f} / {entry['system_fn']:.1f} |"
+            )
     folds: Mapping[str, Mapping[str, object]] = config.get("folds", {})  # type: ignore[assignment]
     if folds:
         lines += [
