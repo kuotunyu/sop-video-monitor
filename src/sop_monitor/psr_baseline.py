@@ -357,6 +357,9 @@ class PSRSpec:
     # with the lowest mean held-out BCE is used for the out-of-fold probabilities and the final
     # fit. Empty = fixed ``mstcn_epochs``.
     mstcn_epoch_grid: tuple[int, ...] = ()
+    # "bce": lowest mean held-out BCE (frame-level proxy); "decoded_f1": highest out-of-fold
+    # F1 of the first decoder's best setting (event-level, what is actually reported).
+    mstcn_epoch_criterion: str = "bce"
     seed: int = 0
     n_boot: int = 2000
     # Widened once (0.98 / 0.99 and 0.95 / 0.1 added) after the first leave-one-out run showed
@@ -750,13 +753,46 @@ def _select_nested(
     chosen_epochs = spec.mstcn_epochs
     if epoch_grid:
         mean_bce = {e: sum(v) / len(train) for e, v in bce_by_epoch.items()}
-        chosen_epochs = min(mean_bce, key=lambda e: (mean_bce[e], e))
-        for held_videos, snapshots in snapshots_by_fold:
-            for v, probs in zip(held_videos, snapshots[chosen_epochs], strict=True):
-                oof["mstcn"][position[v.video_id]] = probs
+
+        def oof_at(epoch: int) -> list[np.ndarray]:
+            probs_at: list[np.ndarray | None] = [None] * len(train)
+            for held_videos, snapshots in snapshots_by_fold:
+                for v, probs in zip(held_videos, snapshots[epoch], strict=True):
+                    probs_at[position[v.video_id]] = probs
+            assert all(p is not None for p in probs_at)
+            return probs_at  # type: ignore[return-value]
+
+        decoded_f1: dict[int, float] = {}
+        if spec.mstcn_epoch_criterion == "decoded_f1":
+            # Score each candidate epoch by the out-of-fold decoded F1 of its best decoder (the
+            # first requested decoder, under the largest latency budget when budgets are given).
+            decoder = decoders[0]
+            with_prior = decoder == "prior_dwell"
+            priors_per_video = [
+                fp[v.kind] if with_prior else None  # type: ignore[index]
+                for v, fp in zip(train, fold_priors, strict=True)
+            ]
+            cap = max(spec.delay_caps_s) if spec.delay_caps_s else None
+            for epoch in epoch_grid:
+                points = evaluate_grid(
+                    train,
+                    oof_at(epoch),
+                    spec,
+                    priors_per_video,
+                    spec.min_dwells if with_prior else (0,),
+                )
+                decoded_f1[epoch] = choose_decoder(points, cap).f1
+            chosen_epochs = max(epoch_grid, key=lambda e: (decoded_f1[e], -e))
+        elif spec.mstcn_epoch_criterion == "bce":
+            chosen_epochs = min(mean_bce, key=lambda e: (mean_bce[e], e))
+        else:
+            raise ValueError("mstcn_epoch_criterion must be 'bce' or 'decoded_f1'")
+        oof["mstcn"] = list(oof_at(chosen_epochs))
         logs[f"mstcn/{log_key}/epoch_selection"] = {
             "grid": list(epoch_grid),
+            "criterion": spec.mstcn_epoch_criterion,
             "mean_heldout_bce": {str(e): mean_bce[e] for e in sorted(mean_bce)},
+            "oof_decoded_f1": {str(e): decoded_f1[e] for e in sorted(decoded_f1)},
             "chosen": chosen_epochs,
         }
     selected: dict[str, list[GridPoint]] = {}

@@ -318,6 +318,9 @@ def train_psr_cmd(
             help="Nested epoch selection grid for the MS-TCN++ head (repeatable; nested only)"
         ),
     ] = None,
+    mstcn_epoch_criterion: Annotated[
+        str, typer.Option(help="bce | decoded_f1 (how the epoch is chosen from the grid)")
+    ] = "bce",
     train_split: Annotated[
         Path | None, typer.Option(help="Split CSV of training recordings (with --eval-split)")
     ] = None,
@@ -354,6 +357,7 @@ def train_psr_cmd(
         epochs=epochs,
         mstcn_epochs=mstcn_epochs,
         mstcn_epoch_grid=tuple(mstcn_epoch_grid or ()),
+        mstcn_epoch_criterion=mstcn_epoch_criterion,
         n_boot=n_boot,
         delay_caps_s=tuple(delay_cap or ()),
     )

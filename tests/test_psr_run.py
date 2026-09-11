@@ -243,3 +243,40 @@ def test_nested_epoch_selection_uses_heldout_bce(
     assert sorted(snapshots) == [2, 3] and len(snapshots[2]) == 1
     assert snapshots[2][0].shape == (60, 11)
     assert set(log["heldout_bce"]) == {"2", "3"}
+
+
+def test_epoch_selection_by_decoded_f1(dataset: tuple[Path, Path], tmp_path: Path) -> None:
+    from dataclasses import replace
+
+    features, psr = dataset
+    spec = replace(
+        TINY, mstcn_epochs=2, mstcn_epoch_grid=(1, 2), mstcn_epoch_criterion="decoded_f1"
+    )
+    result = run_psr_baseline(
+        features,
+        psr,
+        tmp_path / "epochs_f1",
+        spec,
+        heads=("mstcn",),
+        decoders=("prior_dwell",),
+        train_ids={"01_assy_0_1", "02_assy_0_1", "03_assy_0_1"},
+        eval_ids={"04_assy_0_1"},
+        selection="nested",
+    )
+    selection = result["config"]["training"]["mstcn/train->eval/epoch_selection"]
+    assert selection["criterion"] == "decoded_f1"
+    assert set(selection["oof_decoded_f1"]) == {"1", "2"}
+    best = max(selection["oof_decoded_f1"], key=lambda e: (selection["oof_decoded_f1"][e], -int(e)))
+    assert selection["chosen"] == int(best)
+    with pytest.raises(ValueError, match="criterion"):
+        run_psr_baseline(
+            features,
+            psr,
+            tmp_path / "bad",
+            replace(spec, mstcn_epoch_criterion="loss"),
+            heads=("mstcn",),
+            decoders=("plain",),
+            train_ids={"01_assy_0_1", "02_assy_0_1", "03_assy_0_1"},
+            eval_ids={"04_assy_0_1"},
+            selection="nested",
+        )
