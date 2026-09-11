@@ -1,0 +1,58 @@
+{
+  "files": [
+    {
+      "bytes": 5335763,
+      "dataset": "HA-ViD public",
+      "file": "instructions.zip",
+      "sha256": "b8e55d5e188fff1b24a43f745f8058d9b1b0bd676380b6d2c69dc3748d9e05f1"
+    },
+    {
+      "bytes": 408983,
+      "dataset": "HA-ViD public",
+      "file": "sa-tpg.zip",
+      "sha256": "537750275c1fa0923f00d3c5abbc15ea1446652cdeb912bd03ac946e3e80a6cf"
+    },
+    {
+      "bytes": 67816,
+      "dataset": "IndustReal",
+      "file": "action_recognition_labels.zip",
+      "sha256": "9ba70f2b42dc503c1742df966ddcaaa905f85119953529fa73812e89184f3910"
+    },
+    {
+      "bytes": 1266190326,
+      "dataset": "IndustReal",
+      "file": "action_recognition_model_weights.zip",
+      "sha256": "8cc3b54754f10ec005b5a8451dea7b890203b1bfd65ab102f9ab93c9bea04747"
+    },
+    {
+      "bytes": 4960644152,
+      "dataset": "IndustReal",
+      "file": "all_rgb_videos.zip",
+      "sha256": "556357b3ae5804541d6cef75df724af43170f63df6d3cdfda7150fd175822268"
+    },
+    {
+      "bytes": 17338432,
+      "dataset": "IndustReal",
+      "file": "part_geometries.zip",
+      "sha256": "59628d56cc75de40a8e408eada2e83e7006ece5e42e54bd0dc24bb3a452fe9af"
+    },
+    {
+      "bytes": 192153,
+      "dataset": "IndustReal",
+      "file": "test.csv",
+      "sha256": "03641fb2927cdc5a5efb606a105b852d80087a94b88569ec001b74decd109f16"
+    },
+    {
+      "bytes": 191368,
+      "dataset": "IndustReal",
+      "file": "train.csv",
+      "sha256": "2f36ea1964d9255079c014457215a1e6fc7500e3323837dcb924010879654af4"
+    },
+    {
+      "bytes": 100787,
+      "dataset": "IndustReal",
+      "file": "val.csv",
+      "sha256": "010e66a0fdb04fc481e489a71fbb662ebaf3099a0e7987d6c2996daf05f58002"
+    }
+  ]
+}

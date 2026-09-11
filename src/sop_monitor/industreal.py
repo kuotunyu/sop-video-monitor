@@ -10,6 +10,14 @@ The participant id is the first underscore-separated token of ``video_id``. The 
 split is participant-disjoint (12 / 5 / 10 participants); this module regenerates the split
 from the raw rows, *verifies* that disjointness instead of assuming it, and freezes the
 test list with the same SHA-256 contract used for HA-ViD (:mod:`sop_monitor.splits`).
+
+Frame semantics (measured on the local copy, see ``reports/industreal_dev_v1/data_audit.json``):
+the RGB videos run at 10 fps and label frame indices are 0-based indices into that stream, so
+``000027.jpg`` is video frame 27. Segments are treated as half-open ``[start, end)`` because
+consecutive segments routinely share a boundary frame. About 9 % of labelled frames carry two
+overlapping actions (typically ``check_instruction`` during a manipulation); :func:`frame_labels`
+resolves those to the action with the latest onset, which is the convention an online monitor
+would use ("the step the operator most recently started").
 """
 
 from __future__ import annotations
@@ -17,13 +25,18 @@ from __future__ import annotations
 import csv
 import json
 from collections import defaultdict
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
 
+import numpy as np
+
 from sop_monitor.splits import SPLIT_NAMES, hash_test_list
 
 LABEL_FILES: dict[str, str] = {name: f"{name}.csv" for name in SPLIT_NAMES}
+BACKGROUND = -1
+"""Per-frame label of frames that no segment covers (never an IndustReal action id)."""
 
 
 @dataclass(frozen=True)
@@ -164,3 +177,44 @@ def freeze_industreal_splits(labels_dir: Path, out_dir: Path) -> dict[str, objec
         json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     return manifest
+
+
+def segments_by_video(segments: Iterable[Segment]) -> dict[str, list[Segment]]:
+    """Group segments under their video id, preserving file order within a video."""
+    grouped: dict[str, list[Segment]] = defaultdict(list)
+    for segment in segments:
+        grouped[segment.video_id].append(segment)
+    return dict(grouped)
+
+
+def frame_labels(segments: Sequence[Segment], n_frames: int) -> np.ndarray:
+    """Per-frame action ids for one video (``int64``, :data:`BACKGROUND` where nothing is labelled).
+
+    Segments are half-open ``[start_frame, end_frame)``. Overlapping segments resolve to the one
+    with the latest onset; equal onsets resolve to the later-listed segment. Raises when a segment
+    ends beyond ``n_frames`` or the segments come from more than one video.
+    """
+    labels = np.full(n_frames, BACKGROUND, dtype=np.int64)
+    if not segments:
+        return labels
+    videos = {segment.video_id for segment in segments}
+    if len(videos) != 1:
+        raise ValueError(f"segments span several videos: {sorted(videos)}")
+    for segment in sorted(segments, key=lambda s: s.start_frame):  # stable: later-listed wins ties
+        if segment.end_frame > n_frames:
+            raise ValueError(
+                f"{segment.video_id}: segment ends at {segment.end_frame}, beyond {n_frames} frames"
+            )
+        labels[segment.start_frame : segment.end_frame] = segment.action_id
+    return labels
+
+
+def overlap_frame_count(segments: Sequence[Segment]) -> int:
+    """Number of frames covered by two or more segments (what :func:`frame_labels` has to resolve)."""
+    if not segments:
+        return 0
+    n_frames = max(segment.end_frame for segment in segments)
+    cover = np.zeros(n_frames, dtype=np.int64)
+    for segment in segments:
+        cover[segment.start_frame : segment.end_frame] += 1
+    return int(np.count_nonzero(cover > 1))

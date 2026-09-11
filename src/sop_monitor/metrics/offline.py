@@ -146,6 +146,61 @@ def tas_metrics(
 
 
 @dataclass(frozen=True)
+class SequenceStats:
+    """Per-sequence sufficient statistics of ``tas_metrics``; combine any subset without re-scanning."""
+
+    correct: int
+    total: int
+    edit: float
+    counts: tuple[tuple[int, tuple[int, int, int]], ...]  # ((k, (tp, fp, fn)), ...)
+
+
+def sequence_stats(
+    pred: LabelSeq,
+    gt: LabelSeq,
+    ks: Sequence[int] = DEFAULT_KS,
+    background: Collection[Hashable] = (),
+) -> SequenceStats:
+    """Everything ``tas_metrics`` needs from one ``(pred, gt)`` pair, computed once."""
+    _check_pair(pred, gt)
+    return SequenceStats(
+        correct=int(sum(p == g for p, g in zip(pred, gt, strict=True))),
+        total=len(gt),
+        edit=edit_score([(pred, gt)], background),
+        counts=tuple((k, segmental_counts(pred, gt, k / 100.0, background)) for k in ks),
+    )
+
+
+def combine_sequence_stats(stats: Sequence[SequenceStats]) -> dict[str, float]:
+    """``tas_metrics`` of the union of sequences, from their :class:`SequenceStats` alone.
+
+    MoF and F1 are micro (sums first), Edit is macro (mean of per-sequence scores), exactly as
+    in :func:`tas_metrics`; this is what makes subject bootstrapping cheap.
+    """
+    if not stats:
+        raise ValueError("no sequences")
+    total = sum(s.total for s in stats)
+    if total == 0:
+        raise ValueError("no frames")
+    out = {
+        "mof": 100.0 * sum(s.correct for s in stats) / total,
+        "edit": float(np.mean([s.edit for s in stats])),
+    }
+    for index, (k, _) in enumerate(stats[0].counts):
+        tp = sum(s.counts[index][1][0] for s in stats)
+        fp = sum(s.counts[index][1][1] for s in stats)
+        fn = sum(s.counts[index][1][2] for s in stats)
+        precision = tp / (tp + fp) if tp + fp else 0.0
+        recall = tp / (tp + fn) if tp + fn else 0.0
+        out[f"f1@{k}"] = (
+            0.0
+            if precision + recall == 0
+            else 100.0 * 2 * precision * recall / (precision + recall)
+        )
+    return out
+
+
+@dataclass(frozen=True)
 class BootstrapResult:
     point: float
     lower: float

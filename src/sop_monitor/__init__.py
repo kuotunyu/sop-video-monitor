@@ -1,4 +1,4 @@
-"""sop-video-monitor: multi-camera SOP sequence monitoring (W0 skeleton).
+"""sop-video-monitor: multi-camera SOP sequence monitoring (development build).
 
 Package layout mirrors the design spec (2026-09-03, sections 5 and 8.1):
 
@@ -7,6 +7,11 @@ Package layout mirrors the design spec (2026-09-03, sections 5 and 8.1):
 - ``stream``          ring buffer with WAIT / DROP_OLDEST / ADAPTIVE backpressure policies
 - ``metrics.offline`` MoF, Edit, F1@{10,25,50} with subject bootstrap
 - ``metrics.online``  Procedure Order Similarity, completion F1, detection delay
+- ``industreal``      IndustReal labels, split freezing, segment -> per-frame alignment
+- ``video``           PyAV probe / sequential decode
+- ``features``        frozen DINOv2 frame embeddings cached per video
+- ``baseline``        linear head, causal / centered smoothing, prediction tables, scoring
+- ``audit``           on-disk data audit and ``data/manifest.json``
 - ``cli``             typer entry point (``sop-monitor``)
 """
 

@@ -1,9 +1,11 @@
-"""The typer entry point imports and its W0 placeholders behave as documented."""
+"""The typer entry point: data-free commands work, data commands are honest about what is missing."""
 
+import json
 from pathlib import Path
 
 from typer.testing import CliRunner
 
+from sop_monitor.baseline import PredictionRow, render_tables, score_predictions, write_predictions
 from sop_monitor.cli import NOT_YET_EXIT_CODE, app
 
 runner = CliRunner()
@@ -12,13 +14,53 @@ runner = CliRunner()
 def test_reproduce_lite_reports_nothing_to_rebuild(tmp_path: Path) -> None:
     result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
     assert result.exit_code == 0
-    assert "not yet" in result.output
+    assert "nothing to rebuild" in result.output
 
 
-def test_reproduce_lite_refuses_until_regeneration_exists(tmp_path: Path) -> None:
-    (tmp_path / "tas_offline.json").write_text("{}", encoding="utf-8")
+def _write_run(run_dir: Path, tamper: bool = False) -> None:
+    rows = [
+        PredictionRow("a_1", "a", f, g, {"frame": p})
+        for f, (g, p) in enumerate([(1, 1), (1, 1), (2, 1), (-1, -1)])
+    ] + [PredictionRow("b_1", "b", f, g, {"frame": g}) for f, g in enumerate([3, 3, -1])]
+    run_dir.mkdir(parents=True)
+    write_predictions(run_dir / "predictions_val.csv", rows)
+    metrics = score_predictions(rows, n_boot=10, seed=1)
+    if tamper:
+        metrics["runs"]["frame"]["mof"]["point"] = 99.0  # type: ignore[index]
+    config = {
+        "selected": {},
+        "runs": {"frame": "argmax"},
+        "features": {"model": "x"},
+        "classes": {},
+    }
+    (run_dir / "metrics.json").write_text(json.dumps(metrics), encoding="utf-8")
+    (run_dir / "config.json").write_text(json.dumps(config), encoding="utf-8")
+    (run_dir / "tables.md").write_text(render_tables(metrics, config), encoding="utf-8")
+
+
+def test_reproduce_lite_recomputes_committed_runs_and_flags_drift(tmp_path: Path) -> None:
+    _write_run(tmp_path / "good_run")
     result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
-    assert result.exit_code == NOT_YET_EXIT_CODE
+    assert result.exit_code == 0, result.output
+    assert "good_run: OK" in result.output
+    _write_run(tmp_path / "bad_run", tamper=True)
+    result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
+    assert result.exit_code == 1
+    assert "bad_run: MISMATCH" in result.output
+    assert "runs differs" in result.output
+
+
+def test_score_predictions_checks_and_regenerates_tables(tmp_path: Path) -> None:
+    run_dir = tmp_path / "run"
+    _write_run(run_dir)
+    (run_dir / "tables.md").write_text("stale", encoding="utf-8")
+    result = runner.invoke(app, ["score-predictions", "--run", str(run_dir)])
+    assert result.exit_code == 1
+    assert "tables.md is stale" in result.output
+    result = runner.invoke(app, ["score-predictions", "--run", str(run_dir), "--write"])
+    assert result.exit_code == 0, result.output
+    assert "metrics reproduce" in result.output
+    assert (run_dir / "tables.md").read_text(encoding="utf-8") != "stale"
 
 
 def test_ha_vid_split_exits_not_yet() -> None:
