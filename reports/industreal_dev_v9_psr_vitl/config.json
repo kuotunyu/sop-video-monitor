@@ -1,0 +1,1660 @@
+{
+  "decoders": {
+    "plain": "causal EMA + hysteresis; install = up-crossing of theta_on, remove = down-crossing of theta_off",
+    "prior_dwell": "plain + minimum dwell before an event + procedure prior learned from the fold's training labels (active components and initial state per recording kind)"
+  },
+  "device": "cuda",
+  "features": {
+    "autocast_fp16": true,
+    "device": "cuda",
+    "dim": 2048,
+    "dtype": "float16",
+    "embedding": "concat(CLS, mean patch tokens)",
+    "extractor": "facebookresearch/dinov2 via torch.hub",
+    "frame_size_wh": [
+      392,
+      224
+    ],
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "model": "dinov2_vitl14",
+    "normalisation": "ImageNet mean/std",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "stride": 1,
+    "torch": "2.13.0+cu130",
+    "weights": {
+      "bytes": 1217586395,
+      "file": "dinov2_vitl14_pretrain.pth",
+      "sha256": "d5383ea8f4877b2472eb973e0fd72d557c7da5d3611bd527ceeb1d7162cbf428"
+    }
+  },
+  "folds": {
+    "train->eval": {
+      "decoders": {
+        "linear_plain_cap15_s0": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.36613789036415606,
+          "selected": {
+            "delay_s": 14.276220238095238,
+            "ema": 0.9,
+            "f1": 0.36613789036415606,
+            "min_dwell": 0,
+            "pos": 0.019290123456790122,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          }
+        },
+        "linear_plain_cap15_s1": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.37096691838836143,
+          "selected": {
+            "delay_s": 14.435072751322753,
+            "ema": 0.9,
+            "f1": 0.37096691838836143,
+            "min_dwell": 0,
+            "pos": 0.015817901234567902,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          }
+        },
+        "linear_plain_cap15_s2": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.3714271703730284,
+          "selected": {
+            "delay_s": 14.822593694885361,
+            "ema": 0.9,
+            "f1": 0.3714271703730284,
+            "min_dwell": 0,
+            "pos": 0.015817901234567902,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          }
+        },
+        "linear_plain_cap30_s0": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.6918900667632312,
+          "selected": {
+            "delay_s": 29.41884479717813,
+            "ema": 0.95,
+            "f1": 0.6918900667632312,
+            "min_dwell": 0,
+            "pos": 0.23642676767676768,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          }
+        },
+        "linear_plain_cap30_s1": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.6835047239269447,
+          "selected": {
+            "delay_s": 29.631428571428565,
+            "ema": 0.95,
+            "f1": 0.6835047239269447,
+            "min_dwell": 0,
+            "pos": 0.22117003367003366,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          }
+        },
+        "linear_plain_cap30_s2": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.6870970380699972,
+          "selected": {
+            "delay_s": 29.514932760141097,
+            "ema": 0.95,
+            "f1": 0.6870970380699972,
+            "min_dwell": 0,
+            "pos": 0.22790404040404041,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          }
+        },
+        "linear_prior_dwell_cap15_s0": {
+          "decoder": {
+            "ema": 0.8,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.4111583653746591,
+          "selected": {
+            "delay_s": 14.927937610229275,
+            "ema": 0.8,
+            "f1": 0.4111583653746591,
+            "min_dwell": 0,
+            "pos": 0.08460097001763668,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          }
+        },
+        "linear_prior_dwell_cap15_s1": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.39828621820548654,
+          "selected": {
+            "delay_s": 14.404517195767195,
+            "ema": 0.9,
+            "f1": 0.39828621820548654,
+            "min_dwell": 0,
+            "pos": 0.025462962962962965,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          }
+        },
+        "linear_prior_dwell_cap15_s2": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.39972928357787935,
+          "selected": {
+            "delay_s": 14.793195546737214,
+            "ema": 0.9,
+            "f1": 0.39972928357787935,
+            "min_dwell": 0,
+            "pos": 0.025462962962962965,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          }
+        },
+        "linear_prior_dwell_cap30_s0": {
+          "decoder": {
+            "ema": 0.0,
+            "min_dwell": 30,
+            "theta_off": 0.4,
+            "theta_on": 0.8
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.8488967171627423,
+          "selected": {
+            "delay_s": 29.29925925925926,
+            "ema": 0.0,
+            "f1": 0.8488967171627423,
+            "min_dwell": 30,
+            "pos": 0.44993085618085626,
+            "theta_off": 0.4,
+            "theta_on": 0.8
+          }
+        },
+        "linear_prior_dwell_cap30_s1": {
+          "decoder": {
+            "ema": 0.0,
+            "min_dwell": 30,
+            "theta_off": 0.3,
+            "theta_on": 0.8
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.8505250461547347,
+          "selected": {
+            "delay_s": 29.61179563492063,
+            "ema": 0.0,
+            "f1": 0.8505250461547347,
+            "min_dwell": 30,
+            "pos": 0.43199655282988614,
+            "theta_off": 0.3,
+            "theta_on": 0.8
+          }
+        },
+        "linear_prior_dwell_cap30_s2": {
+          "decoder": {
+            "ema": 0.0,
+            "min_dwell": 30,
+            "theta_off": 0.4,
+            "theta_on": 0.8
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.8527456638261567,
+          "selected": {
+            "delay_s": 29.372674162257493,
+            "ema": 0.0,
+            "f1": 0.8527456638261567,
+            "min_dwell": 30,
+            "pos": 0.45775713484046826,
+            "theta_off": 0.4,
+            "theta_on": 0.8
+          }
+        },
+        "mstcn_plain_cap15_s0": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.5303761465760641,
+          "selected": {
+            "delay_s": 14.834591836734694,
+            "ema": 0.95,
+            "f1": 0.5303761465760641,
+            "min_dwell": 0,
+            "pos": 0.19703984287317622,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          }
+        },
+        "mstcn_plain_cap15_s1": {
+          "decoder": {
+            "ema": 0.0,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.4739721177875048,
+          "selected": {
+            "delay_s": 14.940482804232804,
+            "ema": 0.0,
+            "f1": 0.4739721177875048,
+            "min_dwell": 0,
+            "pos": 0.13397867564534233,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          }
+        },
+        "mstcn_plain_cap15_s2": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.558499560383173,
+          "selected": {
+            "delay_s": 13.889222883597885,
+            "ema": 0.95,
+            "f1": 0.558499560383173,
+            "min_dwell": 0,
+            "pos": 0.2142255892255892,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          }
+        },
+        "mstcn_plain_cap30_s0": {
+          "decoder": {
+            "ema": 0.99,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.5969060361712907,
+          "selected": {
+            "delay_s": 23.868326719576714,
+            "ema": 0.99,
+            "f1": 0.5969060361712907,
+            "min_dwell": 0,
+            "pos": 0.23793490460157127,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          }
+        },
+        "mstcn_plain_cap30_s1": {
+          "decoder": {
+            "ema": 0.99,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.5907529591315317,
+          "selected": {
+            "delay_s": 27.48777777777778,
+            "ema": 0.99,
+            "f1": 0.5907529591315317,
+            "min_dwell": 0,
+            "pos": 0.2053521324354658,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          }
+        },
+        "mstcn_plain_cap30_s2": {
+          "decoder": {
+            "ema": 0.98,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.5832030245458615,
+          "selected": {
+            "delay_s": 20.127751322751323,
+            "ema": 0.98,
+            "f1": 0.5832030245458615,
+            "min_dwell": 0,
+            "pos": 0.21383978675645343,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          }
+        },
+        "mstcn_prior_dwell_cap15_s0": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 30,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.6958985323813357,
+          "selected": {
+            "delay_s": 14.897894557823127,
+            "ema": 0.9,
+            "f1": 0.6958985323813357,
+            "min_dwell": 30,
+            "pos": 0.49817620650953987,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          }
+        },
+        "mstcn_prior_dwell_cap15_s1": {
+          "decoder": {
+            "ema": 0.0,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.6166007622451072,
+          "selected": {
+            "delay_s": 14.969186507936508,
+            "ema": 0.0,
+            "f1": 0.6166007622451072,
+            "min_dwell": 0,
+            "pos": 0.3925665383998717,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          }
+        },
+        "mstcn_prior_dwell_cap15_s2": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 10,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          "delay_cap_s": 15.0,
+          "grid_best": 0.7276261605375249,
+          "selected": {
+            "delay_s": 14.59936177248677,
+            "ema": 0.95,
+            "f1": 0.7276261605375249,
+            "min_dwell": 10,
+            "pos": 0.5375180375180375,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          }
+        },
+        "mstcn_prior_dwell_cap30_s0": {
+          "decoder": {
+            "ema": 0.99,
+            "min_dwell": 30,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.7960840676595463,
+          "selected": {
+            "delay_s": 24.274375,
+            "ema": 0.99,
+            "f1": 0.7960840676595463,
+            "min_dwell": 30,
+            "pos": 0.5794041606541607,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          }
+        },
+        "mstcn_prior_dwell_cap30_s1": {
+          "decoder": {
+            "ema": 0.98,
+            "min_dwell": 60,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.7910736212383908,
+          "selected": {
+            "delay_s": 26.18565476190476,
+            "ema": 0.98,
+            "f1": 0.7910736212383908,
+            "min_dwell": 60,
+            "pos": 0.5274871733205067,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          }
+        },
+        "mstcn_prior_dwell_cap30_s2": {
+          "decoder": {
+            "ema": 0.99,
+            "min_dwell": 60,
+            "theta_off": 0.3,
+            "theta_on": 0.8
+          },
+          "delay_cap_s": 30.0,
+          "grid_best": 0.8142606677965412,
+          "selected": {
+            "delay_s": 28.788458994708996,
+            "ema": 0.99,
+            "f1": 0.8142606677965412,
+            "min_dwell": 60,
+            "pos": 0.5118767035433702,
+            "theta_off": 0.3,
+            "theta_on": 0.8
+          }
+        }
+      },
+      "eval_videos": 16,
+      "mstcn_epochs_used": 40,
+      "pareto": {
+        "linear_plain": [
+          {
+            "delay_s": 4.955749959916627,
+            "ema": 0.0,
+            "f1": 0.028499173994944296,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.4,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 5.477165404040404,
+            "ema": 0.0,
+            "f1": 0.037858657141393415,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.3,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 6.152232243065576,
+            "ema": 0.0,
+            "f1": 0.05133358442794931,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 7.70053471220138,
+            "ema": 0.0,
+            "f1": 0.06826607258330258,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 8.115060626102293,
+            "ema": 0.0,
+            "f1": 0.07195825389364614,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 9.128629349046015,
+            "ema": 0.0,
+            "f1": 0.08874890987250592,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 9.49899360670194,
+            "ema": 0.0,
+            "f1": 0.09188880655438875,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 11.085399029982366,
+            "ema": 0.0,
+            "f1": 0.11959658820617941,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 12.308892897226231,
+            "ema": 0.8,
+            "f1": 0.13416903369243477,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.4,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 12.506340388007054,
+            "ema": 0.9,
+            "f1": 0.2072573302836972,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.4,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.85247685185185,
+            "ema": 0.9,
+            "f1": 0.2578397943093096,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.3,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.882253086419757,
+            "ema": 0.8,
+            "f1": 0.26062725148545596,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 14.276220238095238,
+            "ema": 0.9,
+            "f1": 0.36613789036415606,
+            "min_dwell": 0,
+            "pos": 0.019290123456790122,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 15.762751322751322,
+            "ema": 0.95,
+            "f1": 0.42468187821126163,
+            "min_dwell": 0,
+            "pos": 0.034722222222222224,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 16.68500992063492,
+            "ema": 0.9,
+            "f1": 0.42925898342982133,
+            "min_dwell": 0,
+            "pos": 0.04050925925925926,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 17.613192239858904,
+            "ema": 0.95,
+            "f1": 0.505797697926572,
+            "min_dwell": 0,
+            "pos": 0.06428872053872053,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 18.847387566137563,
+            "ema": 0.9,
+            "f1": 0.5442496161945782,
+            "min_dwell": 0,
+            "pos": 0.0908740179573513,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 19.962583774250437,
+            "ema": 0.95,
+            "f1": 0.5490395705932284,
+            "min_dwell": 0,
+            "pos": 0.15060325476992145,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 21.609508377425037,
+            "ema": 0.98,
+            "f1": 0.5618411715531032,
+            "min_dwell": 0,
+            "pos": 0.14379910213243546,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 22.334055335097002,
+            "ema": 0.95,
+            "f1": 0.6249983604867971,
+            "min_dwell": 0,
+            "pos": 0.16386083052749723,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 23.611645723104065,
+            "ema": 0.9,
+            "f1": 0.6599223914317282,
+            "min_dwell": 0,
+            "pos": 0.18315095398428732,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          },
+          {
+            "delay_s": 28.23092813051146,
+            "ema": 0.95,
+            "f1": 0.6673191856151779,
+            "min_dwell": 0,
+            "pos": 0.1960578002244669,
+            "theta_off": 0.2,
+            "theta_on": 0.9
+          },
+          {
+            "delay_s": 29.41884479717813,
+            "ema": 0.95,
+            "f1": 0.6918900667632312,
+            "min_dwell": 0,
+            "pos": 0.23642676767676768,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          }
+        ],
+        "linear_prior_dwell": [
+          {
+            "delay_s": 4.955749959916627,
+            "ema": 0.0,
+            "f1": 0.032077721078220406,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.4,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 5.477165404040404,
+            "ema": 0.0,
+            "f1": 0.042160876646860836,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.3,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 6.152232243065576,
+            "ema": 0.0,
+            "f1": 0.056903689554671226,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 7.212713945005612,
+            "ema": 0.0,
+            "f1": 0.05760834975937057,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.3,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 7.70053471220138,
+            "ema": 0.0,
+            "f1": 0.07739996638828857,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 8.115060626102293,
+            "ema": 0.0,
+            "f1": 0.08005651434405286,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 9.128629349046015,
+            "ema": 0.0,
+            "f1": 0.10247739366307736,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 9.49899360670194,
+            "ema": 0.0,
+            "f1": 0.10459112852243871,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 11.085399029982366,
+            "ema": 0.0,
+            "f1": 0.13906091522767966,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 12.308892897226231,
+            "ema": 0.8,
+            "f1": 0.14306295245892342,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.4,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 12.506340388007054,
+            "ema": 0.9,
+            "f1": 0.2222569777296878,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.4,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.85247685185185,
+            "ema": 0.9,
+            "f1": 0.2747760481848111,
+            "min_dwell": 0,
+            "pos": 0.0,
+            "theta_off": 0.3,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.882253086419757,
+            "ema": 0.8,
+            "f1": 0.328009928340256,
+            "min_dwell": 0,
+            "pos": 0.04128086419753087,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 14.245664682539683,
+            "ema": 0.9,
+            "f1": 0.39326094483671814,
+            "min_dwell": 0,
+            "pos": 0.02893518518518519,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 14.927937610229275,
+            "ema": 0.8,
+            "f1": 0.4111583653746591,
+            "min_dwell": 0,
+            "pos": 0.08460097001763668,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 15.125147707231042,
+            "ema": 0.9,
+            "f1": 0.5130923607280132,
+            "min_dwell": 10,
+            "pos": 0.14098324514991184,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 15.875405643738976,
+            "ema": 0.8,
+            "f1": 0.5165129003395413,
+            "min_dwell": 10,
+            "pos": 0.14136904761904762,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 16.1470667989418,
+            "ema": 0.0,
+            "f1": 0.5652995877544252,
+            "min_dwell": 10,
+            "pos": 0.1933471620971621,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 16.688396164021164,
+            "ema": 0.9,
+            "f1": 0.6239474898182715,
+            "min_dwell": 10,
+            "pos": 0.23517516434183103,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 17.131041666666665,
+            "ema": 0.0,
+            "f1": 0.6382322739216926,
+            "min_dwell": 10,
+            "pos": 0.23287437870771205,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 18.197126322751323,
+            "ema": 0.8,
+            "f1": 0.6576925071427304,
+            "min_dwell": 10,
+            "pos": 0.2256062610229277,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 18.44473544973545,
+            "ema": 0.9,
+            "f1": 0.6740124429921959,
+            "min_dwell": 10,
+            "pos": 0.30116241782908454,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 18.505631613756613,
+            "ema": 0.8,
+            "f1": 0.7219671278339913,
+            "min_dwell": 10,
+            "pos": 0.30867805034471707,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 19.759347442680774,
+            "ema": 0.8,
+            "f1": 0.7258079263939308,
+            "min_dwell": 30,
+            "pos": 0.3317049462882796,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 19.76901344797178,
+            "ema": 0.95,
+            "f1": 0.7302538901143624,
+            "min_dwell": 10,
+            "pos": 0.3565516273849607,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 20.89835758377425,
+            "ema": 0.9,
+            "f1": 0.7512738002537316,
+            "min_dwell": 10,
+            "pos": 0.3857854337021004,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 21.87605158730159,
+            "ema": 0.8,
+            "f1": 0.7827529591911769,
+            "min_dwell": 30,
+            "pos": 0.39492444284110945,
+            "theta_off": 0.3,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 22.603673941798945,
+            "ema": 0.8,
+            "f1": 0.8003692035324926,
+            "min_dwell": 30,
+            "pos": 0.4375631313131313,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 23.528391754850087,
+            "ema": 0.0,
+            "f1": 0.8143810845756738,
+            "min_dwell": 10,
+            "pos": 0.3936026936026936,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          },
+          {
+            "delay_s": 24.90210758377425,
+            "ema": 0.8,
+            "f1": 0.8256458130103292,
+            "min_dwell": 10,
+            "pos": 0.40299322590989256,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          },
+          {
+            "delay_s": 26.140357142857134,
+            "ema": 0.0,
+            "f1": 0.835850479630097,
+            "min_dwell": 30,
+            "pos": 0.4817871172037839,
+            "theta_off": 0.4,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 26.899746472663146,
+            "ema": 0.9,
+            "f1": 0.8424188306374495,
+            "min_dwell": 10,
+            "pos": 0.4253276815776816,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          },
+          {
+            "delay_s": 29.29925925925926,
+            "ema": 0.0,
+            "f1": 0.8488967171627423,
+            "min_dwell": 30,
+            "pos": 0.44993085618085626,
+            "theta_off": 0.4,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 30.07593584656085,
+            "ema": 0.0,
+            "f1": 0.8522587111747333,
+            "min_dwell": 30,
+            "pos": 0.4316107503607503,
+            "theta_off": 0.3,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 33.696343694885364,
+            "ema": 0.8,
+            "f1": 0.8552895520459124,
+            "min_dwell": 30,
+            "pos": 0.451053190636524,
+            "theta_off": 0.2,
+            "theta_on": 0.9
+          }
+        ],
+        "mstcn_plain": [
+          {
+            "delay_s": 12.715068027210883,
+            "ema": 0.0,
+            "f1": 0.41538812365737676,
+            "min_dwell": 0,
+            "pos": 0.13506593714927048,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 12.931445578231294,
+            "ema": 0.8,
+            "f1": 0.42070064388266093,
+            "min_dwell": 0,
+            "pos": 0.13506593714927048,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 12.942360544217687,
+            "ema": 0.0,
+            "f1": 0.44091136244402906,
+            "min_dwell": 0,
+            "pos": 0.16985830527497192,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 12.955261904761906,
+            "ema": 0.8,
+            "f1": 0.4491890459083579,
+            "min_dwell": 0,
+            "pos": 0.16733305274971944,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.554132653061226,
+            "ema": 0.9,
+            "f1": 0.4608871569550171,
+            "min_dwell": 0,
+            "pos": 0.17350589225589225,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.559666666666663,
+            "ema": 0.95,
+            "f1": 0.47464464898225345,
+            "min_dwell": 0,
+            "pos": 0.15537317620650953,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 14.119581632653063,
+            "ema": 0.95,
+            "f1": 0.5028975753943193,
+            "min_dwell": 0,
+            "pos": 0.18430836139169476,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 14.327261904761903,
+            "ema": 0.95,
+            "f1": 0.5030477904346493,
+            "min_dwell": 0,
+            "pos": 0.17466329966329966,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 14.750624716553286,
+            "ema": 0.98,
+            "f1": 0.5171745167132907,
+            "min_dwell": 0,
+            "pos": 0.16540404040404041,
+            "theta_off": 0.4,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 14.834591836734694,
+            "ema": 0.95,
+            "f1": 0.5303761465760641,
+            "min_dwell": 0,
+            "pos": 0.19703984287317622,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 15.185798185941042,
+            "ema": 0.98,
+            "f1": 0.5392781334111216,
+            "min_dwell": 0,
+            "pos": 0.19703984287317622,
+            "theta_off": 0.3,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 15.365185941043084,
+            "ema": 0.98,
+            "f1": 0.5536322933235015,
+            "min_dwell": 0,
+            "pos": 0.2124719416386083,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 15.774445578231294,
+            "ema": 0.95,
+            "f1": 0.5582877432144427,
+            "min_dwell": 0,
+            "pos": 0.19395342312008979,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 16.524424036281182,
+            "ema": 0.98,
+            "f1": 0.5704961504304358,
+            "min_dwell": 0,
+            "pos": 0.2252034231200898,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 18.044785714285716,
+            "ema": 0.98,
+            "f1": 0.5809775190392773,
+            "min_dwell": 0,
+            "pos": 0.23484848484848486,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 19.654437830687833,
+            "ema": 0.99,
+            "f1": 0.5810896308581578,
+            "min_dwell": 0,
+            "pos": 0.2275182379349046,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 19.73616732804233,
+            "ema": 0.98,
+            "f1": 0.5881774689919926,
+            "min_dwell": 0,
+            "pos": 0.2213453984287318,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 21.806660052910054,
+            "ema": 0.99,
+            "f1": 0.5921629368421588,
+            "min_dwell": 0,
+            "pos": 0.2213453984287318,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 23.868326719576714,
+            "ema": 0.99,
+            "f1": 0.5969060361712907,
+            "min_dwell": 0,
+            "pos": 0.23793490460157127,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          }
+        ],
+        "mstcn_prior_dwell": [
+          {
+            "delay_s": 12.715068027210883,
+            "ema": 0.0,
+            "f1": 0.552821142487545,
+            "min_dwell": 0,
+            "pos": 0.3906445406445407,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 12.942360544217687,
+            "ema": 0.0,
+            "f1": 0.5854356761294803,
+            "min_dwell": 0,
+            "pos": 0.4388628346961681,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 12.955261904761906,
+            "ema": 0.8,
+            "f1": 0.5985480724925556,
+            "min_dwell": 0,
+            "pos": 0.4368336139169473,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.295438775510203,
+            "ema": 0.0,
+            "f1": 0.6641301780373466,
+            "min_dwell": 30,
+            "pos": 0.48683361391694724,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.389346938775509,
+            "ema": 0.95,
+            "f1": 0.665826463688754,
+            "min_dwell": 10,
+            "pos": 0.475182379349046,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.629496598639454,
+            "ema": 0.8,
+            "f1": 0.6675901285542777,
+            "min_dwell": 30,
+            "pos": 0.4962261503928171,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 13.999863945578232,
+            "ema": 0.0,
+            "f1": 0.6752165271504793,
+            "min_dwell": 30,
+            "pos": 0.49046015712682384,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 14.027119047619047,
+            "ema": 0.9,
+            "f1": 0.6854714614734507,
+            "min_dwell": 30,
+            "pos": 0.5041175645342312,
+            "theta_off": 0.2,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 14.344391156462587,
+            "ema": 0.95,
+            "f1": 0.6884444436368384,
+            "min_dwell": 10,
+            "pos": 0.48243546576879903,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 14.897894557823127,
+            "ema": 0.9,
+            "f1": 0.6958985323813357,
+            "min_dwell": 30,
+            "pos": 0.49817620650953987,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 15.146707482993198,
+            "ema": 0.9,
+            "f1": 0.7004868794067423,
+            "min_dwell": 30,
+            "pos": 0.49411976911976907,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 15.291051587301586,
+            "ema": 0.8,
+            "f1": 0.7096870057293072,
+            "min_dwell": 30,
+            "pos": 0.47356200897867556,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 15.501636904761906,
+            "ema": 0.95,
+            "f1": 0.7114431300366649,
+            "min_dwell": 10,
+            "pos": 0.47675865800865797,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 15.519854497354496,
+            "ema": 0.9,
+            "f1": 0.7221378243284164,
+            "min_dwell": 30,
+            "pos": 0.49576318742985404,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 15.68094576719577,
+            "ema": 0.8,
+            "f1": 0.7279320487514558,
+            "min_dwell": 30,
+            "pos": 0.47726571268237933,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 15.944854497354495,
+            "ema": 0.0,
+            "f1": 0.7333398640592641,
+            "min_dwell": 60,
+            "pos": 0.5059042809042809,
+            "theta_off": 0.3,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 16.302850529100525,
+            "ema": 0.0,
+            "f1": 0.745690878427977,
+            "min_dwell": 60,
+            "pos": 0.5180515472182138,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 16.781521164021164,
+            "ema": 0.0,
+            "f1": 0.7628639694954232,
+            "min_dwell": 60,
+            "pos": 0.5330868205868204,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 17.90213293650794,
+            "ema": 0.0,
+            "f1": 0.7662397680276788,
+            "min_dwell": 60,
+            "pos": 0.5192630671797338,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 18.99281746031746,
+            "ema": 0.9,
+            "f1": 0.7714616292623956,
+            "min_dwell": 60,
+            "pos": 0.5160012826679493,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 19.074824735449734,
+            "ema": 0.95,
+            "f1": 0.7715198619784199,
+            "min_dwell": 60,
+            "pos": 0.5115911095077761,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 19.324146825396827,
+            "ema": 0.95,
+            "f1": 0.7717299563528673,
+            "min_dwell": 60,
+            "pos": 0.5487714446047779,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          {
+            "delay_s": 19.867476851851855,
+            "ema": 0.95,
+            "f1": 0.7846649979580361,
+            "min_dwell": 60,
+            "pos": 0.511624178290845,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 21.744745370370367,
+            "ema": 0.98,
+            "f1": 0.7918469218863744,
+            "min_dwell": 30,
+            "pos": 0.5263618326118327,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 24.274375,
+            "ema": 0.99,
+            "f1": 0.7960840676595463,
+            "min_dwell": 30,
+            "pos": 0.5794041606541607,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          {
+            "delay_s": 30.039368386243382,
+            "ema": 0.99,
+            "f1": 0.798962242409011,
+            "min_dwell": 60,
+            "pos": 0.49549763508096856,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          {
+            "delay_s": 32.4602876984127,
+            "ema": 0.99,
+            "f1": 0.8051869534772105,
+            "min_dwell": 60,
+            "pos": 0.5287538079204748,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          }
+        ]
+      },
+      "prior": {
+        "assy": {
+          "active": [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "initial_installed": [
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "main": {
+          "active": [
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true
+          ],
+          "initial_installed": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        }
+      },
+      "selection": "nested",
+      "train_participants": [
+        "01",
+        "02",
+        "04",
+        "06",
+        "07",
+        "11",
+        "15",
+        "16",
+        "21",
+        "22",
+        "25",
+        "27"
+      ],
+      "train_videos": 36
+    }
+  },
+  "heads": {
+    "linear": "11-way multi-label logistic regression on frozen frame features (BCE, full-batch Adam)",
+    "mstcn": "causal MS-TCN++ (sigmoid outputs) on frozen frame features, per-stage BCE + smoothing, fixed epochs"
+  },
+  "protocol": "fit once on the 36 train-split recordings (12 participants), decoder selected on out-of-fold predictions of those recordings (grouped 4-fold by participant), evaluated on the 16 eval-split recordings; seeds [0, 1, 2] reported as separate runs",
+  "runs": [
+    "linear_plain",
+    "linear_prior_dwell",
+    "mstcn_plain",
+    "mstcn_prior_dwell"
+  ],
+  "spec": {
+    "delay_caps_s": [
+      15.0,
+      30.0
+    ],
+    "emas": [
+      0.0,
+      0.8,
+      0.9,
+      0.95,
+      0.98,
+      0.99
+    ],
+    "epochs": 300,
+    "lr": 0.005,
+    "min_dwells": [
+      0,
+      10,
+      30,
+      60
+    ],
+    "mstcn_epoch_grid": [],
+    "mstcn_epochs": 40,
+    "mstcn_lr": 0.0005,
+    "n_boot": 2000,
+    "seed": 0,
+    "selection_metric": "f1",
+    "theta_offs": [
+      0.1,
+      0.2,
+      0.3,
+      0.4
+    ],
+    "theta_ons": [
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "weight_decay": 0.001
+  },
+  "training": {
+    "mstcn/train->eval_s0": {
+      "epochs": 40,
+      "final_train_loss": 0.3565956648025248,
+      "parameters": 994220,
+      "train_seconds": 75.31862790000014
+    },
+    "mstcn/train->eval_s0/inner0": {
+      "epochs": 40,
+      "final_train_loss": 0.4352475277015141,
+      "parameters": 994220,
+      "train_seconds": 65.5010328999997
+    },
+    "mstcn/train->eval_s0/inner1": {
+      "epochs": 40,
+      "final_train_loss": 0.3772481221843649,
+      "parameters": 994220,
+      "train_seconds": 59.56716790000064
+    },
+    "mstcn/train->eval_s0/inner2": {
+      "epochs": 40,
+      "final_train_loss": 0.31964524035100583,
+      "parameters": 994220,
+      "train_seconds": 58.89685069999905
+    },
+    "mstcn/train->eval_s0/inner3": {
+      "epochs": 40,
+      "final_train_loss": 0.32724716055851716,
+      "parameters": 994220,
+      "train_seconds": 56.11599170000045
+    },
+    "mstcn/train->eval_s1": {
+      "epochs": 40,
+      "final_train_loss": 0.441452343430784,
+      "parameters": 994220,
+      "train_seconds": 52.65151340000011
+    },
+    "mstcn/train->eval_s1/inner0": {
+      "epochs": 40,
+      "final_train_loss": 0.5769685453602246,
+      "parameters": 994220,
+      "train_seconds": 62.557140699998854
+    },
+    "mstcn/train->eval_s1/inner1": {
+      "epochs": 40,
+      "final_train_loss": 0.37447715688634803,
+      "parameters": 994220,
+      "train_seconds": 62.04503119999936
+    },
+    "mstcn/train->eval_s1/inner2": {
+      "epochs": 40,
+      "final_train_loss": 0.38778897788789535,
+      "parameters": 994220,
+      "train_seconds": 39.759362599997985
+    },
+    "mstcn/train->eval_s1/inner3": {
+      "epochs": 40,
+      "final_train_loss": 0.3248104149332413,
+      "parameters": 994220,
+      "train_seconds": 32.25919300000169
+    },
+    "mstcn/train->eval_s2": {
+      "epochs": 40,
+      "final_train_loss": 0.3382834266457293,
+      "parameters": 994220,
+      "train_seconds": 45.05571820000114
+    },
+    "mstcn/train->eval_s2/inner0": {
+      "epochs": 40,
+      "final_train_loss": 0.4570269158908299,
+      "parameters": 994220,
+      "train_seconds": 40.04445250000208
+    },
+    "mstcn/train->eval_s2/inner1": {
+      "epochs": 40,
+      "final_train_loss": 0.35588651674765126,
+      "parameters": 994220,
+      "train_seconds": 38.14992830000119
+    },
+    "mstcn/train->eval_s2/inner2": {
+      "epochs": 40,
+      "final_train_loss": 0.6087360481421152,
+      "parameters": 994220,
+      "train_seconds": 37.13662280000062
+    },
+    "mstcn/train->eval_s2/inner3": {
+      "epochs": 40,
+      "final_train_loss": 0.3517960522037286,
+      "parameters": 994220,
+      "train_seconds": 28.49774549999711
+    }
+  },
+  "wall_seconds": 908.550480599999
+}
