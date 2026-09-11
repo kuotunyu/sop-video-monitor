@@ -261,6 +261,76 @@ def train_mstcn_cmd(
     typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
 
 
+@app.command("extract-psr-labels")
+def extract_psr_labels_cmd(
+    archive: Annotated[
+        list[Path], typer.Option(help="Recording archives, e.g. val_p1.zip val_p2.zip")
+    ],
+    out: Annotated[Path, typer.Option(help="Where <recording>/PSR_labels*.csv land")] = Path(
+        "data/external/industreal/psr"
+    ),
+) -> None:
+    """Extract only the PSR label CSVs from the per-split recording archives (archives untouched)."""
+    from sop_monitor.industreal_psr import extract_psr_labels
+
+    recordings = extract_psr_labels(archive, out)
+    typer.echo(f"{len(recordings)} recording(s) with PSR labels -> {out}")
+    for name in recordings:
+        typer.echo(f"  {name}")
+
+
+@app.command("train-psr")
+def train_psr_cmd(
+    features: Annotated[Path, typer.Option(help="Feature cache dir of the val videos")],
+    psr_dir: Annotated[Path, typer.Option()] = Path("data/external/industreal/psr"),
+    out: Annotated[Path, typer.Option()] = Path("reports/industreal_dev_v3_psr"),
+    device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
+    epochs: Annotated[int, typer.Option()] = 300,
+    n_boot: Annotated[int, typer.Option()] = 2000,
+    seed: Annotated[int, typer.Option()] = 0,
+) -> None:
+    """Leave-one-participant-out step-completion baseline on val; writes completions + PSR metrics."""
+    from sop_monitor.features import resolve_device
+    from sop_monitor.psr_baseline import PSRSpec, run_psr_baseline
+
+    spec = PSRSpec(epochs=epochs, seed=seed, n_boot=n_boot)
+    result = run_psr_baseline(features, psr_dir, out, spec, device=resolve_device(device))
+    typer.echo(result["tables"])
+    typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
+
+
+def _check_psr_run(run_dir: Path, write: bool) -> list[str]:
+    """PSR runs: recompute metrics from completions_*.csv and check tables.md."""
+    from sop_monitor.baseline import load_metrics
+    from sop_monitor.psr_baseline import read_completions, render_psr_tables, score_completions
+
+    committed = load_metrics(run_dir)
+    boot = committed.get("bootstrap", {})
+    rows = read_completions(sorted(run_dir.glob("completions_*.csv"))[0])
+    recomputed = score_completions(
+        rows,
+        n_boot=int(boot.get("n_boot", 2000)),  # type: ignore[union-attr]
+        seed=int(boot.get("seed", 0)),  # type: ignore[union-attr]
+    )
+    mismatches: list[str] = []
+    for key in ("summary", "per_video", "totals", "n_videos", "n_participants"):
+        if json.dumps(recomputed[key], sort_keys=True) != json.dumps(
+            committed.get(key), sort_keys=True
+        ):
+            mismatches.append(f"{run_dir.name}: {key} differs from metrics.json")
+    config_path = run_dir / "config.json"
+    if config_path.is_file():
+        rendered = render_psr_tables(committed, json.loads(config_path.read_text(encoding="utf-8")))
+        tables_path = run_dir / "tables.md"
+        if write:
+            tables_path.write_text(rendered, encoding="utf-8", newline="\n")
+        elif not tables_path.is_file() or tables_path.read_text(encoding="utf-8") != rendered:
+            mismatches.append(
+                f"{run_dir.name}: tables.md is stale (run with --write to regenerate)"
+            )
+    return mismatches
+
+
 def _check_run(run_dir: Path, write: bool) -> list[str]:
     """Recompute a run's metrics from its prediction table; return the list of mismatches."""
     from sop_monitor.baseline import (
@@ -270,8 +340,12 @@ def _check_run(run_dir: Path, write: bool) -> list[str]:
         score_predictions,
     )
 
+    if not (run_dir / "metrics.json").is_file():
+        return []
+    if sorted(run_dir.glob("completions_*.csv")):
+        return _check_psr_run(run_dir, write)
     tables = sorted(run_dir.glob("predictions_*.csv"))
-    if not tables or not (run_dir / "metrics.json").is_file():
+    if not tables:
         return []
     committed = load_metrics(run_dir)
     boot = committed.get("bootstrap", {})

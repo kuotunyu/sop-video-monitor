@@ -115,3 +115,35 @@ def test_freeze_splits_industreal_needs_labels_dir_and_freezes(tmp_path: Path) -
     assert result.exit_code == 0, result.output
     assert "test_sha256:" in result.output
     assert (out / "test_sha256.txt").is_file()
+
+
+def test_reproduce_lite_handles_psr_completion_runs(tmp_path: Path) -> None:
+    from sop_monitor.psr_baseline import (
+        CompletionRow,
+        render_psr_tables,
+        score_completions,
+        write_completions,
+    )
+
+    run_dir = tmp_path / "psr_run"
+    run_dir.mkdir()
+    rows = [
+        CompletionRow("05_assy_0_1", "05", "gt", 100, 0, "05"),
+        CompletionRow("05_assy_0_1", "05", "pred", 120, 0, "05"),
+        CompletionRow("14_main_0_1", "14", "gt", 300, 3, "14"),
+        CompletionRow("14_main_0_1", "14", "pred", 290, 3, "14"),
+    ]
+    write_completions(run_dir / "completions_val.csv", rows)
+    metrics = score_completions(rows, n_boot=10, seed=0)
+    config = {"folds": {"05": {"decoder": {"ema": 0.9, "theta_on": 0.7, "theta_off": 0.3}}}}
+    (run_dir / "metrics.json").write_text(json.dumps(metrics), encoding="utf-8")
+    (run_dir / "config.json").write_text(json.dumps(config), encoding="utf-8")
+    (run_dir / "tables.md").write_text(render_psr_tables(metrics, config), encoding="utf-8")
+    result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
+    assert result.exit_code == 0, result.output
+    assert "psr_run: OK" in result.output
+    metrics["totals"]["system_fp"] = 99  # type: ignore[index]
+    (run_dir / "metrics.json").write_text(json.dumps(metrics), encoding="utf-8")
+    result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
+    assert result.exit_code == 1
+    assert "totals differs" in result.output

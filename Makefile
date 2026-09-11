@@ -1,7 +1,7 @@
 # Single entry points (spec 8.3). `make reproduce` is the full data+GPU path;
 # `make reproduce-lite` is what CI runs on a clean checkout without data.
 
-.PHONY: reproduce reproduce-lite test lint audit features baseline
+.PHONY: reproduce reproduce-lite test lint audit features baseline mstcn extract-psr psr
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -22,6 +22,15 @@ features:  ## Cache frozen DINOv2 ViT-S/14 frame features for the train and val 
 
 baseline:  ## Train the linear head on train, select and report on val, write $(RUN)/.
 	$(UV) run sop-monitor train-baseline --features $(FEATURES) --labels-dir $(INDUSTREAL)/labels --out $(RUN)
+
+mstcn:  ## Causal vs non-causal MS-TCN++ on the same features, write reports/industreal_dev_v2_mstcn/.
+	$(UV) run sop-monitor train-mstcn --features $(FEATURES) --labels-dir $(INDUSTREAL)/labels --out reports/industreal_dev_v2_mstcn
+
+extract-psr:  ## Pull only the PSR label CSVs out of the val recording archives (val_p1.zip, val_p2.zip).
+	$(UV) run sop-monitor extract-psr-labels --archive $(INDUSTREAL)/val_p1.zip --archive $(INDUSTREAL)/val_p2.zip --out $(INDUSTREAL)/psr
+
+psr:  ## Leave-one-participant-out step-completion baseline on val, write reports/industreal_dev_v3_psr/.
+	$(UV) run sop-monitor train-psr --features $(FEATURES) --psr-dir $(INDUSTREAL)/psr --out reports/industreal_dev_v3_psr
 
 test:
 	$(UV) run pytest -q
