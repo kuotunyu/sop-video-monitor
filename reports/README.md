@@ -40,3 +40,6 @@ Current contents:
 - `industreal_dev_v5_psr_train/` — development result: the same four runs fitted once on the 36
   train-split recordings (12 participants, labels from `train_p1..4.zip`) and evaluated on the 16
   val recordings; decoder still selected on the training recordings.
+- `industreal_dev_v6_psr_nested/` — development result: as v5 but every decoder is selected on
+  out-of-fold predictions of the training recordings (grouped 4-fold by participant) and the
+  whole run is repeated for seeds 0, 1, 2 with a cross-seed summary.

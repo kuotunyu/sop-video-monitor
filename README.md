@@ -61,7 +61,9 @@ CLI（`sop-monitor`）：`freeze-splits`、`check-sop`、`export-sop`、`audit-i
   （POS／system F1／detection delay）；[`reports/industreal_dev_v4_psr_mstcn/`](reports/industreal_dev_v4_psr_mstcn/)
   在同一協定下比較 linear 與 causal MS-TCN++ state head、以及加上 dwell time 與從訓練 fold 學到的
   procedure prior 的 decoder；[`reports/industreal_dev_v5_psr_train/`](reports/industreal_dev_v5_psr_train/)
-  把同樣四個 run 改成在 36 支 train recording（12 位受試者）上訓練一次、在 16 支 val 上評估。
+  把同樣四個 run 改成在 36 支 train recording（12 位受試者）上訓練一次、在 16 支 val 上評估；
+  [`reports/industreal_dev_v6_psr_nested/`](reports/industreal_dev_v6_psr_nested/) 再把 decoder 改成在
+  train 的 out-of-fold 預測上選（依受試者分 4 折），並以 seed 0–2 重複整個流程回報平均與標準差。
   全部都包含真實預測表、`metrics.json`、`tables.md` 與報告。
   數字在 val 上量測，val 同時也是選超參數／epoch／decoder 的依據；frozen test split 沒有被讀取。
   IndustReal 的數字不會進任何 HA-ViD 表格（設計規格 §3.3）。

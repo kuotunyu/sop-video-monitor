@@ -1,7 +1,7 @@
 # Single entry points (spec 8.3). `make reproduce` is the full data+GPU path;
 # `make reproduce-lite` is what CI runs on a clean checkout without data.
 
-.PHONY: reproduce reproduce-lite test lint audit features baseline mstcn extract-psr psr psr-train
+.PHONY: reproduce reproduce-lite test lint audit features baseline mstcn extract-psr psr psr-train psr-nested
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -34,6 +34,9 @@ psr:  ## Leave-one-participant-out step-completion baseline on val, write report
 
 psr-train:  ## Step-completion heads fitted on the 36 train recordings, evaluated on val (needs train_p*.zip labels extracted).
 	$(UV) run sop-monitor train-psr --features $(FEATURES) --psr-dir $(INDUSTREAL)/psr --train-split splits/industreal/train.csv --eval-split splits/industreal/val.csv --out reports/industreal_dev_v5_psr_train
+
+psr-nested:  ## Same as psr-train but decoders chosen on out-of-fold train predictions, seeds 0-2, write reports/industreal_dev_v6_psr_nested/.
+	$(UV) run sop-monitor train-psr --features $(FEATURES) --psr-dir $(INDUSTREAL)/psr --train-split splits/industreal/train.csv --eval-split splits/industreal/val.csv --selection nested --seed 0 --seed 1 --seed 2 --out reports/industreal_dev_v6_psr_nested
 
 test:
 	$(UV) run pytest -q

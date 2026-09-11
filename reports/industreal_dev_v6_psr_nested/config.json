@@ -1,0 +1,360 @@
+{
+  "decoders": {
+    "plain": "causal EMA + hysteresis; install = up-crossing of theta_on, remove = down-crossing of theta_off",
+    "prior_dwell": "plain + minimum dwell before an event + procedure prior learned from the fold's training labels (active components and initial state per recording kind)"
+  },
+  "device": "cuda",
+  "features": {
+    "autocast_fp16": true,
+    "device": "cuda",
+    "dim": 768,
+    "dtype": "float16",
+    "embedding": "concat(CLS, mean patch tokens)",
+    "extractor": "facebookresearch/dinov2 via torch.hub",
+    "frame_size_wh": [
+      392,
+      224
+    ],
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "model": "dinov2_vits14",
+    "normalisation": "ImageNet mean/std",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "stride": 1,
+    "torch": "2.13.0+cu130",
+    "weights": {
+      "bytes": 88283115,
+      "file": "dinov2_vits14_pretrain.pth",
+      "sha256": "b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9"
+    }
+  },
+  "folds": {
+    "train->eval": {
+      "decoders": {
+        "linear_plain_s0": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 0,
+            "theta_off": 0.2,
+            "theta_on": 0.9
+          },
+          "grid_best": 0.6602989469320476
+        },
+        "linear_plain_s1": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 0,
+            "theta_off": 0.2,
+            "theta_on": 0.9
+          },
+          "grid_best": 0.6602989469320476
+        },
+        "linear_plain_s2": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 0,
+            "theta_off": 0.2,
+            "theta_on": 0.9
+          },
+          "grid_best": 0.6602989469320476
+        },
+        "linear_prior_dwell_s0": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 10,
+            "theta_off": 0.2,
+            "theta_on": 0.9
+          },
+          "grid_best": 0.8129955114720003
+        },
+        "linear_prior_dwell_s1": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 10,
+            "theta_off": 0.2,
+            "theta_on": 0.9
+          },
+          "grid_best": 0.8136310872632906
+        },
+        "linear_prior_dwell_s2": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 10,
+            "theta_off": 0.2,
+            "theta_on": 0.9
+          },
+          "grid_best": 0.8129955114720003
+        },
+        "mstcn_plain_s0": {
+          "decoder": {
+            "ema": 0.99,
+            "min_dwell": 0,
+            "theta_off": 0.2,
+            "theta_on": 0.7
+          },
+          "grid_best": 0.5647724817788039
+        },
+        "mstcn_plain_s1": {
+          "decoder": {
+            "ema": 0.99,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.7
+          },
+          "grid_best": 0.5571066540547052
+        },
+        "mstcn_plain_s2": {
+          "decoder": {
+            "ema": 0.99,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          "grid_best": 0.5892924428184021
+        },
+        "mstcn_prior_dwell_s0": {
+          "decoder": {
+            "ema": 0.99,
+            "min_dwell": 30,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          "grid_best": 0.7927378447941001
+        },
+        "mstcn_prior_dwell_s1": {
+          "decoder": {
+            "ema": 0.98,
+            "min_dwell": 60,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          },
+          "grid_best": 0.7877437083979131
+        },
+        "mstcn_prior_dwell_s2": {
+          "decoder": {
+            "ema": 0.99,
+            "min_dwell": 30,
+            "theta_off": 0.1,
+            "theta_on": 0.8
+          },
+          "grid_best": 0.7933995590965224
+        }
+      },
+      "eval_videos": 16,
+      "prior": {
+        "assy": {
+          "active": [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "initial_installed": [
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "main": {
+          "active": [
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true
+          ],
+          "initial_installed": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        }
+      },
+      "selection": "nested",
+      "train_participants": [
+        "01",
+        "02",
+        "04",
+        "06",
+        "07",
+        "11",
+        "15",
+        "16",
+        "21",
+        "22",
+        "25",
+        "27"
+      ],
+      "train_videos": 36
+    }
+  },
+  "heads": {
+    "linear": "11-way multi-label logistic regression on frozen frame features (BCE, full-batch Adam)",
+    "mstcn": "causal MS-TCN++ (sigmoid outputs) on frozen frame features, per-stage BCE + smoothing, fixed epochs"
+  },
+  "protocol": "fit once on the 36 train-split recordings (12 participants), decoder selected on out-of-fold predictions of those recordings (grouped 4-fold by participant), evaluated on the 16 eval-split recordings; seeds [0, 1, 2] reported as separate runs",
+  "runs": [
+    "linear_plain",
+    "linear_prior_dwell",
+    "mstcn_plain",
+    "mstcn_prior_dwell"
+  ],
+  "spec": {
+    "emas": [
+      0.0,
+      0.8,
+      0.9,
+      0.95,
+      0.98,
+      0.99
+    ],
+    "epochs": 300,
+    "lr": 0.005,
+    "min_dwells": [
+      0,
+      10,
+      30,
+      60
+    ],
+    "mstcn_epochs": 40,
+    "mstcn_lr": 0.0005,
+    "n_boot": 2000,
+    "seed": 0,
+    "selection_metric": "f1",
+    "theta_offs": [
+      0.1,
+      0.2,
+      0.3,
+      0.4
+    ],
+    "theta_ons": [
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "weight_decay": 0.001
+  },
+  "training": {
+    "mstcn/train->eval_s0": {
+      "epochs": 40,
+      "final_train_loss": 0.41571928767694366,
+      "parameters": 912300,
+      "train_seconds": 79.77337459999944
+    },
+    "mstcn/train->eval_s0/inner0": {
+      "epochs": 40,
+      "final_train_loss": 0.5410180826272283,
+      "parameters": 912300,
+      "train_seconds": 31.488399699999718
+    },
+    "mstcn/train->eval_s0/inner1": {
+      "epochs": 40,
+      "final_train_loss": 0.39784087351074926,
+      "parameters": 912300,
+      "train_seconds": 25.628541099998984
+    },
+    "mstcn/train->eval_s0/inner2": {
+      "epochs": 40,
+      "final_train_loss": 0.4832701583703359,
+      "parameters": 912300,
+      "train_seconds": 25.66538010000113
+    },
+    "mstcn/train->eval_s0/inner3": {
+      "epochs": 40,
+      "final_train_loss": 0.45173847446074855,
+      "parameters": 912300,
+      "train_seconds": 24.790739400001257
+    },
+    "mstcn/train->eval_s1": {
+      "epochs": 40,
+      "final_train_loss": 0.4848317777117093,
+      "parameters": 912300,
+      "train_seconds": 33.9459670999986
+    },
+    "mstcn/train->eval_s1/inner0": {
+      "epochs": 40,
+      "final_train_loss": 0.4474431350827217,
+      "parameters": 912300,
+      "train_seconds": 62.87494350000088
+    },
+    "mstcn/train->eval_s1/inner1": {
+      "epochs": 40,
+      "final_train_loss": 0.4673316953358827,
+      "parameters": 912300,
+      "train_seconds": 62.475124999999025
+    },
+    "mstcn/train->eval_s1/inner2": {
+      "epochs": 40,
+      "final_train_loss": 0.4298798519152182,
+      "parameters": 912300,
+      "train_seconds": 47.67383470000095
+    },
+    "mstcn/train->eval_s1/inner3": {
+      "epochs": 40,
+      "final_train_loss": 0.35343083911217177,
+      "parameters": 912300,
+      "train_seconds": 24.18518220000078
+    },
+    "mstcn/train->eval_s2": {
+      "epochs": 40,
+      "final_train_loss": 0.43686818662616944,
+      "parameters": 912300,
+      "train_seconds": 53.52245649999895
+    },
+    "mstcn/train->eval_s2/inner0": {
+      "epochs": 40,
+      "final_train_loss": 0.42601089073078974,
+      "parameters": 912300,
+      "train_seconds": 25.929124899999806
+    },
+    "mstcn/train->eval_s2/inner1": {
+      "epochs": 40,
+      "final_train_loss": 0.5292741479697051,
+      "parameters": 912300,
+      "train_seconds": 24.572517100001278
+    },
+    "mstcn/train->eval_s2/inner2": {
+      "epochs": 40,
+      "final_train_loss": 0.48313121332062614,
+      "parameters": 912300,
+      "train_seconds": 25.206246399999145
+    },
+    "mstcn/train->eval_s2/inner3": {
+      "epochs": 40,
+      "final_train_loss": 0.3790714213481316,
+      "parameters": 912300,
+      "train_seconds": 23.872845099998813
+    }
+  },
+  "wall_seconds": 653.6492001999995
+}

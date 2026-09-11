@@ -1,0 +1,1042 @@
+[
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 198,
+    "frame_offset": 0,
+    "last_frame": 1765,
+    "n_frames": 1845,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "01_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 1845,
+      "first": 0,
+      "last": 1844
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 9,
+    "error_steps": 1,
+    "first_frame": 272,
+    "frame_offset": 0,
+    "last_frame": 2102,
+    "n_frames": 2175,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "01_assy_1_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2175,
+      "first": 0,
+      "last": 2174
+    }
+  },
+  {
+    "completions": 10,
+    "completions_with_errors": 10,
+    "error_steps": 0,
+    "first_frame": 78,
+    "frame_offset": 0,
+    "last_frame": 1298,
+    "n_frames": 1367,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 9,
+    "recording": "01_main_0_1",
+    "remove_steps": 5,
+    "rgb_index": {
+      "count": 1367,
+      "first": 0,
+      "last": 1366
+    }
+  },
+  {
+    "completions": 11,
+    "completions_with_errors": 12,
+    "error_steps": 1,
+    "first_frame": 448,
+    "frame_offset": 0,
+    "last_frame": 3884,
+    "n_frames": 3946,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 8,
+    "recording": "02_assy_0_1",
+    "remove_steps": 1,
+    "rgb_index": {
+      "count": 3946,
+      "first": 0,
+      "last": 3945
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 9,
+    "error_steps": 1,
+    "first_frame": 747,
+    "frame_offset": 0,
+    "last_frame": 3563,
+    "n_frames": 3658,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "02_assy_1_2",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 3658,
+      "first": 0,
+      "last": 3657
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 98,
+    "frame_offset": 0,
+    "last_frame": 2196,
+    "n_frames": 2289,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "02_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 2289,
+      "first": 0,
+      "last": 2288
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 1170,
+    "frame_offset": 0,
+    "last_frame": 4105,
+    "n_frames": 4150,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "04_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 4150,
+      "first": 0,
+      "last": 4149
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 10,
+    "error_steps": 2,
+    "first_frame": 565,
+    "frame_offset": 0,
+    "last_frame": 3006,
+    "n_frames": 3122,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 8,
+    "recording": "04_assy_2_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 3122,
+      "first": 0,
+      "last": 3121
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 85,
+    "frame_offset": 0,
+    "last_frame": 1728,
+    "n_frames": 1790,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "04_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1790,
+      "first": 0,
+      "last": 1789
+    }
+  },
+  {
+    "completions": 11,
+    "completions_with_errors": 11,
+    "error_steps": 0,
+    "first_frame": 521,
+    "frame_offset": 0,
+    "last_frame": 2870,
+    "n_frames": 2918,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 9,
+    "recording": "05_assy_0_1",
+    "remove_steps": 1,
+    "rgb_index": {
+      "count": 2918,
+      "first": 0,
+      "last": 2917
+    }
+  },
+  {
+    "completions": 12,
+    "completions_with_errors": 14,
+    "error_steps": 2,
+    "first_frame": 207,
+    "frame_offset": 0,
+    "last_frame": 2281,
+    "n_frames": 2323,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 10,
+    "recording": "05_assy_2_2",
+    "remove_steps": 2,
+    "rgb_index": {
+      "count": 2323,
+      "first": 0,
+      "last": 2322
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 56,
+    "frame_offset": 0,
+    "last_frame": 1349,
+    "n_frames": 1380,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "05_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1380,
+      "first": 0,
+      "last": 1379
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 322,
+    "frame_offset": 0,
+    "last_frame": 1917,
+    "n_frames": 1983,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "06_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 1983,
+      "first": 0,
+      "last": 1982
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 9,
+    "error_steps": 1,
+    "first_frame": 333,
+    "frame_offset": 0,
+    "last_frame": 1825,
+    "n_frames": 1903,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "06_assy_1_4",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 1903,
+      "first": 0,
+      "last": 1902
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 165,
+    "frame_offset": 0,
+    "last_frame": 1337,
+    "n_frames": 1401,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "06_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1401,
+      "first": 0,
+      "last": 1400
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 362,
+    "frame_offset": 0,
+    "last_frame": 2113,
+    "n_frames": 2161,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "07_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2161,
+      "first": 0,
+      "last": 2160
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 11,
+    "error_steps": 2,
+    "first_frame": 565,
+    "frame_offset": 0,
+    "last_frame": 3172,
+    "n_frames": 3221,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 9,
+    "recording": "07_assy_2_3",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 3221,
+      "first": 0,
+      "last": 3220
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 55,
+    "frame_offset": 0,
+    "last_frame": 1355,
+    "n_frames": 1394,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "07_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1394,
+      "first": 0,
+      "last": 1393
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 413,
+    "frame_offset": 29,
+    "last_frame": 2567,
+    "n_frames": 2572,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "11_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2571,
+      "first": 30,
+      "last": 2600
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 9,
+    "error_steps": 1,
+    "first_frame": 313,
+    "frame_offset": 0,
+    "last_frame": 2088,
+    "n_frames": 2123,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "11_assy_3_3",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2123,
+      "first": 0,
+      "last": 2122
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 47,
+    "frame_offset": 0,
+    "last_frame": 1508,
+    "n_frames": 1587,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "11_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1587,
+      "first": 0,
+      "last": 1586
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 420,
+    "frame_offset": 0,
+    "last_frame": 2930,
+    "n_frames": 3005,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "14_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 3005,
+      "first": 0,
+      "last": 3004
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 124,
+    "frame_offset": 0,
+    "last_frame": 1614,
+    "n_frames": 1685,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "14_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1685,
+      "first": 0,
+      "last": 1684
+    }
+  },
+  {
+    "completions": 7,
+    "completions_with_errors": 7,
+    "error_steps": 0,
+    "first_frame": 90,
+    "frame_offset": 0,
+    "last_frame": 1362,
+    "n_frames": 1404,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "14_main_2_2",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1404,
+      "first": 0,
+      "last": 1403
+    }
+  },
+  {
+    "completions": 11,
+    "completions_with_errors": 11,
+    "error_steps": 0,
+    "first_frame": 72,
+    "frame_offset": 0,
+    "last_frame": 1607,
+    "n_frames": 1679,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 8,
+    "recording": "14_main_2_3",
+    "remove_steps": 6,
+    "rgb_index": {
+      "count": 1679,
+      "first": 0,
+      "last": 1678
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 551,
+    "frame_offset": 0,
+    "last_frame": 2757,
+    "n_frames": 2839,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "15_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2839,
+      "first": 0,
+      "last": 2838
+    }
+  },
+  {
+    "completions": 7,
+    "completions_with_errors": 8,
+    "error_steps": 1,
+    "first_frame": 83,
+    "frame_offset": 0,
+    "last_frame": 1588,
+    "n_frames": 1661,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "15_main_3_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1661,
+      "first": 0,
+      "last": 1660
+    }
+  },
+  {
+    "completions": 7,
+    "completions_with_errors": 8,
+    "error_steps": 1,
+    "first_frame": 43,
+    "frame_offset": 0,
+    "last_frame": 1215,
+    "n_frames": 1331,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "15_main_3_2",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1331,
+      "first": 0,
+      "last": 1330
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 404,
+    "frame_offset": 0,
+    "last_frame": 3345,
+    "n_frames": 3449,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "16_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 3449,
+      "first": 0,
+      "last": 3448
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 67,
+    "frame_offset": 0,
+    "last_frame": 2214,
+    "n_frames": 2350,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 5,
+    "recording": "16_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 2350,
+      "first": 0,
+      "last": 2349
+    }
+  },
+  {
+    "completions": 7,
+    "completions_with_errors": 8,
+    "error_steps": 1,
+    "first_frame": 73,
+    "frame_offset": 0,
+    "last_frame": 1750,
+    "n_frames": 1812,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 5,
+    "recording": "16_main_3_3",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1812,
+      "first": 0,
+      "last": 1811
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 367,
+    "frame_offset": 0,
+    "last_frame": 2736,
+    "n_frames": 2854,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "20_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2854,
+      "first": 0,
+      "last": 2853
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 9,
+    "error_steps": 1,
+    "first_frame": 349,
+    "frame_offset": 0,
+    "last_frame": 2799,
+    "n_frames": 2967,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "20_assy_3_6",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2967,
+      "first": 0,
+      "last": 2966
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 70,
+    "frame_offset": 0,
+    "last_frame": 1892,
+    "n_frames": 2066,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "20_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 2066,
+      "first": 0,
+      "last": 2065
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 682,
+    "frame_offset": 0,
+    "last_frame": 2625,
+    "n_frames": 2712,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "21_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2712,
+      "first": 0,
+      "last": 2711
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 56,
+    "frame_offset": 0,
+    "last_frame": 1060,
+    "n_frames": 1129,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "21_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1129,
+      "first": 0,
+      "last": 1128
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 309,
+    "frame_offset": 0,
+    "last_frame": 2677,
+    "n_frames": 2738,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "22_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2738,
+      "first": 0,
+      "last": 2737
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 658,
+    "frame_offset": 0,
+    "last_frame": 2957,
+    "n_frames": 3065,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "22_assy_2_3",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 3065,
+      "first": 0,
+      "last": 3064
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 101,
+    "frame_offset": 0,
+    "last_frame": 1480,
+    "n_frames": 1556,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "22_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1556,
+      "first": 0,
+      "last": 1555
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 300,
+    "frame_offset": 0,
+    "last_frame": 2067,
+    "n_frames": 2158,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "24_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2158,
+      "first": 0,
+      "last": 2157
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 9,
+    "error_steps": 1,
+    "first_frame": 401,
+    "frame_offset": 0,
+    "last_frame": 2777,
+    "n_frames": 2952,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "24_assy_2_4",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2952,
+      "first": 0,
+      "last": 2951
+    }
+  },
+  {
+    "completions": 10,
+    "completions_with_errors": 10,
+    "error_steps": 0,
+    "first_frame": 56,
+    "frame_offset": 0,
+    "last_frame": 1298,
+    "n_frames": 1371,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 8,
+    "recording": "24_main_0_1",
+    "remove_steps": 5,
+    "rgb_index": {
+      "count": 1371,
+      "first": 0,
+      "last": 1370
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 303,
+    "frame_offset": 0,
+    "last_frame": 1752,
+    "n_frames": 1798,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "25_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 1798,
+      "first": 0,
+      "last": 1797
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 233,
+    "frame_offset": 0,
+    "last_frame": 1299,
+    "n_frames": 1340,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "25_assy_2_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 1340,
+      "first": 0,
+      "last": 1339
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 94,
+    "frame_offset": 0,
+    "last_frame": 1488,
+    "n_frames": 1545,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "25_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1545,
+      "first": 0,
+      "last": 1544
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 415,
+    "frame_offset": 0,
+    "last_frame": 3029,
+    "n_frames": 3093,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "26_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 3093,
+      "first": 0,
+      "last": 3092
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 9,
+    "error_steps": 1,
+    "first_frame": 565,
+    "frame_offset": 0,
+    "last_frame": 4519,
+    "n_frames": 4587,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "26_assy_1_5",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 4587,
+      "first": 0,
+      "last": 4586
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 39,
+    "frame_offset": 0,
+    "last_frame": 1448,
+    "n_frames": 1594,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "26_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1594,
+      "first": 0,
+      "last": 1593
+    }
+  },
+  {
+    "completions": 9,
+    "completions_with_errors": 9,
+    "error_steps": 0,
+    "first_frame": 247,
+    "frame_offset": 0,
+    "last_frame": 2709,
+    "n_frames": 2781,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 6,
+    "recording": "27_assy_0_1",
+    "remove_steps": 0,
+    "rgb_index": {
+      "count": 2781,
+      "first": 0,
+      "last": 2780
+    }
+  },
+  {
+    "completions": 8,
+    "completions_with_errors": 8,
+    "error_steps": 0,
+    "first_frame": 94,
+    "frame_offset": 0,
+    "last_frame": 1179,
+    "n_frames": 1248,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "27_main_0_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1248,
+      "first": 0,
+      "last": 1247
+    }
+  },
+  {
+    "completions": 7,
+    "completions_with_errors": 8,
+    "error_steps": 1,
+    "first_frame": 182,
+    "frame_offset": 0,
+    "last_frame": 1560,
+    "n_frames": 1618,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "27_main_1_3",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1618,
+      "first": 0,
+      "last": 1617
+    }
+  },
+  {
+    "completions": 7,
+    "completions_with_errors": 8,
+    "error_steps": 1,
+    "first_frame": 72,
+    "frame_offset": 0,
+    "last_frame": 1183,
+    "n_frames": 1273,
+    "problems": [],
+    "raw_matches_labels": true,
+    "raw_matches_labels_with_errors": true,
+    "raw_rows": 7,
+    "recording": "27_main_3_1",
+    "remove_steps": 4,
+    "rgb_index": {
+      "count": 1273,
+      "first": 0,
+      "last": 1272
+    }
+  }
+]
