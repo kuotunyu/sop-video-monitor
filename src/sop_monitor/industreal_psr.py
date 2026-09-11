@@ -26,6 +26,7 @@ from sop_monitor.metrics.online import Completion
 N_COMPONENTS = 11
 INSTALL, INCORRECT, REMOVE = 0, 1, 2
 PSR_FILES = ("PSR_labels.csv", "PSR_labels_with_errors.csv", "PSR_labels_raw.csv")
+RGB_INDEX = "rgb_index.json"  # first / last / count of the archive's JPEG names, per recording
 PROCEDURE_INFO = Path(__file__).resolve().parents[2] / "sop" / "industreal" / "procedure_info.json"
 """Committed copy of the reference ``procedure_info.json`` (see ``sop/industreal/NOTICE.md``)."""
 
@@ -130,10 +131,17 @@ def extract_psr_labels(archives: Sequence[Path], out_dir: Path) -> list[str]:
     import zipfile
 
     recordings: set[str] = set()
+    jpeg_names: dict[str, list[int]] = {}
     for archive in archives:
         with zipfile.ZipFile(archive) as zf:
             for member in zf.namelist():
+                parts = Path(member).parts
                 name = Path(member).name
+                if len(parts) >= 3 and parts[-2] == "rgb" and name.lower().endswith(".jpg"):
+                    stem = name[:-4]
+                    if stem.isdigit():
+                        jpeg_names.setdefault(parts[-3], []).append(int(stem))
+                    continue
                 if name not in PSR_FILES:
                     continue
                 recording = Path(member).parent.name
@@ -141,7 +149,37 @@ def extract_psr_labels(archives: Sequence[Path], out_dir: Path) -> list[str]:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(zf.read(member))
                 recordings.add(recording)
+    # The JPEG names are the frame index space the labels use; recording their range lets the
+    # loader detect archives whose names do not start at 0 (see frame_offset).
+    for recording in recordings:
+        names = jpeg_names.get(recording)
+        if names:
+            index = {"first": min(names), "last": max(names), "count": len(names)}
+            (out_dir / recording / RGB_INDEX).write_text(
+                json.dumps(index, sort_keys=True) + "\n", encoding="utf-8"
+            )
     return sorted(recordings)
+
+
+def frame_offset(rec_dir: Path, n_frames: int | None) -> int:
+    """``jpeg_name - offset == video frame``; 0 unless the archive's JPEG names are shifted.
+
+    For a regular recording the JPEGs are ``000000..<n_frames-1>``. When the names start later
+    (one IndustReal training recording starts at ``000030`` while its mp4 has one more frame
+    than the archive has JPEGs), the offset is ``first - (n_frames - count)``; this was verified
+    by pixel comparison against the decoded mp4 for that recording.
+    """
+    index_path = rec_dir / RGB_INDEX
+    if n_frames is None or not index_path.is_file():
+        return 0
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    return int(index["first"]) - (n_frames - int(index["count"]))
+
+
+def shift_completions(completions: Sequence[Completion], offset: int) -> list[Completion]:
+    if offset == 0:
+        return list(completions)
+    return [Completion(frame=max(0, c.frame - offset), step=c.step) for c in completions]
 
 
 def audit_recording(
@@ -162,11 +200,16 @@ def audit_recording(
     frames = [c.frame for c in with_errors]
     if frames != sorted(frames):
         problems.append("PSR_labels_with_errors frames are not sorted")
-    if n_frames is not None and frames and max(frames) >= n_frames:
+    offset = frame_offset(rec_dir, n_frames)
+    if n_frames is not None and frames and max(frames) - offset >= n_frames:
         problems.append(f"label frame {max(frames)} beyond the {n_frames}-frame video")
+    index_path = rec_dir / RGB_INDEX
+    rgb_index = json.loads(index_path.read_text(encoding="utf-8")) if index_path.is_file() else None
     return {
         "recording": rec_dir.name,
         "n_frames": n_frames,
+        "rgb_index": rgb_index,
+        "frame_offset": offset,
         "completions": len(labels),
         "completions_with_errors": len(with_errors),
         "error_steps": sum(1 for c in with_errors if c.step % 3 == INCORRECT),

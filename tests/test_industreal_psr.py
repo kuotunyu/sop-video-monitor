@@ -95,3 +95,34 @@ def test_malformed_rows_are_rejected(tmp_path: Path) -> None:
     (tmp_path / "PSR_labels.csv").write_text("abc.jpg,0\n", encoding="utf-8")
     with pytest.raises(ValueError):
         load_psr_labels(tmp_path / "PSR_labels.csv")
+
+
+def test_extraction_records_the_jpeg_range_and_derives_the_frame_offset(tmp_path: Path) -> None:
+    import json
+    import zipfile
+
+    from sop_monitor.industreal_psr import RGB_INDEX, extract_psr_labels, frame_offset
+
+    archive = tmp_path / "part.zip"
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr("reg_assy_0_1/PSR_labels.csv", "000005.jpg,0,Install base\n")
+        zf.writestr("reg_assy_0_1/PSR_labels_with_errors.csv", "000005.jpg,0,Install base\n")
+        zf.writestr("reg_assy_0_1/PSR_labels_raw.csv", "000000.jpg" + ",0" * 11 + "\n")
+        for i in range(10):
+            zf.writestr(f"reg_assy_0_1/rgb/{i:06d}.jpg", b"")
+        zf.writestr("reg_assy_0_1/rgb/Thumbs.db", b"")
+        zf.writestr("off_assy_0_1/PSR_labels.csv", "000039.jpg,0,Install base\n")
+        zf.writestr("off_assy_0_1/PSR_labels_with_errors.csv", "000039.jpg,0,Install base\n")
+        zf.writestr("off_assy_0_1/PSR_labels_raw.csv", "000030.jpg" + ",0" * 11 + "\n")
+        for i in range(30, 40):  # names 30..39 while the video has 11 frames
+            zf.writestr(f"off_assy_0_1/rgb/{i:06d}.jpg", b"")
+    out = tmp_path / "psr"
+    assert extract_psr_labels([archive], out) == ["off_assy_0_1", "reg_assy_0_1"]
+    regular = json.loads((out / "reg_assy_0_1" / RGB_INDEX).read_text(encoding="utf-8"))
+    assert regular == {"first": 0, "last": 9, "count": 10}
+    assert frame_offset(out / "reg_assy_0_1", n_frames=10) == 0
+    # 10 JPEGs named 30..39, an 11-frame video: JPEG 30 is video frame 1 -> offset 29.
+    assert frame_offset(out / "off_assy_0_1", n_frames=11) == 29
+    assert frame_offset(out / "off_assy_0_1", n_frames=None) == 0
+    report = audit_recording(out / "off_assy_0_1", 11, load_procedure_info(PROCEDURE_INFO))
+    assert report["frame_offset"] == 29 and report["problems"] == []

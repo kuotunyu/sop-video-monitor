@@ -40,9 +40,11 @@ from sop_monitor.industreal_psr import (
     PROCEDURE_INFO,
     REMOVE,
     audit_recording,
+    frame_offset,
     load_procedure_info,
     load_psr_labels,
     load_psr_raw,
+    shift_completions,
 )
 from sop_monitor.metrics.offline import subject_bootstrap
 from sop_monitor.metrics.online import Completion, psr_performance
@@ -358,7 +360,12 @@ def load_psr_videos(features_dir: Path, psr_dir: Path) -> list[PSRVideo]:
             frames = payload["frames"].astype(np.int64)
             features = payload["features"]
             n_frames = int(payload["n_frames"])
-        states = frame_states(load_psr_raw(rec_dir / "PSR_labels_raw.csv"), n_frames)
+        offset = frame_offset(rec_dir, n_frames)  # JPEG name -> video frame (0 for all but one)
+        raw = [
+            (max(0, frame - offset), values)
+            for frame, values in load_psr_raw(rec_dir / "PSR_labels_raw.csv")
+        ]
+        states = frame_states(raw, n_frames)
         with_errors = load_psr_labels(rec_dir / "PSR_labels_with_errors.csv")
         videos.append(
             PSRVideo(
@@ -369,7 +376,7 @@ def load_psr_videos(features_dir: Path, psr_dir: Path) -> list[PSRVideo]:
                 features=features,
                 targets=(states[frames] == 1).astype(np.float32),
                 initial_state=states[0] == 1,
-                gt=load_psr_labels(rec_dir / "PSR_labels.csv"),
+                gt=shift_completions(load_psr_labels(rec_dir / "PSR_labels.csv"), offset),
                 has_errors=any(c.step % 3 == INCORRECT for c in with_errors),
                 n_frames=n_frames,
             )
