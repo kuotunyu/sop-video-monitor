@@ -49,6 +49,30 @@
       "sha256": "2f36ea1964d9255079c014457215a1e6fc7500e3323837dcb924010879654af4"
     },
     {
+      "bytes": 6371363172,
+      "dataset": "IndustReal",
+      "file": "train_p1.zip",
+      "sha256": "2ede24239b1d4e626b662dfad67d0640590066cc3286496a876ce6d02e309079"
+    },
+    {
+      "bytes": 4801035968,
+      "dataset": "IndustReal",
+      "file": "train_p2.zip",
+      "sha256": "1aac5bc078d5b036bdb304a3861ffdce0692c374a59141ce48b7f64e017f39e5"
+    },
+    {
+      "bytes": 4414811027,
+      "dataset": "IndustReal",
+      "file": "train_p3.zip",
+      "sha256": "17e812b8549e3996ba3651c7a058b67819afa744f5d9d0fc1c5ee3e62b888978"
+    },
+    {
+      "bytes": 4837382030,
+      "dataset": "IndustReal",
+      "file": "train_p4.zip",
+      "sha256": "920e858e66e2aab025c5755d350e89dd5f5f879bdea1e5e24eec0b369d6687e5"
+    },
+    {
       "bytes": 100787,
       "dataset": "IndustReal",
       "file": "val.csv",

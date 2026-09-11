@@ -37,3 +37,6 @@ Current contents:
 - `industreal_dev_v4_psr_mstcn/` — development result: the same protocol with a causal
   MS-TCN++ state head and a decoder that adds a minimum dwell time and a procedure prior learned
   from each fold's training labels; four runs (head × decoder) in one completions table.
+- `industreal_dev_v5_psr_train/` — development result: the same four runs fitted once on the 36
+  train-split recordings (12 participants, labels from `train_p1..4.zip`) and evaluated on the 16
+  val recordings; decoder still selected on the training recordings.

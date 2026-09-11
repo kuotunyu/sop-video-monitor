@@ -47,8 +47,10 @@ CLI（`sop-monitor`）：`freeze-splits`、`check-sop`、`export-sop`、`audit-i
   三個 action-recognition 標註 CSV（84 支有標註）；稽核結果在
   [`reports/industreal_dev_v1/data_audit.json`](reports/industreal_dev_v1/data_audit.json)。
   procedure-step-recognition（PSR）標註在 4TU 沒有獨立檔案，只放在每個 split 的 recording 壓縮檔內；
-  本機已下載並驗證 `val_p1.zip`（3.8 GB）與 `val_p2.zip`（6.2 GB），只抽出 16 支 val recording 的
-  `PSR_labels*.csv`（`data/external/industreal/psr/`），train 與 test 的 recording 壓縮檔沒有下載。
+  本機已下載並驗證 `val_p1..2.zip`（10.0 GB）與 `train_p1..4.zip`（20.4 GB），只抽出 52 支 train／val
+  recording 的 `PSR_labels*.csv` 與 JPEG 名稱範圍（`data/external/industreal/psr/`）；test 的三包
+  壓縮檔沒有下載。其中一支 train recording（`11_assy_0_1`）的 JPEG 名稱從 000030 起算、比 mp4 少一格，
+  以像素比對確認位移 29 格後由 loader 修正，其餘 51 支皆從 0 起算且數量與 mp4 相同。
 - **HA-ViD**（CC BY-NC 4.0，主力）：本機只有三張 subject-agnostic task precedence graph（OWL）與七份
   組裝說明 PDF，**沒有影片、沒有 HR-SAT 標註**；主力資料線被 request form 阻擋。
 - **開發結果**（不是 headline）：[`reports/industreal_dev_v1/`](reports/industreal_dev_v1/) 是
@@ -58,7 +60,9 @@ CLI（`sop-monitor`）：`freeze-splits`、`check-sop`、`export-sop`、`audit-i
   用 val 的 PSR 標註做 leave-one-participant-out 的 step-completion head，給出第一組真實的線上指標
   （POS／system F1／detection delay）；[`reports/industreal_dev_v4_psr_mstcn/`](reports/industreal_dev_v4_psr_mstcn/)
   在同一協定下比較 linear 與 causal MS-TCN++ state head、以及加上 dwell time 與從訓練 fold 學到的
-  procedure prior 的 decoder。全部都包含真實預測表、`metrics.json`、`tables.md` 與報告。
+  procedure prior 的 decoder；[`reports/industreal_dev_v5_psr_train/`](reports/industreal_dev_v5_psr_train/)
+  把同樣四個 run 改成在 36 支 train recording（12 位受試者）上訓練一次、在 16 支 val 上評估。
+  全部都包含真實預測表、`metrics.json`、`tables.md` 與報告。
   數字在 val 上量測，val 同時也是選超參數／epoch／decoder 的依據；frozen test split 沒有被讀取。
   IndustReal 的數字不會進任何 HA-ViD 表格（設計規格 §3.3）。
 - **正式研究成果**：無。

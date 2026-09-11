@@ -1,0 +1,203 @@
+{
+  "decoders": {
+    "plain": "causal EMA + hysteresis; install = up-crossing of theta_on, remove = down-crossing of theta_off",
+    "prior_dwell": "plain + minimum dwell before an event + procedure prior learned from the fold's training labels (active components and initial state per recording kind)"
+  },
+  "device": "cuda",
+  "features": {
+    "autocast_fp16": true,
+    "device": "cuda",
+    "dim": 768,
+    "dtype": "float16",
+    "embedding": "concat(CLS, mean patch tokens)",
+    "extractor": "facebookresearch/dinov2 via torch.hub",
+    "frame_size_wh": [
+      392,
+      224
+    ],
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "model": "dinov2_vits14",
+    "normalisation": "ImageNet mean/std",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "stride": 1,
+    "torch": "2.13.0+cu130",
+    "weights": {
+      "bytes": 88283115,
+      "file": "dinov2_vits14_pretrain.pth",
+      "sha256": "b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9"
+    }
+  },
+  "folds": {
+    "train->eval": {
+      "decoders": {
+        "linear_plain": {
+          "decoder": {
+            "ema": 0.95,
+            "min_dwell": 0,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          "grid_best": 0.7965847231543125
+        },
+        "linear_prior_dwell": {
+          "decoder": {
+            "ema": 0.9,
+            "min_dwell": 10,
+            "theta_off": 0.2,
+            "theta_on": 0.8
+          },
+          "grid_best": 0.958792056240066
+        },
+        "mstcn_plain": {
+          "decoder": {
+            "ema": 0.98,
+            "min_dwell": 0,
+            "theta_off": 0.1,
+            "theta_on": 0.6
+          },
+          "grid_best": 0.7075836161728224
+        },
+        "mstcn_prior_dwell": {
+          "decoder": {
+            "ema": 0.0,
+            "min_dwell": 30,
+            "theta_off": 0.1,
+            "theta_on": 0.9
+          },
+          "grid_best": 0.9029820780902599
+        }
+      },
+      "eval_videos": 16,
+      "prior": {
+        "assy": {
+          "active": [
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "initial_installed": [
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "main": {
+          "active": [
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            true
+          ],
+          "initial_installed": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        }
+      },
+      "train_participants": [
+        "01",
+        "02",
+        "04",
+        "06",
+        "07",
+        "11",
+        "15",
+        "16",
+        "21",
+        "22",
+        "25",
+        "27"
+      ],
+      "train_videos": 36
+    }
+  },
+  "heads": {
+    "linear": "11-way multi-label logistic regression on frozen frame features (BCE, full-batch Adam)",
+    "mstcn": "causal MS-TCN++ (sigmoid outputs) on frozen frame features, per-stage BCE + smoothing, fixed epochs"
+  },
+  "protocol": "fit once on the 36 train-split recordings (12 participants), decoder selected on those same recordings, evaluated on the 16 eval-split recordings",
+  "runs": [
+    "linear_plain",
+    "linear_prior_dwell",
+    "mstcn_plain",
+    "mstcn_prior_dwell"
+  ],
+  "spec": {
+    "emas": [
+      0.0,
+      0.8,
+      0.9,
+      0.95,
+      0.98,
+      0.99
+    ],
+    "epochs": 300,
+    "lr": 0.005,
+    "min_dwells": [
+      0,
+      10,
+      30,
+      60
+    ],
+    "mstcn_epochs": 40,
+    "mstcn_lr": 0.0005,
+    "n_boot": 2000,
+    "seed": 0,
+    "selection_metric": "f1",
+    "theta_offs": [
+      0.1,
+      0.2,
+      0.3,
+      0.4
+    ],
+    "theta_ons": [
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "weight_decay": 0.001
+  },
+  "training": {
+    "mstcn/train->eval": {
+      "epochs": 40,
+      "final_train_loss": 0.41571928767694366,
+      "parameters": 912300,
+      "train_seconds": 92.01708210000106
+    }
+  },
+  "wall_seconds": 145.259546700001
+}
