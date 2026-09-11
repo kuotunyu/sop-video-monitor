@@ -102,3 +102,113 @@ def test_gt_sanity_cases_behave_as_documented() -> None:
     assert sanity["shift_plus_30_frames"]["pos"] == 1.0
     assert sanity["drop_last"]["system_fn"] == 2.0  # one per video
     assert sanity["swap_first_two"]["pos"] == pytest.approx(1 - 1 / 3)
+
+
+def test_dwell_requires_the_crossing_to_persist() -> None:
+    from sop_monitor.psr_baseline import ema_filter
+
+    probs = np.zeros((40, 1), dtype=np.float32)
+    probs[5:8, 0] = 1.0  # 3-frame blip
+    probs[20:33, 0] = 1.0  # 13-frame plateau
+    frames = np.arange(40)
+    plain = decode_completions(probs, frames, DecoderConfig(ema=0.0, theta_on=0.7, theta_off=0.3))
+    assert [(c.frame, c.step) for c in plain] == [
+        (5, INSTALL),
+        (8, REMOVE),
+        (20, INSTALL),
+        (33, REMOVE),
+    ]
+    dwelled = decode_completions(
+        probs, frames, DecoderConfig(ema=0.0, theta_on=0.7, theta_off=0.3, min_dwell=5)
+    )
+    # The blip is ignored; each event is emitted 5 frames after its crossing.
+    assert [(c.frame, c.step) for c in dwelled] == [(25, INSTALL), (38, REMOVE)]
+    assert np.allclose(ema_filter(probs, 0.0), probs)
+    smoothed = ema_filter(probs, 0.5)
+    # The blip's residual (0.5**12) keeps these from being exact.
+    assert smoothed[20, 0] == pytest.approx(0.5, abs=1e-3)
+    assert smoothed[21, 0] == pytest.approx(0.75, abs=1e-3)
+    with pytest.raises(ValueError):
+        decode_completions(probs, frames, DecoderConfig(min_dwell=-1))
+
+
+def test_prior_freezes_inactive_components_and_sets_the_initial_state() -> None:
+    from sop_monitor.psr_baseline import ProcedurePrior
+
+    probs = np.zeros((20, 2), dtype=np.float32)
+    probs[:10, :] = 1.0  # both components look installed, then removed
+    frames = np.arange(20)
+    config = DecoderConfig(ema=0.0, theta_on=0.7, theta_off=0.3)
+    without = decode_completions(probs, frames, config)
+    assert [(c.frame, c.step) for c in without] == [
+        (0, INSTALL),
+        (0, 3 + INSTALL),
+        (10, REMOVE),
+        (10, 3 + REMOVE),
+    ]
+    prior = ProcedurePrior(active=np.array([True, False]), initial_installed=np.array([True, True]))
+    with_prior = decode_completions(probs, frames, config, prior)
+    # Component 0 starts installed, so only its removal is an event; component 1 never emits.
+    assert [(c.frame, c.step) for c in with_prior] == [(10, REMOVE)]
+
+
+def test_multi_run_tables_score_each_run_separately(tmp_path: Path) -> None:
+    rows = [
+        CompletionRow("05_assy_0_1", "05", "gt", 100, 0, "05", ""),
+        CompletionRow("05_assy_0_1", "05", "pred", 120, 0, "05", "linear_plain"),
+        CompletionRow("05_assy_0_1", "05", "pred", 900, 9, "05", "linear_plain"),
+        CompletionRow("05_assy_0_1", "05", "pred", 110, 0, "05", "mstcn_prior_dwell"),
+        CompletionRow("14_main_0_1", "14", "gt", 300, 3, "14", ""),
+        CompletionRow("14_main_0_1", "14", "pred", 330, 3, "14", "linear_plain"),
+        CompletionRow("14_main_0_1", "14", "pred", 305, 3, "14", "mstcn_prior_dwell"),
+    ]
+    path = tmp_path / "completions_val.csv"
+    write_completions(path, rows)
+    assert read_completions(path) == rows
+    result = score_completions(rows, n_boot=10, seed=0)
+    assert set(result["runs"]) == {"linear_plain", "mstcn_prior_dwell"}
+    assert result["runs"]["linear_plain"]["totals"]["system_fp"] == 1
+    assert result["runs"]["mstcn_prior_dwell"]["totals"] == {
+        "system_tp": 2,
+        "system_fp": 0,
+        "system_fn": 0,
+        "n_gt": 2,
+        "n_pred": 2,
+    }
+    assert (
+        result["runs"]["mstcn_prior_dwell"]["summary"]["mean_delay_frames"]["mean_over_videos"]
+        == 7.5
+    )
+    assert "summary" not in result  # multi-run layout has no flat summary
+    assert result["gt_sanity"]["identity"]["pos"] == 1.0
+
+
+def test_learn_prior_uses_recordings_of_the_same_kind() -> None:
+    from sop_monitor.psr_baseline import PSRVideo, learn_prior
+
+    def video(video_id: str, initial: list[int], steps: list[int]) -> PSRVideo:
+        kind = "main" if "_main_" in video_id else "assy"
+        return PSRVideo(
+            video_id,
+            video_id[:2],
+            kind,
+            np.arange(1),
+            np.zeros((1, 2), np.float32),
+            np.zeros((1, 11), np.float32),
+            np.array(initial, dtype=bool),
+            [Completion(10 * i, s) for i, s in enumerate(steps)],
+            False,
+            1,
+        )
+
+    train = [
+        video("01_assy_0_1", [1] + [0] * 10, [3, 6]),
+        video("02_assy_0_1", [1] + [0] * 10, [3, 9]),
+        video("01_main_0_1", [1] * 11, [32, 12]),
+    ]
+    assy = learn_prior(train, "assy")
+    assert assy.active.tolist() == [False, True, True, True] + [False] * 7
+    assert assy.initial_installed.tolist() == [True] + [False] * 10
+    main = learn_prior(train, "main")
+    assert main.active.tolist() == [False] * 4 + [True] + [False] * 5 + [True]
+    assert main.initial_installed.all()

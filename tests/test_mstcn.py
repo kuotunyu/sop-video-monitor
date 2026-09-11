@@ -55,3 +55,11 @@ def test_a_few_optimiser_steps_reduce_the_loss_on_a_toy_sequence() -> None:
         optimiser.step()
         first = first if first is not None else float(loss)
     assert float(loss) < first * 0.5
+
+
+def test_sigmoid_activation_builds_a_multilabel_head() -> None:
+    model = build_model(dim=6, n_classes=4, spec=SMALL, causal=True, activation="sigmoid").eval()
+    outputs = model(torch.randn(1, 6, 25))
+    assert all(tuple(o.shape) == (1, 4, 25) for o in outputs)
+    with pytest.raises(ValueError):
+        build_model(6, 4, SMALL, activation="tanh")

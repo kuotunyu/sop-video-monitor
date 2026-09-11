@@ -52,7 +52,7 @@ class MSTCNSpec:
     selection_metric: str = "mof"
 
 
-def _build(dim: int, n_classes: int, spec: MSTCNSpec, causal: bool):
+def _build(dim: int, n_classes: int, spec: MSTCNSpec, causal: bool, activation: str = "softmax"):
     import torch
     from torch import nn
     from torch.nn import functional as F
@@ -139,16 +139,30 @@ def _build(dim: int, n_classes: int, spec: MSTCNSpec, causal: bool):
             out = self.pg(x)
             outputs = [out]
             for stage in self.stages:
-                out = stage(F.softmax(out, dim=1))
+                out = stage(
+                    F.softmax(out, dim=1) if activation == "softmax" else torch.sigmoid(out)
+                )
                 outputs.append(out)
             return outputs
 
     return MSTCNpp()
 
 
-def build_model(dim: int, n_classes: int, spec: MSTCNSpec | None = None, causal: bool = True):
-    """Public constructor (``torch.nn.Module``); input ``(batch, dim, T)``, output list of stage logits."""
-    return _build(dim, n_classes, spec or MSTCNSpec(), causal)
+def build_model(
+    dim: int,
+    n_classes: int,
+    spec: MSTCNSpec | None = None,
+    causal: bool = True,
+    activation: str = "softmax",
+):
+    """Public constructor (``torch.nn.Module``); input ``(batch, dim, T)``, output list of stage logits.
+
+    ``activation`` is what the refinement stages see: ``softmax`` for mutually exclusive classes,
+    ``sigmoid`` for independent (multi-label) outputs such as component states.
+    """
+    if activation not in ("softmax", "sigmoid"):
+        raise ValueError("activation must be 'softmax' or 'sigmoid'")
+    return _build(dim, n_classes, spec or MSTCNSpec(), causal, activation)
 
 
 def _loss(outputs, targets, n_classes: int, spec: MSTCNSpec):

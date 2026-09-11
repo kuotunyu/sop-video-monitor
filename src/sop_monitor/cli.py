@@ -283,6 +283,13 @@ def extract_psr_labels_cmd(
 def train_psr_cmd(
     features: Annotated[Path, typer.Option(help="Feature cache dir of the val videos")],
     psr_dir: Annotated[Path, typer.Option()] = Path("data/external/industreal/psr"),
+    head: Annotated[
+        list[str] | None, typer.Option(help="linear | mstcn (repeatable; default both)")
+    ] = None,
+    decoder: Annotated[
+        list[str] | None, typer.Option(help="plain | prior_dwell (repeatable; default both)")
+    ] = None,
+    mstcn_epochs: Annotated[int, typer.Option()] = 40,
     out: Annotated[Path, typer.Option()] = Path("reports/industreal_dev_v3_psr"),
     device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
     epochs: Annotated[int, typer.Option()] = 300,
@@ -291,10 +298,18 @@ def train_psr_cmd(
 ) -> None:
     """Leave-one-participant-out step-completion baseline on val; writes completions + PSR metrics."""
     from sop_monitor.features import resolve_device
-    from sop_monitor.psr_baseline import PSRSpec, run_psr_baseline
+    from sop_monitor.psr_baseline import DECODERS, HEADS, PSRSpec, run_psr_baseline
 
-    spec = PSRSpec(epochs=epochs, seed=seed, n_boot=n_boot)
-    result = run_psr_baseline(features, psr_dir, out, spec, device=resolve_device(device))
+    spec = PSRSpec(epochs=epochs, mstcn_epochs=mstcn_epochs, seed=seed, n_boot=n_boot)
+    result = run_psr_baseline(
+        features,
+        psr_dir,
+        out,
+        spec,
+        device=resolve_device(device),
+        heads=tuple(head or HEADS),
+        decoders=tuple(decoder or DECODERS),
+    )
     typer.echo(result["tables"])
     typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
 
@@ -313,11 +328,19 @@ def _check_psr_run(run_dir: Path, write: bool) -> list[str]:
         seed=int(boot.get("seed", 0)),  # type: ignore[union-attr]
     )
     mismatches: list[str] = []
-    for key in ("summary", "per_video", "totals", "gt_sanity", "n_videos", "n_participants"):
-        if json.dumps(recomputed[key], sort_keys=True) != json.dumps(
+    scored_keys = ("summary", "per_video", "totals")
+    for key in (*scored_keys, "gt_sanity", "n_videos", "n_participants"):
+        if key in recomputed and json.dumps(recomputed[key], sort_keys=True) != json.dumps(
             committed.get(key), sort_keys=True
         ):
             mismatches.append(f"{run_dir.name}: {key} differs from metrics.json")
+    for run, scored in recomputed.get("runs", {}).items():  # type: ignore[union-attr]
+        stored = committed.get("runs", {}).get(run, {})  # type: ignore[union-attr]
+        for key in scored_keys:
+            if json.dumps(scored[key], sort_keys=True) != json.dumps(
+                stored.get(key), sort_keys=True
+            ):
+                mismatches.append(f"{run_dir.name}: runs/{run}/{key} differs from metrics.json")
     config_path = run_dir / "config.json"
     if config_path.is_file():
         rendered = render_psr_tables(committed, json.loads(config_path.read_text(encoding="utf-8")))
