@@ -119,7 +119,6 @@
       "gt_violations": [],
       "kind": "main",
       "pred_omissions": [
-        "S18",
         "S30"
       ],
       "pred_unknown": [],
@@ -178,7 +177,6 @@
       "kind": "assy",
       "pred_omissions": [
         "S12",
-        "S27",
         "S8"
       ],
       "pred_unknown": [],
@@ -208,9 +206,7 @@
       "gt_unknown": [],
       "gt_violations": [],
       "kind": "main",
-      "pred_omissions": [
-        "S30"
-      ],
+      "pred_omissions": [],
       "pred_unknown": [],
       "pred_violations": []
     },
@@ -226,7 +222,6 @@
       "pred_omissions": [
         "S12",
         "S27",
-        "S30",
         "S8"
       ],
       "pred_unknown": [],
@@ -294,7 +289,6 @@
       "kind": "assy",
       "pred_omissions": [
         "S12",
-        "S27",
         "S8"
       ],
       "pred_unknown": [
@@ -323,7 +317,7 @@
       "pred_violations": []
     }
   },
-  "run": "mstcn_prior_dwell_s0",
+  "run": "mstcn_prior_dwell_cap30_s0",
   "video_level": {
     "neither_flags": 13,
     "only_gt_flags": 3

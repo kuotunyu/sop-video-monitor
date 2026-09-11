@@ -408,6 +408,20 @@ def _check_psr_run(run_dir: Path, write: bool) -> list[str]:
             mismatches.append(
                 f"{run_dir.name}: tables.md is stale (run with --write to regenerate)"
             )
+    # Committed SOP checks are recomputed from the completions and the graphs they name.
+    from sop_monitor.industreal_sop import sop_checks_for_run
+
+    for checks_path in sorted(run_dir.glob("sop_checks_*.json")):
+        stored = json.loads(checks_path.read_text(encoding="utf-8"))
+        if "graphs_dir" not in stored:
+            mismatches.append(f"{run_dir.name}: {checks_path.name} has no graphs_dir; regenerate")
+            continue
+        fresh = sop_checks_for_run(run_dir, str(stored["run"]), Path(str(stored["graphs_dir"])))
+        for key in ("per_video", "video_level", "graphs"):
+            if json.dumps(fresh[key], sort_keys=True) != json.dumps(
+                stored.get(key), sort_keys=True
+            ):
+                mismatches.append(f"{run_dir.name}: {checks_path.name}/{key} differs")
     return mismatches
 
 
@@ -523,27 +537,13 @@ def check_psr_run_cmd(
     ] = "sop_checks.json",
 ) -> None:
     """Run the precedence / omission checks on ground-truth and predicted completions of one run."""
-    from collections import defaultdict
+    from sop_monitor.industreal_sop import sop_checks_for_run
 
-    from sop_monitor.industreal_sop import KINDS, sop_check_summary
-    from sop_monitor.metrics.online import Completion
-    from sop_monitor.psr_baseline import read_completions, recording_kind
-    from sop_monitor.sop_graph import load_graph
-
-    loaded = {kind: load_graph(graphs / f"learned_precedence_{kind}.json") for kind in KINDS}
-    rows = read_completions(sorted(run.glob("completions_*.csv"))[0])
-    gt: dict[str, list[Completion]] = defaultdict(list)
-    pred: dict[str, list[Completion]] = defaultdict(list)
-    for r in rows:
-        if r.source == "gt":
-            gt[r.video_id].append(Completion(r.frame, r.step))
-        elif r.run == run_name:
-            pred[r.video_id].append(Completion(r.frame, r.step))
-    if not any(pred.values()):
-        typer.echo(f"no predictions for run {run_name!r} in {run}")
-        raise typer.Exit(code=1)
-    summary = sop_check_summary(loaded, {v: recording_kind(v) for v in gt}, gt, pred)
-    summary["run"] = run_name
+    try:
+        summary = sop_checks_for_run(run, run_name, graphs)
+    except ValueError as error:
+        typer.echo(str(error))
+        raise typer.Exit(code=1) from error
     (run / out).write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     typer.echo(f"graphs: {summary['graphs']}")
     typer.echo(f"video-level agreement over {summary['n_videos']} videos: {summary['video_level']}")

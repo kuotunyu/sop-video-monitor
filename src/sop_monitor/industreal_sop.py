@@ -15,6 +15,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from itertools import permutations
+from pathlib import Path
 
 from sop_monitor.industreal_psr import ProcedureStep
 from sop_monitor.metrics.online import Completion
@@ -106,6 +107,32 @@ def describe(graph: TaskGraph, steps: Sequence[ProcedureStep]) -> list[str]:
 def check_completions(graph: TaskGraph, completions: Sequence[Completion]) -> OrderReport:
     """Order / omission / unknown-step report of a completion sequence against the graph."""
     return check_order(graph, observed_order(completions), level="PT")
+
+
+def sop_checks_for_run(run_dir: Path, run_name: str, graphs_dir: Path) -> dict[str, object]:
+    """Precedence checks of one prediction run of a PSR run directory against the learned graphs.
+
+    Returns the :func:`sop_check_summary` payload plus ``run`` and ``graphs_dir`` (as given, so a
+    committed file can be recomputed by ``reproduce-lite`` from the repository root).
+    """
+    from sop_monitor.psr_baseline import read_completions, recording_kind
+    from sop_monitor.sop_graph import load_graph
+
+    graphs = {kind: load_graph(graphs_dir / f"learned_precedence_{kind}.json") for kind in KINDS}
+    rows = read_completions(sorted(run_dir.glob("completions_*.csv"))[0])
+    gt: dict[str, list[Completion]] = defaultdict(list)
+    pred: dict[str, list[Completion]] = defaultdict(list)
+    for r in rows:
+        if r.source == "gt":
+            gt[r.video_id].append(Completion(r.frame, r.step))
+        elif r.run == run_name:
+            pred[r.video_id].append(Completion(r.frame, r.step))
+    if not any(pred.values()):
+        raise ValueError(f"no predictions for run {run_name!r} in {run_dir}")
+    summary = sop_check_summary(graphs, {v: recording_kind(v) for v in gt}, gt, pred)
+    summary["run"] = run_name
+    summary["graphs_dir"] = graphs_dir.as_posix()
+    return summary
 
 
 def sop_check_summary(

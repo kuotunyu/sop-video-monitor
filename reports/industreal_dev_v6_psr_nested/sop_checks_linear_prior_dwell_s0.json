@@ -9,6 +9,7 @@
       "nodes": 8
     }
   },
+  "graphs_dir": "sop/industreal",
   "n_videos": 16,
   "per_video": {
     "05_assy_0_1": {

@@ -67,6 +67,13 @@ Reading:
   `05_assy_2_2`, `14_main_2_3` (missed maintenance removals and the remove-and-reinstall
   recording) for both heads; `26_assy_1_5` for MS-TCN++.
 
+## 3b. SOP checks (`sop_checks_mstcn_prior_dwell_cap30_s0.json`)
+
+Against the train-learned precedence graphs (see the v6 report, section 6) the 30 s MS-TCN++
+decoder behaves like its uncapped v6 twin: the three ground-truth deviations are not flagged
+and no false alarm is raised (13 neither / 3 only-GT). `reproduce-lite` now recomputes every
+committed `sop_checks_*.json` from the completions and the graphs it names.
+
 ## 4. Cost
 
 `train-psr … --delay-cap 15 --delay-cap 30`, seeds 0–2: 798 s on the RTX 4090 (the inner and

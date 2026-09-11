@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from sop_monitor.baseline import PredictionRow, render_tables, score_predictions, write_predictions
@@ -165,3 +166,51 @@ def test_verify_splits_checks_the_committed_hash(tmp_path: Path) -> None:
     (tmp_path / "test_sha256.txt").write_text("0" * 64 + "\n", encoding="utf-8")
     result = runner.invoke(app, ["verify-splits", "--directory", str(tmp_path)])
     assert result.exit_code == 1 and "MISMATCH" in result.output
+
+
+def test_reproduce_lite_recomputes_committed_sop_checks(tmp_path: Path) -> None:
+    from sop_monitor.industreal_sop import learn_precedence, sop_checks_for_run
+    from sop_monitor.metrics.online import Completion
+    from sop_monitor.psr_baseline import (
+        CompletionRow,
+        render_psr_tables,
+        score_completions,
+        write_completions,
+    )
+    from sop_monitor.sop_graph import export_json
+
+    graphs = tmp_path / "graphs"
+    sequence = [Completion(1, 0), Completion(2, 3), Completion(3, 6)]
+    for kind in ("assy", "main"):
+        export_json(learn_precedence([sequence] * 3), graphs / f"learned_precedence_{kind}.json")
+    run_dir = tmp_path / "psr_run"
+    run_dir.mkdir()
+    rows = [
+        CompletionRow("05_assy_0_1", "05", "gt", 1, 0, "05", ""),
+        CompletionRow("05_assy_0_1", "05", "gt", 2, 3, "05", ""),
+        CompletionRow("05_assy_0_1", "05", "pred", 5, 6, "05", "linear_plain"),  # out of order
+        CompletionRow("05_assy_0_1", "05", "pred", 9, 3, "05", "linear_plain"),
+        CompletionRow("05_assy_0_1", "05", "pred", 4, 0, "05", "mstcn_plain"),
+    ]
+    write_completions(run_dir / "completions_val.csv", rows)
+    metrics = score_completions(rows, n_boot=10, seed=0)
+    config = {"folds": {}}
+    (run_dir / "metrics.json").write_text(json.dumps(metrics), encoding="utf-8")
+    (run_dir / "config.json").write_text(json.dumps(config), encoding="utf-8")
+    (run_dir / "tables.md").write_text(render_psr_tables(metrics, config), encoding="utf-8")
+    checks = sop_checks_for_run(run_dir, "linear_plain", graphs)
+    assert checks["per_video"]["05_assy_0_1"]["pred_violations"][0]["step"] == "S6"
+    assert checks["video_level"] == {"only_pred_flags": 1}
+    (run_dir / "sop_checks_linear_plain.json").write_text(json.dumps(checks), encoding="utf-8")
+    result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
+    assert result.exit_code == 0, result.output
+    checks["video_level"] = {"neither_flags": 1}
+    (run_dir / "sop_checks_linear_plain.json").write_text(json.dumps(checks), encoding="utf-8")
+    result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
+    assert result.exit_code == 1 and "video_level differs" in result.output
+    del checks["graphs_dir"]
+    (run_dir / "sop_checks_linear_plain.json").write_text(json.dumps(checks), encoding="utf-8")
+    result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
+    assert result.exit_code == 1 and "no graphs_dir" in result.output
+    with pytest.raises(ValueError, match="no predictions"):
+        sop_checks_for_run(run_dir, "nope", graphs)
