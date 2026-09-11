@@ -50,6 +50,28 @@ def freeze_splits(
     raise typer.Exit(code=NOT_YET_EXIT_CODE)
 
 
+@app.command("verify-splits")
+def verify_splits(
+    directory: Annotated[
+        Path, typer.Option(help="Split directory with test.csv and test_sha256.txt")
+    ] = Path("splits/industreal"),
+) -> None:
+    """Recompute the frozen test-list hash from test.csv and compare it with test_sha256.txt (spec 4.1)."""
+    import csv
+
+    from sop_monitor.splits import hash_test_list, read_test_sha256
+
+    with (directory / "test.csv").open(encoding="utf-8", newline="") as handle:
+        video_ids = [row["video_id"] for row in csv.DictReader(handle)]
+    actual = hash_test_list(video_ids)
+    expected = read_test_sha256(directory / "test_sha256.txt")
+    typer.echo(f"{directory}: {len(video_ids)} test videos, sha256 {actual}")
+    if actual != expected:
+        typer.echo(f"MISMATCH: test_sha256.txt says {expected}")
+        raise typer.Exit(code=1)
+    typer.echo("OK: test list hash matches test_sha256.txt")
+
+
 @app.command("check-sop")
 def check_sop(
     graph: Annotated[Path, typer.Option(help="OWL file or JSON export of the precedence graph")],
@@ -450,6 +472,91 @@ def score_predictions_cmd(
         typer.echo(line)
     typer.echo(f"{run.name}: {'OK, metrics reproduce' if not mismatches else 'MISMATCH'}")
     raise typer.Exit(code=1 if mismatches else 0)
+
+
+@app.command("learn-sop")
+def learn_sop_cmd(
+    psr_dir: Annotated[Path, typer.Option()] = Path("data/external/industreal/psr"),
+    train_split: Annotated[Path, typer.Option()] = Path("splits/industreal/train.csv"),
+    out: Annotated[Path, typer.Option(help="Directory for learned_precedence_<kind>.json")] = Path(
+        "sop/industreal"
+    ),
+    min_support: Annotated[int, typer.Option()] = 3,
+) -> None:
+    """Learn one IndustReal step precedence graph per recording kind from the train-split PSR labels."""
+    from sop_monitor.industreal_psr import PROCEDURE_INFO, load_procedure_info, load_psr_labels
+    from sop_monitor.industreal_sop import KINDS, describe, learn_precedence
+    from sop_monitor.psr_baseline import read_split_ids, recording_kind
+    from sop_monitor.sop_graph import export_json
+
+    steps = load_procedure_info(PROCEDURE_INFO)
+    train_ids = sorted(read_split_ids(train_split))
+    for kind in KINDS:
+        recordings = [v for v in train_ids if recording_kind(v) == kind]
+        sequences = [load_psr_labels(psr_dir / v / "PSR_labels.csv") for v in recordings]
+        graph = learn_precedence(
+            sequences,
+            min_support=min_support,
+            source=f"learned from {len(recordings)} IndustReal train-split {kind} recordings (PSR_labels.csv, min_support={min_support})",
+        )
+        target = out / f"learned_precedence_{kind}.json"
+        export_json(graph, target)
+        typer.echo(
+            f"{kind}: {len(recordings)} recordings -> {len(graph.nodes)} steps, "
+            f"{len(graph.relation('precedesPT'))} edges -> {target}"
+        )
+        for line in describe(graph, steps):
+            typer.echo(f"  {line}")
+
+
+@app.command("check-psr-run")
+def check_psr_run_cmd(
+    run: Annotated[Path, typer.Option(help="PSR run directory with completions_val.csv")],
+    run_name: Annotated[
+        str, typer.Option(help="Prediction run to check, e.g. mstcn_prior_dwell_s0")
+    ],
+    graphs: Annotated[
+        Path, typer.Option(help="Directory with learned_precedence_<kind>.json")
+    ] = Path("sop/industreal"),
+    out: Annotated[
+        str, typer.Option(help="JSON file name written into the run directory")
+    ] = "sop_checks.json",
+) -> None:
+    """Run the precedence / omission checks on ground-truth and predicted completions of one run."""
+    from collections import defaultdict
+
+    from sop_monitor.industreal_sop import KINDS, sop_check_summary
+    from sop_monitor.metrics.online import Completion
+    from sop_monitor.psr_baseline import read_completions, recording_kind
+    from sop_monitor.sop_graph import load_graph
+
+    loaded = {kind: load_graph(graphs / f"learned_precedence_{kind}.json") for kind in KINDS}
+    rows = read_completions(sorted(run.glob("completions_*.csv"))[0])
+    gt: dict[str, list[Completion]] = defaultdict(list)
+    pred: dict[str, list[Completion]] = defaultdict(list)
+    for r in rows:
+        if r.source == "gt":
+            gt[r.video_id].append(Completion(r.frame, r.step))
+        elif r.run == run_name:
+            pred[r.video_id].append(Completion(r.frame, r.step))
+    if not any(pred.values()):
+        typer.echo(f"no predictions for run {run_name!r} in {run}")
+        raise typer.Exit(code=1)
+    summary = sop_check_summary(loaded, {v: recording_kind(v) for v in gt}, gt, pred)
+    summary["run"] = run_name
+    (run / out).write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    typer.echo(f"graphs: {summary['graphs']}")
+    typer.echo(f"video-level agreement over {summary['n_videos']} videos: {summary['video_level']}")
+    typer.echo(
+        "| video | kind | GT violations | GT omissions | pred violations | pred omissions | agreement |"
+    )
+    typer.echo("|---|---|---|---|---|---|---|")
+    for video, entry in summary["per_video"].items():  # type: ignore[union-attr]
+        typer.echo(
+            f"| {video} | {entry['kind']} | {len(entry['gt_violations'])} | {len(entry['gt_omissions'])} | "
+            f"{len(entry['pred_violations'])} | {len(entry['pred_omissions'])} | {entry['agreement']} |"
+        )
+    typer.echo(f"-> {run / out}")
 
 
 @app.command("reproduce-lite")

@@ -32,5 +32,6 @@ jobs:
       - run: uv run pytest -q
       # Recompute every committed run's metrics from its prediction table and check tables.md.
       - run: uv run sop-monitor reproduce-lite
+      # Recompute the frozen test-list hash from the committed split CSV (spec 4.1).
+      - run: uv run sop-monitor verify-splits --directory splits/industreal
       # TODO: add the ignored-directory scan (no source code under data/, artifacts/) per spec 3.3.
-      # TODO: add `sop-monitor verify-splits` so CI recomputes splits/test_sha256.txt (spec 4.1).

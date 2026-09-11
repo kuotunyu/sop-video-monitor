@@ -1,0 +1,100 @@
+{
+  "edges": {
+    "precedesPT": [
+      [
+        "S15",
+        "S21"
+      ],
+      [
+        "S15",
+        "S24"
+      ],
+      [
+        "S15",
+        "S27"
+      ],
+      [
+        "S15",
+        "S30"
+      ],
+      [
+        "S18",
+        "S21"
+      ],
+      [
+        "S18",
+        "S24"
+      ],
+      [
+        "S18",
+        "S27"
+      ],
+      [
+        "S18",
+        "S30"
+      ],
+      [
+        "S3",
+        "S21"
+      ],
+      [
+        "S3",
+        "S24"
+      ],
+      [
+        "S3",
+        "S27"
+      ],
+      [
+        "S3",
+        "S30"
+      ],
+      [
+        "S6",
+        "S21"
+      ],
+      [
+        "S6",
+        "S24"
+      ],
+      [
+        "S6",
+        "S27"
+      ],
+      [
+        "S6",
+        "S30"
+      ],
+      [
+        "S9",
+        "S21"
+      ],
+      [
+        "S9",
+        "S24"
+      ],
+      [
+        "S9",
+        "S27"
+      ],
+      [
+        "S9",
+        "S30"
+      ]
+    ]
+  },
+  "nodes": {
+    "S12": "PrimitiveTask",
+    "S15": "PrimitiveTask",
+    "S18": "PrimitiveTask",
+    "S21": "PrimitiveTask",
+    "S24": "PrimitiveTask",
+    "S27": "PrimitiveTask",
+    "S3": "PrimitiveTask",
+    "S30": "PrimitiveTask",
+    "S6": "PrimitiveTask",
+    "S8": "PrimitiveTask",
+    "S9": "PrimitiveTask"
+  },
+  "source": "learned from 20 IndustReal train-split assy recordings (PSR_labels.csv, min_support=3)"
+}

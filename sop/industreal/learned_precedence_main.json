@@ -1,0 +1,73 @@
+{
+  "edges": {
+    "precedesPT": [
+      [
+        "S11",
+        "S12"
+      ],
+      [
+        "S11",
+        "S15"
+      ],
+      [
+        "S11",
+        "S30"
+      ],
+      [
+        "S12",
+        "S18"
+      ],
+      [
+        "S15",
+        "S18"
+      ],
+      [
+        "S17",
+        "S12"
+      ],
+      [
+        "S17",
+        "S15"
+      ],
+      [
+        "S17",
+        "S30"
+      ],
+      [
+        "S20",
+        "S12"
+      ],
+      [
+        "S20",
+        "S15"
+      ],
+      [
+        "S20",
+        "S30"
+      ],
+      [
+        "S32",
+        "S12"
+      ],
+      [
+        "S32",
+        "S15"
+      ],
+      [
+        "S32",
+        "S30"
+      ]
+    ]
+  },
+  "nodes": {
+    "S11": "PrimitiveTask",
+    "S12": "PrimitiveTask",
+    "S15": "PrimitiveTask",
+    "S17": "PrimitiveTask",
+    "S18": "PrimitiveTask",
+    "S20": "PrimitiveTask",
+    "S30": "PrimitiveTask",
+    "S32": "PrimitiveTask"
+  },
+  "source": "learned from 16 IndustReal train-split main recordings (PSR_labels.csv, min_support=3)"
+}

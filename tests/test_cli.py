@@ -147,3 +147,21 @@ def test_reproduce_lite_handles_psr_completion_runs(tmp_path: Path) -> None:
     result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
     assert result.exit_code == 1
     assert "totals differs" in result.output
+
+
+def test_verify_splits_checks_the_committed_hash(tmp_path: Path) -> None:
+    from sop_monitor.splits import hash_test_list
+
+    result = runner.invoke(app, ["verify-splits", "--directory", "splits/industreal"])
+    assert result.exit_code == 0, result.output
+    assert "OK" in result.output
+    (tmp_path / "test.csv").write_text(
+        "video_id,participant,n_segments\n03_assy_0_1,03,1\n", encoding="utf-8"
+    )
+    (tmp_path / "test_sha256.txt").write_text(
+        hash_test_list(["03_assy_0_1"]) + "\n", encoding="utf-8"
+    )
+    assert runner.invoke(app, ["verify-splits", "--directory", str(tmp_path)]).exit_code == 0
+    (tmp_path / "test_sha256.txt").write_text("0" * 64 + "\n", encoding="utf-8")
+    result = runner.invoke(app, ["verify-splits", "--directory", str(tmp_path)])
+    assert result.exit_code == 1 and "MISMATCH" in result.output
