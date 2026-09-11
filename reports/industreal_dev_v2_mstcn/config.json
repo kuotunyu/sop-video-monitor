@@ -1,0 +1,252 @@
+{
+  "classes": {
+    "background_index": 0,
+    "index_to_action_id": [
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      67,
+      68,
+      69,
+      70,
+      71,
+      73,
+      74
+    ],
+    "majority_action_id": -1,
+    "n_classes": 73
+  },
+  "device": "cuda",
+  "eval_frames": 38036,
+  "eval_videos": 16,
+  "features": {
+    "autocast_fp16": true,
+    "device": "cuda",
+    "dim": 768,
+    "dtype": "float16",
+    "embedding": "concat(CLS, mean patch tokens)",
+    "extractor": "facebookresearch/dinov2 via torch.hub",
+    "frame_size_wh": [
+      392,
+      224
+    ],
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "model": "dinov2_vits14",
+    "normalisation": "ImageNet mean/std",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "stride": 1,
+    "torch": "2.13.0+cu130",
+    "weights": {
+      "bytes": 88283115,
+      "file": "dinov2_vits14_pretrain.pth",
+      "sha256": "b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9"
+    }
+  },
+  "model": "MS-TCN++ (Li et al., TPAMI 2020) on frozen frame features; epoch selected on val",
+  "runs": {
+    "majority": "constant most frequent training label",
+    "mstcn_causal": "MS-TCN++ with left-only padding: frame t sees frames <= t (online)",
+    "mstcn_offline": "MS-TCN++ with symmetric padding: sees future frames (not an online result)"
+  },
+  "spec": {
+    "dropout": 0.5,
+    "epochs": 50,
+    "eval_every": 5,
+    "lr": 0.0005,
+    "n_boot": 2000,
+    "num_f_maps": 64,
+    "num_layers_pg": 11,
+    "num_layers_r": 10,
+    "num_refinement_stages": 3,
+    "seed": 0,
+    "selection_metric": "mof",
+    "smoothing_clamp": 16.0,
+    "smoothing_weight": 0.15
+  },
+  "train_frames": 78932,
+  "train_videos": 36,
+  "training": {
+    "mstcn_causal": {
+      "best_epoch": 35,
+      "best_val_mof": 34.7986118414134,
+      "causal": true,
+      "curve": [
+        {
+          "epoch": 5,
+          "mof": 19.915343358923124,
+          "train_loss": 11.42753161324395
+        },
+        {
+          "epoch": 10,
+          "mof": 24.2612262067515,
+          "train_loss": 9.643197721905178
+        },
+        {
+          "epoch": 15,
+          "mof": 30.741928699127143,
+          "train_loss": 8.308812843428719
+        },
+        {
+          "epoch": 20,
+          "mof": 32.55074140288148,
+          "train_loss": 7.2397842274771795
+        },
+        {
+          "epoch": 25,
+          "mof": 33.72068566621096,
+          "train_loss": 6.45746910572052
+        },
+        {
+          "epoch": 30,
+          "mof": 34.28593963613419,
+          "train_loss": 5.840872142050001
+        },
+        {
+          "epoch": 35,
+          "mof": 34.7986118414134,
+          "train_loss": 5.446990331013997
+        },
+        {
+          "epoch": 40,
+          "mof": 31.49384793353665,
+          "train_loss": 5.0238847732543945
+        },
+        {
+          "epoch": 45,
+          "mof": 34.48575034178147,
+          "train_loss": 4.691945016384125
+        },
+        {
+          "epoch": 50,
+          "mof": 33.51824587233148,
+          "train_loss": 4.280214428901672
+        }
+      ],
+      "parameters": 940324,
+      "train_seconds": 54.411244500000066
+    },
+    "mstcn_offline": {
+      "best_epoch": 50,
+      "best_val_mof": 39.076138395204545,
+      "causal": false,
+      "curve": [
+        {
+          "epoch": 5,
+          "mof": 20.42275738773793,
+          "train_loss": 11.1378382841746
+        },
+        {
+          "epoch": 10,
+          "mof": 34.70922284151856,
+          "train_loss": 8.78660249710083
+        },
+        {
+          "epoch": 15,
+          "mof": 36.791460721421814,
+          "train_loss": 7.307944456736247
+        },
+        {
+          "epoch": 20,
+          "mof": 35.655694605110945,
+          "train_loss": 6.469827082422045
+        },
+        {
+          "epoch": 25,
+          "mof": 36.60742454516774,
+          "train_loss": 5.659156243006389
+        },
+        {
+          "epoch": 30,
+          "mof": 38.639709748659165,
+          "train_loss": 5.084947321150038
+        },
+        {
+          "epoch": 35,
+          "mof": 36.87033336838784,
+          "train_loss": 4.725158194700877
+        },
+        {
+          "epoch": 40,
+          "mof": 37.41192554422126,
+          "train_loss": 4.2172101272477045
+        },
+        {
+          "epoch": 45,
+          "mof": 37.06225680933852,
+          "train_loss": 4.047423263390859
+        },
+        {
+          "epoch": 50,
+          "mof": 39.076138395204545,
+          "train_loss": 3.779717458619012
+        }
+      ],
+      "parameters": 940324,
+      "train_seconds": 45.9955516
+    }
+  },
+  "wall_seconds": 105.39918169999964
+}

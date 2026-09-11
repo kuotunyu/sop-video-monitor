@@ -25,7 +25,8 @@ left／front／top 三路固定視角影片以 RTSP 重播進入系統，經 PyA
 |---|---|
 | `metrics/offline.py` | MoF、Edit、F1@{10,25,50}（MS-TCN 參考實作的定義）、每序列充分統計量、以 test subject 為重抽單位的 bootstrap CI |
 | `metrics/reference_mstcn.py` | 參考 `eval.py` 控制流程的獨立轉錄，只用來交叉核對；隨機輸入與真實預測表上都與 `offline.py` 一致 |
-| `metrics/online.py` | Procedure Order Similarity（Damerau-Levenshtein）、completion F1、mean detection delay（IndustReal 定義；尚未在 IndustReal PSR 標註上做 sanity run，因為本機沒有 PSR 標註） |
+| `metrics/online.py` | IndustReal PSR 指標：POS（unrestricted Damerau-Levenshtein，substitute 成本 2、以 GT 長度正規化）、system-level F1、mean detection delay；2026-09-11 已逐條對照官方 `PSR/psr_utils.py` 重寫並以手算案例測試，兩處刻意偏離（早於 GT 且無候選時的配對、無 delay 時不補 100 frames）寫在 docstring；尚未在真實 PSR 標註上跑，因為本機沒有 PSR 標註 |
+| `mstcn.py` | MS-TCN++（prediction generation + 3 refinement stages）；`causal=True` 時所有 kernel-3 卷積只做左側 padding，測試以數值驗證未來影格不影響輸出；非因果版本為離線對照 |
 | `splits.py`、`industreal.py` | test list SHA-256 契約；IndustReal 標註解析、participant-disjoint split 重建與凍結（`splits/industreal/`，從本機標註重跑結果與已 commit 檔案逐位元一致）；標註 → 逐影格標籤對齊（半開區間、重疊取最新 onset） |
 | `sop_graph.py` | HR-SAT OWL 解析、JSON 匯出（`sop/ha-vid/{cylinder,gear,general}_plate.json`）、拓撲排序、順序／遺漏／未知步驟檢查、時長區間檢查 |
 | `video.py` | PyAV probe 與循序解碼（含 swscale 縮放），影格索引從 0 起算 |
@@ -35,19 +36,23 @@ left／front／top 三路固定視角影片以 RTSP 重播進入系統，經 PyA
 | `stream/ring_buffer.py` | `WAIT`／`DROP_OLDEST`／`ADAPTIVE` 三種 backpressure 策略與 `skipped_frames` 計數（in-process 版本） |
 
 CLI（`sop-monitor`）：`freeze-splits`、`check-sop`、`export-sop`、`audit-industreal`、`extract-features`、
-`train-baseline`、`score-predictions`、`reproduce-lite`。CI 跑 `ruff`、`pytest` 與 `reproduce-lite`（不裝 torch）。
+`train-baseline`、`train-mstcn`、`score-predictions`、`reproduce-lite`。CI 跑 `ruff`、`pytest` 與 `reproduce-lite`（不裝 torch）。
 
 ### 目前的資料與結果
 
 - **IndustReal**（Apache-2.0，指標捐贈／開發資料）：本機有 86 支 1280×720、10 fps 的 RGB 影片與
   三個 action-recognition 標註 CSV（84 支有標註）；稽核結果在
   [`reports/industreal_dev_v1/data_audit.json`](reports/industreal_dev_v1/data_audit.json)。
-  本機沒有 procedure-step-recognition（PSR）標註，所以線上指標還不能在 IndustReal 上做 sanity run。
+  本機沒有 procedure-step-recognition（PSR）標註：4TU 上沒有獨立的 PSR 標註檔，`PSR_labels*.csv` 只放在
+  每個 split 的 recording 壓縮檔內（`val_p1.zip` 3.8 GB + `val_p2.zip` 6.2 GB；test 三包共 23.7 GB），
+  所以線上指標只完成了與官方程式碼的逐條對照，還不能在真實標註上跑。
 - **HA-ViD**（CC BY-NC 4.0，主力）：本機只有三張 subject-agnostic task precedence graph（OWL）與七份
   組裝說明 PDF，**沒有影片、沒有 HR-SAT 標註**；主力資料線被 request form 阻擋。
 - **開發結果**（不是 headline）：[`reports/industreal_dev_v1/`](reports/industreal_dev_v1/) 是
-  IndustReal train → val 的第一個影片 baseline，包含真實逐影格預測表、`metrics.json`、`tables.md` 與
-  報告。數字在 val 上量測，val 同時也是選 weight decay 與平滑視窗的依據；frozen test split 沒有被讀取。
+  IndustReal train → val 的第一個影片 baseline（frozen DINOv2 + linear head），
+  [`reports/industreal_dev_v2_mstcn/`](reports/industreal_dev_v2_mstcn/) 在同一份特徵上比較
+  causal 與非 causal 的 MS-TCN++。兩者都包含真實逐影格預測表、`metrics.json`、`tables.md` 與報告。
+  數字在 val 上量測，val 同時也是選超參數／epoch 的依據；frozen test split 沒有被讀取。
   IndustReal 的數字不會進任何 HA-ViD 表格（設計規格 §3.3）。
 - **正式研究成果**：無。
 
@@ -55,7 +60,7 @@ CLI（`sop-monitor`）：`freeze-splits`、`check-sop`、`export-sop`、`audit-i
 
 - HA-ViD 影片、HR-SAT parser、HA-ViD subject-wise split、特徵快取、任何 HA-ViD 指標。
 - RTSP 重播（mediamtx）、decode thread、batch collector、watchdog、shared-memory ring buffer（W4）。
-- causal MS-TCN++、ASFormer、late fusion、VideoMAE-V2 clip 特徵（W2–W3）。
+- ASFormer、late fusion、VideoMAE-V2 clip 特徵（W2–W3）；MS-TCN++ 只有單視角 IndustReal 開發版。
 - SOP 狀態機的 hysteresis 雙門檻、duration bounds 檔、synthetic 違規生成器（W3）。
 - 複核 UI、deviation queue、VLM verifier（W5）。
 - `MODEL_CARD.md`、`docs/claims_audit.md`、`docs/what_this_does_not_show.md`（W6）。

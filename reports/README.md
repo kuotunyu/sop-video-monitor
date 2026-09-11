@@ -24,6 +24,9 @@ Every run directory under `reports/` is self-describing and recomputable from wh
 
 Current contents:
 
-- `industreal_dev_v1/` — development result. IndustReal is the metric-donor dataset (spec 3.1);
-  its numbers never enter an HA-ViD table. No formal result exists yet because no HA-ViD video
-  or annotation is on disk (see `industreal_dev_v1/data_audit.json`).
+- `industreal_dev_v1/` — development result: frozen DINOv2 ViT-S/14 features + linear head,
+  frame / causal / offline smoothing. IndustReal is the metric-donor dataset (spec 3.1); its
+  numbers never enter an HA-ViD table. No formal result exists yet because no HA-ViD video or
+  annotation is on disk (see `industreal_dev_v1/data_audit.json`).
+- `industreal_dev_v2_mstcn/` — development result: causal vs non-causal MS-TCN++ on the same
+  feature cache; first measured causal-vs-offline gap.
