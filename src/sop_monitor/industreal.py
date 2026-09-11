@@ -11,7 +11,7 @@ split is participant-disjoint (12 / 5 / 10 participants); this module regenerate
 from the raw rows, *verifies* that disjointness instead of assuming it, and freezes the
 test list with the same SHA-256 contract used for HA-ViD (:mod:`sop_monitor.splits`).
 
-Frame semantics (measured on the local copy, see ``reports/industreal_dev_v1/data_audit.json``):
+Frame semantics (measured on the local copy, see ``reports/data_audit.json``):
 the RGB videos run at 10 fps and label frame indices are 0-based indices into that stream, so
 ``000027.jpg`` is video frame 27. Segments are treated as half-open ``[start, end)`` because
 consecutive segments routinely share a boundary frame. About 9 % of labelled frames carry two

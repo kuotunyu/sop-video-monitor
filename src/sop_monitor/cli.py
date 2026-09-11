@@ -134,9 +134,7 @@ def audit_industreal_cmd(
     ha_vid: Annotated[Path, typer.Option(help="HA-ViD public files directory")] = Path(
         "data/external/ha-vid-public"
     ),
-    out: Annotated[Path, typer.Option(help="Audit JSON path")] = Path(
-        "reports/industreal_dev_v1/data_audit.json"
-    ),
+    out: Annotated[Path, typer.Option(help="Audit JSON path")] = Path("reports/data_audit.json"),
     manifest: Annotated[
         Path | None, typer.Option(help="Also write data/manifest.json (names, sizes, SHA-256)")
     ] = None,

@@ -8,7 +8,7 @@
 - Role of the dataset: IndustReal is the project's metric-donor / development dataset
   (ADR 0001). Nothing here is an HA-ViD result and nothing here enters an HA-ViD table.
 
-## 1. Data identity (from `data_audit.json`, all measured on disk)
+## 1. Data identity (from `../data_audit.json`, all measured on disk)
 
 | item | value |
 |---|---|
@@ -98,7 +98,7 @@ predicted.
 ```bash
 uv sync --all-extras --group baseline
 export PYTHONUTF8=1   # the checkout path contains non-ASCII characters
-uv run sop-monitor audit-industreal --root data/external/industreal --out reports/industreal_dev_v1/data_audit.json --manifest data/manifest.json
+uv run sop-monitor audit-industreal --root data/external/industreal --out reports/data_audit.json --manifest data/manifest.json
 uv run sop-monitor extract-features --root data/external/industreal --split train --split val --model dinov2_vits14 --stride 1 --device auto
 uv run sop-monitor train-baseline --features artifacts/features/industreal/dinov2_vits14_s1 --labels-dir data/external/industreal/labels --out reports/industreal_dev_v1 --device auto --epochs 300 --n-boot 2000 --seed 0
 uv run sop-monitor score-predictions --run reports/industreal_dev_v1      # recompute metrics.json from predictions_val.csv, no data/GPU needed

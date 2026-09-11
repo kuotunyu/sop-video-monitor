@@ -10,7 +10,7 @@
 - Purpose: the spec 4.3 sanity run — exercise the project's implementation of the IndustReal online
   metrics on real labels and real model output, after aligning it with the reference code.
 
-## 1. Data identity (`psr_audit.json`, `../industreal_dev_v1/data_audit.json`, `data/manifest.json`)
+## 1. Data identity (`psr_audit.json`, `../data_audit.json`, `data/manifest.json`)
 
 | item | value |
 |---|---|
@@ -104,7 +104,7 @@ uv run sop-monitor train-psr --features artifacts/features/industreal/dinov2_vit
 uv run sop-monitor reproduce-lite     # recomputes metrics.json from completions_val.csv, checks tables.md
 ```
 
-`make extract-psr` and `make psr` wrap the same commands. Determinism: a second `train-psr` run
+`make extract-psr` and `make psr-lopo` wrap the same commands. Determinism: a second `train-psr` run
 with the same seed on the same GPU reproduced `completions_val.csv` byte-for-byte, and
 `reproduce-lite` recomputes `metrics.json` and `tables.md` from that table without features.
 
