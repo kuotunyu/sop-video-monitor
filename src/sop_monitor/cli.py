@@ -225,7 +225,7 @@ def train_baseline_cmd(
     # Render from the files just written, exactly as `score-predictions` will re-read them.
     config = json.loads((out / "config.json").read_text(encoding="utf-8"))
     tables = render_tables(load_metrics(out), config)
-    (out / "tables.md").write_text(tables, encoding="utf-8")
+    (out / "tables.md").write_text(tables, encoding="utf-8", newline="\n")
     typer.echo(tables)
     typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
 
@@ -261,7 +261,7 @@ def _check_run(run_dir: Path, write: bool) -> list[str]:
         rendered = render_tables(committed, config)
         tables_path = run_dir / "tables.md"
         if write:
-            tables_path.write_text(rendered, encoding="utf-8")
+            tables_path.write_text(rendered, encoding="utf-8", newline="\n")
         elif not tables_path.is_file() or tables_path.read_text(encoding="utf-8") != rendered:
             mismatches.append(
                 f"{run_dir.name}: tables.md is stale (run with --write to regenerate)"
