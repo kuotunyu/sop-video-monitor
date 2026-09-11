@@ -1,0 +1,1111 @@
+{
+  "ha_vid_public": {
+    "annotation_files": 0,
+    "blocker": "no HA-ViD videos or HR-SAT annotations on disk; the request-form delivery has not arrived",
+    "by_suffix": {
+      ".owl": 3,
+      ".pdf": 7,
+      ".zip": 2
+    },
+    "dataset": "HA-ViD",
+    "files": 12,
+    "instruction_pdfs": [
+      "I01.pdf",
+      "I21.pdf",
+      "I22.pdf",
+      "I23.pdf",
+      "I24.pdf",
+      "I25.pdf",
+      "I26.pdf"
+    ],
+    "license": "CC BY-NC 4.0",
+    "precedence_graphs": [
+      "Subject_agnostic_task_precedence_graph_cylinder_plate.owl",
+      "Subject_agnostic_task_precedence_graph_gear_plate.owl",
+      "Subject_agnostic_task_precedence_graph_general_plate.owl"
+    ],
+    "present": true,
+    "root": "data\\external\\ha-vid-public",
+    "usable_for_training": false,
+    "videos": 0
+  },
+  "industreal": {
+    "dataset": "IndustReal",
+    "frame_semantics": {
+      "label_frame_index": "0-based index into the 10 fps RGB stream",
+      "overlap_rule": "latest onset wins (sop_monitor.industreal.frame_labels)",
+      "segment_interval": "half-open [start, end)"
+    },
+    "labels": {
+      "test": {
+        "action_ids": 68,
+        "file": "test.csv",
+        "frames_with_two_or_more_labels": 7669,
+        "labelled_fraction": 0.7791243549192609,
+        "labelled_frames": 70203,
+        "last_label_over_frame_count": {
+          "max": 0.9989098837209303,
+          "min": 0.9502890173410404
+        },
+        "min_start_frame": 0,
+        "participants": [
+          "03",
+          "08",
+          "09",
+          "10",
+          "12",
+          "13",
+          "17",
+          "18",
+          "19",
+          "23"
+        ],
+        "rows": 3678,
+        "segment_frames": {
+          "max": 195,
+          "min": 1,
+          "p50": 17,
+          "p95": 51
+        },
+        "sha256": "03641fb2927cdc5a5efb606a105b852d80087a94b88569ec001b74decd109f16",
+        "video_frames": 90105,
+        "videos": 32
+      },
+      "train": {
+        "action_ids": 72,
+        "file": "train.csv",
+        "frames_with_two_or_more_labels": 5399,
+        "labelled_fraction": 0.7598565854152942,
+        "labelled_frames": 59977,
+        "last_label_over_frame_count": {
+          "max": 1.0,
+          "min": 0.9530558015943312
+        },
+        "min_start_frame": 0,
+        "participants": [
+          "01",
+          "02",
+          "04",
+          "06",
+          "07",
+          "11",
+          "15",
+          "16",
+          "21",
+          "22",
+          "25",
+          "27"
+        ],
+        "rows": 3667,
+        "segment_frames": {
+          "max": 253,
+          "min": 2,
+          "p50": 14,
+          "p95": 40
+        },
+        "sha256": "2f36ea1964d9255079c014457215a1e6fc7500e3323837dcb924010879654af4",
+        "video_frames": 78932,
+        "videos": 36
+      },
+      "val": {
+        "action_ids": 65,
+        "file": "val.csv",
+        "frames_with_two_or_more_labels": 4774,
+        "labelled_fraction": 0.8001367125880745,
+        "labelled_frames": 30434,
+        "last_label_over_frame_count": {
+          "max": 0.9965561773568661,
+          "min": 0.973198332340679
+        },
+        "min_start_frame": 9,
+        "participants": [
+          "05",
+          "14",
+          "20",
+          "24",
+          "26"
+        ],
+        "rows": 1928,
+        "segment_frames": {
+          "max": 178,
+          "min": 2,
+          "p50": 14,
+          "p95": 44
+        },
+        "sha256": "010e66a0fdb04fc481e489a71fbb662ebaf3099a0e7987d6c2996daf05f58002",
+        "video_frames": 38036,
+        "videos": 16
+      }
+    },
+    "license": "Apache-2.0",
+    "problems": [],
+    "root": "data\\external\\industreal",
+    "videos": {
+      "count": 86,
+      "frame_count_from_header": true,
+      "per_video": {
+        "01_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 184.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1845,
+          "path": "data\\external\\industreal\\rgb\\01_assy_0_1.mp4",
+          "video_id": "01_assy_0_1",
+          "width": 1280
+        },
+        "01_assy_1_1": {
+          "codec": "mpeg4",
+          "duration_s": 217.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2175,
+          "path": "data\\external\\industreal\\rgb\\01_assy_1_1.mp4",
+          "video_id": "01_assy_1_1",
+          "width": 1280
+        },
+        "01_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 136.7,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1367,
+          "path": "data\\external\\industreal\\rgb\\01_main_0_1.mp4",
+          "video_id": "01_main_0_1",
+          "width": 1280
+        },
+        "02_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 394.6,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3946,
+          "path": "data\\external\\industreal\\rgb\\02_assy_0_1.mp4",
+          "video_id": "02_assy_0_1",
+          "width": 1280
+        },
+        "02_assy_1_2": {
+          "codec": "mpeg4",
+          "duration_s": 365.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3658,
+          "path": "data\\external\\industreal\\rgb\\02_assy_1_2.mp4",
+          "video_id": "02_assy_1_2",
+          "width": 1280
+        },
+        "02_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 228.9,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2289,
+          "path": "data\\external\\industreal\\rgb\\02_main_0_1.mp4",
+          "video_id": "02_main_0_1",
+          "width": 1280
+        },
+        "03_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 275.4,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2754,
+          "path": "data\\external\\industreal\\rgb\\03_assy_0_1.mp4",
+          "video_id": "03_assy_0_1",
+          "width": 1280
+        },
+        "03_assy_1_3": {
+          "codec": "mpeg4",
+          "duration_s": 263.0,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2630,
+          "path": "data\\external\\industreal\\rgb\\03_assy_1_3.mp4",
+          "video_id": "03_assy_1_3",
+          "width": 1280
+        },
+        "03_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 134.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1348,
+          "path": "data\\external\\industreal\\rgb\\03_main_0_1.mp4",
+          "video_id": "03_main_0_1",
+          "width": 1280
+        },
+        "04_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 415.0,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 4150,
+          "path": "data\\external\\industreal\\rgb\\04_assy_0_1.mp4",
+          "video_id": "04_assy_0_1",
+          "width": 1280
+        },
+        "04_assy_2_1": {
+          "codec": "mpeg4",
+          "duration_s": 312.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3122,
+          "path": "data\\external\\industreal\\rgb\\04_assy_2_1.mp4",
+          "video_id": "04_assy_2_1",
+          "width": 1280
+        },
+        "04_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 179.0,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1790,
+          "path": "data\\external\\industreal\\rgb\\04_main_0_1.mp4",
+          "video_id": "04_main_0_1",
+          "width": 1280
+        },
+        "05_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 291.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2918,
+          "path": "data\\external\\industreal\\rgb\\05_assy_0_1.mp4",
+          "video_id": "05_assy_0_1",
+          "width": 1280
+        },
+        "05_assy_2_2": {
+          "codec": "mpeg4",
+          "duration_s": 232.3,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2323,
+          "path": "data\\external\\industreal\\rgb\\05_assy_2_2.mp4",
+          "video_id": "05_assy_2_2",
+          "width": 1280
+        },
+        "05_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 138.0,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1380,
+          "path": "data\\external\\industreal\\rgb\\05_main_0_1.mp4",
+          "video_id": "05_main_0_1",
+          "width": 1280
+        },
+        "06_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 198.3,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1983,
+          "path": "data\\external\\industreal\\rgb\\06_assy_0_1.mp4",
+          "video_id": "06_assy_0_1",
+          "width": 1280
+        },
+        "06_assy_1_4": {
+          "codec": "mpeg4",
+          "duration_s": 190.3,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1903,
+          "path": "data\\external\\industreal\\rgb\\06_assy_1_4.mp4",
+          "video_id": "06_assy_1_4",
+          "width": 1280
+        },
+        "06_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 140.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1401,
+          "path": "data\\external\\industreal\\rgb\\06_main_0_1.mp4",
+          "video_id": "06_main_0_1",
+          "width": 1280
+        },
+        "07_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 216.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2161,
+          "path": "data\\external\\industreal\\rgb\\07_assy_0_1.mp4",
+          "video_id": "07_assy_0_1",
+          "width": 1280
+        },
+        "07_assy_2_3": {
+          "codec": "mpeg4",
+          "duration_s": 322.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3221,
+          "path": "data\\external\\industreal\\rgb\\07_assy_2_3.mp4",
+          "video_id": "07_assy_2_3",
+          "width": 1280
+        },
+        "07_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 139.4,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1394,
+          "path": "data\\external\\industreal\\rgb\\07_main_0_1.mp4",
+          "video_id": "07_main_0_1",
+          "width": 1280
+        },
+        "08_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 527.6,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 5276,
+          "path": "data\\external\\industreal\\rgb\\08_assy_0_1.mp4",
+          "video_id": "08_assy_0_1",
+          "width": 1280
+        },
+        "08_assy_2_4": {
+          "codec": "mpeg4",
+          "duration_s": 344.3,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3443,
+          "path": "data\\external\\industreal\\rgb\\08_assy_2_4.mp4",
+          "video_id": "08_assy_2_4",
+          "width": 1280
+        },
+        "08_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 259.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2595,
+          "path": "data\\external\\industreal\\rgb\\08_main_0_1.mp4",
+          "video_id": "08_main_0_1",
+          "width": 1280
+        },
+        "09_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 350.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3501,
+          "path": "data\\external\\industreal\\rgb\\09_assy_0_1.mp4",
+          "video_id": "09_assy_0_1",
+          "width": 1280
+        },
+        "09_assy_3_1": {
+          "codec": "mpeg4",
+          "duration_s": 382.4,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3824,
+          "path": "data\\external\\industreal\\rgb\\09_assy_3_1.mp4",
+          "video_id": "09_assy_3_1",
+          "width": 1280
+        },
+        "09_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 255.4,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2554,
+          "path": "data\\external\\industreal\\rgb\\09_main_0_1.mp4",
+          "video_id": "09_main_0_1",
+          "width": 1280
+        },
+        "10_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 258.6,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2586,
+          "path": "data\\external\\industreal\\rgb\\10_assy_0_1.mp4",
+          "video_id": "10_assy_0_1",
+          "width": 1280
+        },
+        "10_assy_3_2": {
+          "codec": "mpeg4",
+          "duration_s": 259.7,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2597,
+          "path": "data\\external\\industreal\\rgb\\10_assy_3_2.mp4",
+          "video_id": "10_assy_3_2",
+          "width": 1280
+        },
+        "10_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 151.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1512,
+          "path": "data\\external\\industreal\\rgb\\10_main_0_1.mp4",
+          "video_id": "10_main_0_1",
+          "width": 1280
+        },
+        "10_main_3_4": {
+          "codec": "mpeg4",
+          "duration_s": 135.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1351,
+          "path": "data\\external\\industreal\\rgb\\10_main_3_4.mp4",
+          "video_id": "10_main_3_4",
+          "width": 1280
+        },
+        "11_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 257.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2572,
+          "path": "data\\external\\industreal\\rgb\\11_assy_0_1.mp4",
+          "video_id": "11_assy_0_1",
+          "width": 1280
+        },
+        "11_assy_3_3": {
+          "codec": "mpeg4",
+          "duration_s": 212.3,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2123,
+          "path": "data\\external\\industreal\\rgb\\11_assy_3_3.mp4",
+          "video_id": "11_assy_3_3",
+          "width": 1280
+        },
+        "11_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 158.7,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1587,
+          "path": "data\\external\\industreal\\rgb\\11_main_0_1.mp4",
+          "video_id": "11_main_0_1",
+          "width": 1280
+        },
+        "12_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 299.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2992,
+          "path": "data\\external\\industreal\\rgb\\12_assy_0_1.mp4",
+          "video_id": "12_assy_0_1",
+          "width": 1280
+        },
+        "12_assy_3_4": {
+          "codec": "mpeg4",
+          "duration_s": 275.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2752,
+          "path": "data\\external\\industreal\\rgb\\12_assy_3_4.mp4",
+          "video_id": "12_assy_3_4",
+          "width": 1280
+        },
+        "12_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 193.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1935,
+          "path": "data\\external\\industreal\\rgb\\12_main_0_1.mp4",
+          "video_id": "12_main_0_1",
+          "width": 1280
+        },
+        "13_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 283.3,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2833,
+          "path": "data\\external\\industreal\\rgb\\13_assy_0_1.mp4",
+          "video_id": "13_assy_0_1",
+          "width": 1280
+        },
+        "13_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 145.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1455,
+          "path": "data\\external\\industreal\\rgb\\13_main_0_1.mp4",
+          "video_id": "13_main_0_1",
+          "width": 1280
+        },
+        "13_main_1_3": {
+          "codec": "mpeg4",
+          "duration_s": 140.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1405,
+          "path": "data\\external\\industreal\\rgb\\13_main_1_3.mp4",
+          "video_id": "13_main_1_3",
+          "width": 1280
+        },
+        "13_main_2_1": {
+          "codec": "mpeg4",
+          "duration_s": 239.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2398,
+          "path": "data\\external\\industreal\\rgb\\13_main_2_1.mp4",
+          "video_id": "13_main_2_1",
+          "width": 1280
+        },
+        "14_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 300.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3005,
+          "path": "data\\external\\industreal\\rgb\\14_assy_0_1.mp4",
+          "video_id": "14_assy_0_1",
+          "width": 1280
+        },
+        "14_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 168.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1685,
+          "path": "data\\external\\industreal\\rgb\\14_main_0_1.mp4",
+          "video_id": "14_main_0_1",
+          "width": 1280
+        },
+        "14_main_2_2": {
+          "codec": "mpeg4",
+          "duration_s": 140.4,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1404,
+          "path": "data\\external\\industreal\\rgb\\14_main_2_2.mp4",
+          "video_id": "14_main_2_2",
+          "width": 1280
+        },
+        "14_main_2_3": {
+          "codec": "mpeg4",
+          "duration_s": 167.9,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1679,
+          "path": "data\\external\\industreal\\rgb\\14_main_2_3.mp4",
+          "video_id": "14_main_2_3",
+          "width": 1280
+        },
+        "15_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 283.9,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2839,
+          "path": "data\\external\\industreal\\rgb\\15_assy_0_1.mp4",
+          "video_id": "15_assy_0_1",
+          "width": 1280
+        },
+        "15_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 247.9,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2479,
+          "path": "data\\external\\industreal\\rgb\\15_main_0_1.mp4",
+          "video_id": "15_main_0_1",
+          "width": 1280
+        },
+        "15_main_3_1": {
+          "codec": "mpeg4",
+          "duration_s": 166.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1661,
+          "path": "data\\external\\industreal\\rgb\\15_main_3_1.mp4",
+          "video_id": "15_main_3_1",
+          "width": 1280
+        },
+        "15_main_3_2": {
+          "codec": "mpeg4",
+          "duration_s": 133.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1331,
+          "path": "data\\external\\industreal\\rgb\\15_main_3_2.mp4",
+          "video_id": "15_main_3_2",
+          "width": 1280
+        },
+        "16_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 344.9,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3449,
+          "path": "data\\external\\industreal\\rgb\\16_assy_0_1.mp4",
+          "video_id": "16_assy_0_1",
+          "width": 1280
+        },
+        "16_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 235.0,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2350,
+          "path": "data\\external\\industreal\\rgb\\16_main_0_1.mp4",
+          "video_id": "16_main_0_1",
+          "width": 1280
+        },
+        "16_main_3_3": {
+          "codec": "mpeg4",
+          "duration_s": 181.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1812,
+          "path": "data\\external\\industreal\\rgb\\16_main_3_3.mp4",
+          "video_id": "16_main_3_3",
+          "width": 1280
+        },
+        "17_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 397.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3972,
+          "path": "data\\external\\industreal\\rgb\\17_assy_0_1.mp4",
+          "video_id": "17_assy_0_1",
+          "width": 1280
+        },
+        "17_assy_1_5": {
+          "codec": "mpeg4",
+          "duration_s": 418.6,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 4186,
+          "path": "data\\external\\industreal\\rgb\\17_assy_1_5.mp4",
+          "video_id": "17_assy_1_5",
+          "width": 1280
+        },
+        "17_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 177.7,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1777,
+          "path": "data\\external\\industreal\\rgb\\17_main_0_1.mp4",
+          "video_id": "17_main_0_1",
+          "width": 1280
+        },
+        "18_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 347.4,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3474,
+          "path": "data\\external\\industreal\\rgb\\18_assy_0_1.mp4",
+          "video_id": "18_assy_0_1",
+          "width": 1280
+        },
+        "18_assy_2_5": {
+          "codec": "mpeg4",
+          "duration_s": 431.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 4318,
+          "path": "data\\external\\industreal\\rgb\\18_assy_2_5.mp4",
+          "video_id": "18_assy_2_5",
+          "width": 1280
+        },
+        "18_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 202.6,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2026,
+          "path": "data\\external\\industreal\\rgb\\18_main_0_1.mp4",
+          "video_id": "18_main_0_1",
+          "width": 1280
+        },
+        "19_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 395.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3955,
+          "path": "data\\external\\industreal\\rgb\\19_assy_0_1.mp4",
+          "video_id": "19_assy_0_1",
+          "width": 1280
+        },
+        "19_assy_3_5": {
+          "codec": "mpeg4",
+          "duration_s": 428.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 4288,
+          "path": "data\\external\\industreal\\rgb\\19_assy_3_5.mp4",
+          "video_id": "19_assy_3_5",
+          "width": 1280
+        },
+        "19_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 199.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1991,
+          "path": "data\\external\\industreal\\rgb\\19_main_0_1.mp4",
+          "video_id": "19_main_0_1",
+          "width": 1280
+        },
+        "20_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 285.4,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2854,
+          "path": "data\\external\\industreal\\rgb\\20_assy_0_1.mp4",
+          "video_id": "20_assy_0_1",
+          "width": 1280
+        },
+        "20_assy_3_6": {
+          "codec": "mpeg4",
+          "duration_s": 296.7,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2967,
+          "path": "data\\external\\industreal\\rgb\\20_assy_3_6.mp4",
+          "video_id": "20_assy_3_6",
+          "width": 1280
+        },
+        "20_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 206.6,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2066,
+          "path": "data\\external\\industreal\\rgb\\20_main_0_1.mp4",
+          "video_id": "20_main_0_1",
+          "width": 1280
+        },
+        "21_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 271.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2712,
+          "path": "data\\external\\industreal\\rgb\\21_assy_0_1.mp4",
+          "video_id": "21_assy_0_1",
+          "width": 1280
+        },
+        "21_assy_1_1": {
+          "codec": "mpeg4",
+          "duration_s": 237.9,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2379,
+          "path": "data\\external\\industreal\\rgb\\21_assy_1_1.mp4",
+          "video_id": "21_assy_1_1",
+          "width": 1280
+        },
+        "21_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 112.9,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1129,
+          "path": "data\\external\\industreal\\rgb\\21_main_0_1.mp4",
+          "video_id": "21_main_0_1",
+          "width": 1280
+        },
+        "22_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 273.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2738,
+          "path": "data\\external\\industreal\\rgb\\22_assy_0_1.mp4",
+          "video_id": "22_assy_0_1",
+          "width": 1280
+        },
+        "22_assy_2_3": {
+          "codec": "mpeg4",
+          "duration_s": 306.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3065,
+          "path": "data\\external\\industreal\\rgb\\22_assy_2_3.mp4",
+          "video_id": "22_assy_2_3",
+          "width": 1280
+        },
+        "22_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 155.6,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1556,
+          "path": "data\\external\\industreal\\rgb\\22_main_0_1.mp4",
+          "video_id": "22_main_0_1",
+          "width": 1280
+        },
+        "23_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 260.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2602,
+          "path": "data\\external\\industreal\\rgb\\23_assy_0_1.mp4",
+          "video_id": "23_assy_0_1",
+          "width": 1280
+        },
+        "23_assy_1_2": {
+          "codec": "mpeg4",
+          "duration_s": 385.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3855,
+          "path": "data\\external\\industreal\\rgb\\23_assy_1_2.mp4",
+          "video_id": "23_assy_1_2",
+          "width": 1280
+        },
+        "23_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 192.0,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1920,
+          "path": "data\\external\\industreal\\rgb\\23_main_0_1.mp4",
+          "video_id": "23_main_0_1",
+          "width": 1280
+        },
+        "24_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 215.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2158,
+          "path": "data\\external\\industreal\\rgb\\24_assy_0_1.mp4",
+          "video_id": "24_assy_0_1",
+          "width": 1280
+        },
+        "24_assy_2_4": {
+          "codec": "mpeg4",
+          "duration_s": 295.2,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2952,
+          "path": "data\\external\\industreal\\rgb\\24_assy_2_4.mp4",
+          "video_id": "24_assy_2_4",
+          "width": 1280
+        },
+        "24_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 137.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1371,
+          "path": "data\\external\\industreal\\rgb\\24_main_0_1.mp4",
+          "video_id": "24_main_0_1",
+          "width": 1280
+        },
+        "25_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 179.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1798,
+          "path": "data\\external\\industreal\\rgb\\25_assy_0_1.mp4",
+          "video_id": "25_assy_0_1",
+          "width": 1280
+        },
+        "25_assy_2_1": {
+          "codec": "mpeg4",
+          "duration_s": 134.0,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1340,
+          "path": "data\\external\\industreal\\rgb\\25_assy_2_1.mp4",
+          "video_id": "25_assy_2_1",
+          "width": 1280
+        },
+        "25_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 154.5,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1545,
+          "path": "data\\external\\industreal\\rgb\\25_main_0_1.mp4",
+          "video_id": "25_main_0_1",
+          "width": 1280
+        },
+        "26_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 309.3,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 3093,
+          "path": "data\\external\\industreal\\rgb\\26_assy_0_1.mp4",
+          "video_id": "26_assy_0_1",
+          "width": 1280
+        },
+        "26_assy_1_5": {
+          "codec": "mpeg4",
+          "duration_s": 458.7,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 4587,
+          "path": "data\\external\\industreal\\rgb\\26_assy_1_5.mp4",
+          "video_id": "26_assy_1_5",
+          "width": 1280
+        },
+        "26_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 159.4,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1594,
+          "path": "data\\external\\industreal\\rgb\\26_main_0_1.mp4",
+          "video_id": "26_main_0_1",
+          "width": 1280
+        },
+        "27_assy_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 278.1,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 2781,
+          "path": "data\\external\\industreal\\rgb\\27_assy_0_1.mp4",
+          "video_id": "27_assy_0_1",
+          "width": 1280
+        },
+        "27_main_0_1": {
+          "codec": "mpeg4",
+          "duration_s": 124.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1248,
+          "path": "data\\external\\industreal\\rgb\\27_main_0_1.mp4",
+          "video_id": "27_main_0_1",
+          "width": 1280
+        },
+        "27_main_1_3": {
+          "codec": "mpeg4",
+          "duration_s": 161.8,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1618,
+          "path": "data\\external\\industreal\\rgb\\27_main_1_3.mp4",
+          "video_id": "27_main_1_3",
+          "width": 1280
+        },
+        "27_main_3_1": {
+          "codec": "mpeg4",
+          "duration_s": 127.3,
+          "fps": 10.0,
+          "frames_from_header": true,
+          "height": 720,
+          "n_frames": 1273,
+          "path": "data\\external\\industreal\\rgb\\27_main_3_1.mp4",
+          "video_id": "27_main_3_1",
+          "width": 1280
+        }
+      },
+      "streams": [
+        {
+          "codec": "mpeg4",
+          "count": 86,
+          "fps": 10.0,
+          "height": 720,
+          "width": 1280
+        }
+      ],
+      "total_frames": 211931,
+      "total_hours": 5.886972222222222,
+      "without_labels": [
+        "15_main_0_1",
+        "21_assy_1_1"
+      ]
+    }
+  }
+}
