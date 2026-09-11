@@ -48,3 +48,6 @@ Current contents:
 - `industreal_dev_v7_psr_latency/` — development result: as v6 with decoders chosen under a
   latency budget (best out-of-fold F1 among settings whose mean delay is within 15 s or 30 s),
   plus the out-of-fold F1-vs-delay Pareto front per head × decoder in `config.json`.
+- `industreal_dev_v8_psr_vitb/` — development result: the v7 protocol on DINOv2 ViT-B/14 frame
+  features (1,536-d) instead of ViT-S/14 (768-d); everything else identical, to see whether
+  stronger frame features move the F1-vs-delay front.

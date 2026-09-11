@@ -1,0 +1,328 @@
+{
+  "graphs": {
+    "assy": {
+      "edges": 20,
+      "nodes": 11
+    },
+    "main": {
+      "edges": 14,
+      "nodes": 8
+    }
+  },
+  "graphs_dir": "sop/industreal",
+  "n_videos": 16,
+  "per_video": {
+    "05_assy_0_1": {
+      "agreement": "neither_flags",
+      "gt_omissions": [
+        "S12",
+        "S8"
+      ],
+      "gt_unknown": [
+        "S17"
+      ],
+      "gt_violations": [],
+      "kind": "assy",
+      "pred_omissions": [
+        "S12",
+        "S27",
+        "S8"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "05_assy_2_2": {
+      "agreement": "only_gt_flags",
+      "gt_omissions": [
+        "S12",
+        "S18",
+        "S8"
+      ],
+      "gt_unknown": [
+        "S11",
+        "S17"
+      ],
+      "gt_violations": [
+        {
+          "index": 8,
+          "missing_predecessors": [
+            "S18"
+          ],
+          "step": "S30"
+        },
+        {
+          "index": 9,
+          "missing_predecessors": [
+            "S18"
+          ],
+          "step": "S21"
+        },
+        {
+          "index": 10,
+          "missing_predecessors": [
+            "S18"
+          ],
+          "step": "S24"
+        },
+        {
+          "index": 11,
+          "missing_predecessors": [
+            "S18"
+          ],
+          "step": "S27"
+        }
+      ],
+      "kind": "assy",
+      "pred_omissions": [
+        "S12",
+        "S27",
+        "S8"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "05_main_0_1": {
+      "agreement": "neither_flags",
+      "gt_omissions": [],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "main",
+      "pred_omissions": [
+        "S18",
+        "S30"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "14_assy_0_1": {
+      "agreement": "neither_flags",
+      "gt_omissions": [
+        "S12",
+        "S8"
+      ],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "assy",
+      "pred_omissions": [
+        "S12",
+        "S27",
+        "S8"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "14_main_0_1": {
+      "agreement": "neither_flags",
+      "gt_omissions": [],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "main",
+      "pred_omissions": [
+        "S30"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "14_main_2_2": {
+      "agreement": "only_gt_flags",
+      "gt_omissions": [
+        "S15"
+      ],
+      "gt_unknown": [],
+      "gt_violations": [
+        {
+          "index": 5,
+          "missing_predecessors": [
+            "S15"
+          ],
+          "step": "S18"
+        }
+      ],
+      "kind": "main",
+      "pred_omissions": [
+        "S18",
+        "S30"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "14_main_2_3": {
+      "agreement": "neither_flags",
+      "gt_omissions": [
+        "S12",
+        "S18"
+      ],
+      "gt_unknown": [
+        "S9",
+        "S9"
+      ],
+      "gt_violations": [],
+      "kind": "main",
+      "pred_omissions": [
+        "S18",
+        "S30"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "20_assy_0_1": {
+      "agreement": "neither_flags",
+      "gt_omissions": [
+        "S12",
+        "S8"
+      ],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "assy",
+      "pred_omissions": [
+        "S12",
+        "S27",
+        "S30",
+        "S8"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "20_assy_3_6": {
+      "agreement": "neither_flags",
+      "gt_omissions": [
+        "S12",
+        "S27",
+        "S8"
+      ],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "assy",
+      "pred_omissions": [
+        "S12",
+        "S27",
+        "S8"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "20_main_0_1": {
+      "agreement": "neither_flags",
+      "gt_omissions": [],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "main",
+      "pred_omissions": [
+        "S30"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "24_assy_0_1": {
+      "agreement": "neither_flags",
+      "gt_omissions": [
+        "S12",
+        "S8"
+      ],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "assy",
+      "pred_omissions": [
+        "S12",
+        "S27",
+        "S8"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "24_assy_2_4": {
+      "agreement": "neither_flags",
+      "gt_omissions": [
+        "S12",
+        "S24",
+        "S8"
+      ],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "assy",
+      "pred_omissions": [
+        "S12",
+        "S27",
+        "S8"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "24_main_0_1": {
+      "agreement": "neither_flags",
+      "gt_omissions": [],
+      "gt_unknown": [
+        "S29",
+        "S27"
+      ],
+      "gt_violations": [],
+      "kind": "main",
+      "pred_omissions": [
+        "S18",
+        "S30"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "26_assy_0_1": {
+      "agreement": "neither_flags",
+      "gt_omissions": [
+        "S12",
+        "S8"
+      ],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "assy",
+      "pred_omissions": [
+        "S12",
+        "S27",
+        "S8"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "26_assy_1_5": {
+      "agreement": "neither_flags",
+      "gt_omissions": [
+        "S12",
+        "S30",
+        "S8"
+      ],
+      "gt_unknown": [],
+      "gt_violations": [],
+      "kind": "assy",
+      "pred_omissions": [
+        "S12",
+        "S27",
+        "S8"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    },
+    "26_main_0_1": {
+      "agreement": "only_gt_flags",
+      "gt_omissions": [],
+      "gt_unknown": [],
+      "gt_violations": [
+        {
+          "index": 5,
+          "missing_predecessors": [
+            "S15"
+          ],
+          "step": "S18"
+        }
+      ],
+      "kind": "main",
+      "pred_omissions": [
+        "S30"
+      ],
+      "pred_unknown": [],
+      "pred_violations": []
+    }
+  },
+  "run": "mstcn_prior_dwell_cap30_s0",
+  "video_level": {
+    "neither_flags": 13,
+    "only_gt_flags": 3
+  }
+}

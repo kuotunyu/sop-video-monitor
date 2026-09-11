@@ -1,7 +1,7 @@
 # Single entry points (spec 8.3). `make reproduce` is the full data+GPU path;
 # `make reproduce-lite` is what CI runs on a clean checkout without data.
 
-.PHONY: reproduce reproduce-lite test lint audit features baseline mstcn extract-psr psr psr-train psr-nested
+.PHONY: reproduce reproduce-lite test lint audit features baseline mstcn extract-psr psr psr-train psr-nested psr-latency
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -37,6 +37,9 @@ psr-train:  ## Step-completion heads fitted on the 36 train recordings, evaluate
 
 psr-nested:  ## Same as psr-train but decoders chosen on out-of-fold train predictions, seeds 0-2, write reports/industreal_dev_v6_psr_nested/.
 	$(UV) run sop-monitor train-psr --features $(FEATURES) --psr-dir $(INDUSTREAL)/psr --train-split splits/industreal/train.csv --eval-split splits/industreal/val.csv --selection nested --seed 0 --seed 1 --seed 2 --out reports/industreal_dev_v6_psr_nested
+
+psr-latency:  ## psr-nested with 15 s and 30 s latency budgets (set FEATURES=... and OUT=... for other feature caches).
+	$(UV) run sop-monitor train-psr --features $(FEATURES) --psr-dir $(INDUSTREAL)/psr --train-split splits/industreal/train.csv --eval-split splits/industreal/val.csv --selection nested --seed 0 --seed 1 --seed 2 --delay-cap 15 --delay-cap 30 --out $(or $(OUT),reports/industreal_dev_v7_psr_latency)
 
 test:
 	$(UV) run pytest -q
