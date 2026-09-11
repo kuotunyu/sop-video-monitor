@@ -72,7 +72,11 @@ CLI（`sop-monitor`）：`freeze-splits`、`check-sop`、`export-sop`、`audit-i
   [`reports/industreal_dev_v7_psr_latency/`](reports/industreal_dev_v7_psr_latency/) 加上 15 s／30 s
   的延遲預算選 decoder，並記錄 out-of-fold 的 F1–delay Pareto front；
   [`reports/industreal_dev_v8_psr_vitb/`](reports/industreal_dev_v8_psr_vitb/) 把特徵換成 DINOv2 ViT-B/14
-  重跑同一協定。全部都包含真實預測表、`metrics.json`、`tables.md` 與報告。
+  重跑同一協定，[`reports/industreal_dev_v9_psr_vitl/`](reports/industreal_dev_v9_psr_vitl/) 再換成 ViT-L/14；
+  [`reports/industreal_dev_v10_psr_epochsel/`](reports/industreal_dev_v10_psr_epochsel/) 讓 MS-TCN++ 的
+  訓練 epoch 也在內層折上以 held-out BCE 選（負面結果），
+  [`reports/industreal_dev_v11_psr_epochsel_f1/`](reports/industreal_dev_v11_psr_epochsel_f1/) 改以
+  out-of-fold 的 decoded F1 選 epoch。全部都包含真實預測表、`metrics.json`、`tables.md` 與報告。
   數字在 val 上量測，val 同時也是選超參數／epoch／decoder 的依據；frozen test split 沒有被讀取。
   IndustReal 的數字不會進任何 HA-ViD 表格（設計規格 §3.3）。
 - **正式研究成果**：無。

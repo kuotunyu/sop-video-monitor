@@ -51,3 +51,11 @@ Current contents:
 - `industreal_dev_v8_psr_vitb/` — development result: the v7 protocol on DINOv2 ViT-B/14 frame
   features (1,536-d) instead of ViT-S/14 (768-d); everything else identical, to see whether
   stronger frame features move the F1-vs-delay front.
+- `industreal_dev_v9_psr_vitl/` — development result: the same protocol on DINOv2 ViT-L/14
+  features (2,048-d).
+- `industreal_dev_v10_psr_epochsel/` — development result: ViT-B/14, MS-TCN++ + prior/dwell,
+  30 s budget, with the training length chosen by nested epoch selection (lowest mean held-out
+  BCE over the inner folds) instead of a fixed 40 epochs; seeds 0–2. Negative result: the BCE
+  criterion picks 20 epochs and decodes worse than the fixed 40.
+- `industreal_dev_v11_psr_epochsel_f1/` — development result: as v10 but the epoch is chosen by
+  the out-of-fold decoded F1 of the decoder's best setting (the event-level metric itself).
