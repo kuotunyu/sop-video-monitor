@@ -290,15 +290,27 @@ def train_psr_cmd(
         list[str] | None, typer.Option(help="plain | prior_dwell (repeatable; default both)")
     ] = None,
     mstcn_epochs: Annotated[int, typer.Option()] = 40,
+    train_split: Annotated[
+        Path | None, typer.Option(help="Split CSV of training recordings (with --eval-split)")
+    ] = None,
+    eval_split: Annotated[
+        Path | None, typer.Option(help="Split CSV of evaluated recordings (with --train-split)")
+    ] = None,
     out: Annotated[Path, typer.Option()] = Path("reports/industreal_dev_v3_psr"),
     device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
     epochs: Annotated[int, typer.Option()] = 300,
     n_boot: Annotated[int, typer.Option()] = 2000,
     seed: Annotated[int, typer.Option()] = 0,
 ) -> None:
-    """Leave-one-participant-out step-completion baseline on val; writes completions + PSR metrics."""
+    """Step-completion baselines: leave-one-participant-out over psr-dir, or train-split -> eval-split."""
     from sop_monitor.features import resolve_device
-    from sop_monitor.psr_baseline import DECODERS, HEADS, PSRSpec, run_psr_baseline
+    from sop_monitor.psr_baseline import (
+        DECODERS,
+        HEADS,
+        PSRSpec,
+        read_split_ids,
+        run_psr_baseline,
+    )
 
     spec = PSRSpec(epochs=epochs, mstcn_epochs=mstcn_epochs, seed=seed, n_boot=n_boot)
     result = run_psr_baseline(
@@ -309,6 +321,8 @@ def train_psr_cmd(
         device=resolve_device(device),
         heads=tuple(head or HEADS),
         decoders=tuple(decoder or DECODERS),
+        train_ids=read_split_ids(train_split) if train_split else None,
+        eval_ids=read_split_ids(eval_split) if eval_split else None,
     )
     typer.echo(result["tables"])
     typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]

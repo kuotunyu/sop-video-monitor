@@ -538,6 +538,83 @@ def _select_decoder(
     return best[1], grid
 
 
+def _fit_and_decode(
+    train: Sequence[PSRVideo],
+    test: Sequence[PSRVideo],
+    fold_name: str,
+    spec: PSRSpec,
+    device: str,
+    heads: Sequence[str],
+    decoders: Sequence[str],
+) -> tuple[list[CompletionRow], dict[str, object], dict[str, object]]:
+    """Fit every head on ``train``, select every decoder on ``train``, decode ``test``."""
+    rows: list[CompletionRow] = []
+    training_logs: dict[str, object] = {}
+    priors = {kind: learn_prior(train, kind) for kind in ("assy", "main")}
+    predictors: dict[str, object] = {}
+    if "linear" in heads:
+        predictors["linear"] = train_state_head(
+            np.concatenate([v.features for v in train]).astype(np.float32),
+            np.concatenate([v.targets for v in train]),
+            spec,
+            device,
+        )
+    if "mstcn" in heads:
+        predictors["mstcn"], training_logs[f"mstcn/{fold_name}"] = train_state_mstcn(
+            train, spec, device
+        )
+    fold: dict[str, object] = {
+        "train_videos": len(train),
+        "train_participants": sorted({v.participant for v in train}),
+        "eval_videos": len(test),
+        "prior": {
+            kind: {
+                "active": prior.active.tolist(),
+                "initial_installed": prior.initial_installed.tolist(),
+            }
+            for kind, prior in priors.items()
+        },
+        "decoders": {},
+    }
+    for v in test:
+        rows.extend(
+            CompletionRow(v.video_id, v.participant, "gt", c.frame, c.step, fold_name, "")
+            for c in v.gt
+        )
+    for head, predictor in predictors.items():
+        train_probs = [predictor.predict_proba(v.features) for v in train]  # type: ignore[attr-defined]
+        test_probs = [predictor.predict_proba(v.features) for v in test]  # type: ignore[attr-defined]
+        for decoder in decoders:
+            with_prior = decoder == "prior_dwell"
+            config, grid = _select_decoder(
+                train,
+                train_probs,
+                spec,
+                priors if with_prior else None,
+                spec.min_dwells if with_prior else (0,),
+            )
+            run = f"{head}_{decoder}"
+            fold["decoders"][run] = {"decoder": asdict(config), "grid_best": max(grid.values())}  # type: ignore[index]
+            for v, p in zip(test, test_probs, strict=True):
+                pred = decode_completions(
+                    p, v.frames, config, priors[v.kind] if with_prior else None
+                )
+                rows.extend(
+                    CompletionRow(
+                        v.video_id, v.participant, "pred", c.frame, c.step, fold_name, run
+                    )
+                    for c in pred
+                )
+    return rows, fold, training_logs
+
+
+def read_split_ids(path: Path) -> set[str]:
+    """Video ids listed in a committed split CSV (``video_id,participant,n_segments``)."""
+    with path.open(encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        return {row["video_id"] for row in reader}
+
+
 def run_psr_baseline(
     features_dir: Path,
     psr_dir: Path,
@@ -546,79 +623,57 @@ def run_psr_baseline(
     device: str = "cpu",
     heads: Sequence[str] = HEADS,
     decoders: Sequence[str] = DECODERS,
+    train_ids: set[str] | None = None,
+    eval_ids: set[str] | None = None,
 ) -> dict[str, object]:
+    """Leave-one-participant-out over every recording in ``psr_dir``, or — when ``train_ids`` and
+    ``eval_ids`` are given — one fit on the train recordings evaluated on the eval recordings."""
     spec = spec or PSRSpec()
     if any(h not in HEADS for h in heads) or any(d not in DECODERS for d in decoders):
         raise ValueError(f"heads must be in {HEADS} and decoders in {DECODERS}")
+    if (train_ids is None) != (eval_ids is None):
+        raise ValueError("train_ids and eval_ids must be given together")
     started = time.perf_counter()
     videos = load_psr_videos(features_dir, psr_dir)
     steps = load_procedure_info(PROCEDURE_INFO)
     audits = [audit_recording(psr_dir / v.video_id, v.n_frames, steps) for v in videos]
     if any(a["problems"] for a in audits):
         raise ValueError(f"PSR label problems: {[a for a in audits if a['problems']]}")
-    participants = sorted({v.participant for v in videos})
-    if len(participants) < 2:
-        raise ValueError("leave-one-participant-out needs at least two participants")
     rows: list[CompletionRow] = []
     folds: dict[str, object] = {}
     training_logs: dict[str, object] = {}
-    for held_out in participants:
-        train = [v for v in videos if v.participant != held_out]
-        test = [v for v in videos if v.participant == held_out]
-        priors = {kind: learn_prior(train, kind) for kind in ("assy", "main")}
-        predictors: dict[str, object] = {}
-        if "linear" in heads:
-            predictors["linear"] = train_state_head(
-                np.concatenate([v.features for v in train]).astype(np.float32),
-                np.concatenate([v.targets for v in train]),
-                spec,
-                device,
+    if train_ids is not None and eval_ids is not None:
+        train = [v for v in videos if v.video_id in train_ids]
+        test = [v for v in videos if v.video_id in eval_ids]
+        missing = (train_ids | eval_ids) - {v.video_id for v in videos}
+        if missing or not train or not test:
+            raise ValueError(f"split videos without PSR labels/features: {sorted(missing)}")
+        if {v.participant for v in train} & {v.participant for v in test}:
+            raise ValueError("train and eval splits share a participant")
+        protocol = (
+            f"fit once on the {len(train)} train-split recordings ({len({v.participant for v in train})} "
+            f"participants), decoder selected on those same recordings, evaluated on the "
+            f"{len(test)} eval-split recordings"
+        )
+        rows, folds["train->eval"], training_logs = _fit_and_decode(
+            train, test, "train->eval", spec, device, heads, decoders
+        )
+        evaluated = test
+    else:
+        participants = sorted({v.participant for v in videos})
+        if len(participants) < 2:
+            raise ValueError("leave-one-participant-out needs at least two participants")
+        protocol = "leave-one-participant-out over the val participants; decoder selected on each fold's training videos"
+        for held_out in participants:
+            train = [v for v in videos if v.participant != held_out]
+            test = [v for v in videos if v.participant == held_out]
+            fold_rows, folds[held_out], logs = _fit_and_decode(
+                train, test, held_out, spec, device, heads, decoders
             )
-        if "mstcn" in heads:
-            predictors["mstcn"], training_logs[f"mstcn/{held_out}"] = train_state_mstcn(
-                train, spec, device
-            )
-        fold: dict[str, object] = {
-            "train_videos": len(train),
-            "prior": {
-                kind: {
-                    "active": prior.active.tolist(),
-                    "initial_installed": prior.initial_installed.tolist(),
-                }
-                for kind, prior in priors.items()
-            },
-            "decoders": {},
-        }
-        for v in test:
-            rows.extend(
-                CompletionRow(v.video_id, v.participant, "gt", c.frame, c.step, held_out, "")
-                for c in v.gt
-            )
-        for head, predictor in predictors.items():
-            train_probs = [predictor.predict_proba(v.features) for v in train]  # type: ignore[attr-defined]
-            test_probs = [predictor.predict_proba(v.features) for v in test]  # type: ignore[attr-defined]
-            for decoder in decoders:
-                with_prior = decoder == "prior_dwell"
-                config, grid = _select_decoder(
-                    train,
-                    train_probs,
-                    spec,
-                    priors if with_prior else None,
-                    spec.min_dwells if with_prior else (0,),
-                )
-                run = f"{head}_{decoder}"
-                fold["decoders"][run] = {"decoder": asdict(config), "grid_best": max(grid.values())}  # type: ignore[index]
-                for v, p in zip(test, test_probs, strict=True):
-                    pred = decode_completions(
-                        p, v.frames, config, priors[v.kind] if with_prior else None
-                    )
-                    rows.extend(
-                        CompletionRow(
-                            v.video_id, v.participant, "pred", c.frame, c.step, held_out, run
-                        )
-                        for c in pred
-                    )
-        folds[held_out] = fold
+            rows.extend(fold_rows)
+            training_logs.update(logs)
+        evaluated = videos
+    videos = evaluated
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "psr_audit.json").write_text(
         json.dumps(audits, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -645,7 +700,7 @@ def run_psr_baseline(
             metrics[f"summary_{label}"] = {"n_videos": sub["n_videos"], "summary": sub["summary"]}
     meta_path = features_dir / "meta.json"
     config = {
-        "protocol": "leave-one-participant-out over the val participants; decoder selected on each fold's training videos",
+        "protocol": protocol,
         "spec": asdict(spec),
         "heads": {
             "linear": "11-way multi-label logistic regression on frozen frame features (BCE, full-batch Adam)",
