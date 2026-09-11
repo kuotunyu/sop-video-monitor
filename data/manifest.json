@@ -53,6 +53,18 @@
       "dataset": "IndustReal",
       "file": "val.csv",
       "sha256": "010e66a0fdb04fc481e489a71fbb662ebaf3099a0e7987d6c2996daf05f58002"
+    },
+    {
+      "bytes": 3783132550,
+      "dataset": "IndustReal",
+      "file": "val_p1.zip",
+      "sha256": "20bd1e3089123b5b28ccfe57647f8b0a2822d4a3565830db4ef87d0182ebc248"
+    },
+    {
+      "bytes": 6222333683,
+      "dataset": "IndustReal",
+      "file": "val_p2.zip",
+      "sha256": "0506827a9e07748cf6b52564728015d45fa044e12f94a19ed243a0fe3548728b"
     }
   ]
 }

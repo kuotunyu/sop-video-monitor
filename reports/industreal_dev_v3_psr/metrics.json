@@ -1,0 +1,291 @@
+{
+  "aggregation": "unweighted mean of per-video metrics (as psr_baseline.py); delay in frames at 10 fps",
+  "bootstrap": {
+    "alpha": 0.05,
+    "n_boot": 2000,
+    "seed": 0,
+    "unit": "participant"
+  },
+  "gt_sanity": {
+    "drop_last": {
+      "f1": 0.9393600146090463,
+      "mean_delay_frames": 0.0,
+      "pos": 0.8857841810966811,
+      "system_fn": 16.0,
+      "system_fp": 0.0
+    },
+    "identity": {
+      "f1": 0.99999950000025,
+      "mean_delay_frames": 0.0,
+      "pos": 1.0,
+      "system_fn": 0.0,
+      "system_fp": 0.0
+    },
+    "shift_plus_30_frames": {
+      "f1": 0.99999950000025,
+      "mean_delay_frames": 30.0,
+      "pos": 1.0,
+      "system_fn": 0.0,
+      "system_fp": 0.0
+    },
+    "swap_first_two": {
+      "f1": 0.9722594777633901,
+      "mean_delay_frames": 16.130456349206348,
+      "pos": 0.9478896103896104,
+      "system_fn": 0.0,
+      "system_fp": 7.0
+    }
+  },
+  "n_participants": 5,
+  "n_videos": 16,
+  "per_video": {
+    "05_assy_0_1": {
+      "f1": 0.4137927039242859,
+      "mean_delay_frames": 238.5,
+      "n_gt": 11,
+      "n_pred": 21,
+      "pos": 0.0,
+      "system_fn": 2,
+      "system_fp": 15,
+      "system_tp": 6
+    },
+    "05_assy_2_2": {
+      "f1": 0.8275857217600942,
+      "mean_delay_frames": 174.33333333333334,
+      "n_gt": 12,
+      "n_pred": 17,
+      "pos": 0.08333333333333337,
+      "system_fn": 0,
+      "system_fp": 5,
+      "system_tp": 12
+    },
+    "05_main_0_1": {
+      "f1": 0.38709646201898223,
+      "mean_delay_frames": 122.83333333333333,
+      "n_gt": 8,
+      "n_pred": 25,
+      "pos": 0.0,
+      "system_fn": 0,
+      "system_fp": 19,
+      "system_tp": 6
+    },
+    "14_assy_0_1": {
+      "f1": 0.4374996582033921,
+      "mean_delay_frames": 309.57142857142856,
+      "n_gt": 9,
+      "n_pred": 25,
+      "pos": 0.0,
+      "system_fn": 0,
+      "system_fp": 18,
+      "system_tp": 7
+    },
+    "14_main_0_1": {
+      "f1": 0.36363602938506395,
+      "mean_delay_frames": 225.33333333333334,
+      "n_gt": 8,
+      "n_pred": 26,
+      "pos": 0.0,
+      "system_fn": 1,
+      "system_fp": 20,
+      "system_tp": 6
+    },
+    "14_main_2_2": {
+      "f1": 0.3225802955258732,
+      "mean_delay_frames": 183.0,
+      "n_gt": 7,
+      "n_pred": 24,
+      "pos": 0.0,
+      "system_fn": 2,
+      "system_fp": 19,
+      "system_tp": 5
+    },
+    "14_main_2_3": {
+      "f1": 0.270269902118836,
+      "mean_delay_frames": 284.6,
+      "n_gt": 11,
+      "n_pred": 28,
+      "pos": 0.0,
+      "system_fn": 4,
+      "system_fp": 23,
+      "system_tp": 5
+    },
+    "20_assy_0_1": {
+      "f1": 0.4102560841554203,
+      "mean_delay_frames": 358.75,
+      "n_gt": 9,
+      "n_pred": 31,
+      "pos": 0.0,
+      "system_fn": 0,
+      "system_fp": 23,
+      "system_tp": 8
+    },
+    "20_assy_3_6": {
+      "f1": 0.5217387448017974,
+      "mean_delay_frames": 325.5,
+      "n_gt": 8,
+      "n_pred": 17,
+      "pos": 0.0,
+      "system_fn": 0,
+      "system_fp": 11,
+      "system_tp": 6
+    },
+    "20_main_0_1": {
+      "f1": 0.457142504490068,
+      "mean_delay_frames": 213.5,
+      "n_gt": 8,
+      "n_pred": 27,
+      "pos": 0.0,
+      "system_fn": 0,
+      "system_fp": 19,
+      "system_tp": 8
+    },
+    "24_assy_0_1": {
+      "f1": 0.8749995078127769,
+      "mean_delay_frames": 195.85714285714286,
+      "n_gt": 9,
+      "n_pred": 9,
+      "pos": 0.5555555555555556,
+      "system_fn": 0,
+      "system_fp": 2,
+      "system_tp": 7
+    },
+    "24_assy_2_4": {
+      "f1": 0.5517237384069481,
+      "mean_delay_frames": 244.0,
+      "n_gt": 8,
+      "n_pred": 21,
+      "pos": 0.0,
+      "system_fn": 0,
+      "system_fp": 13,
+      "system_tp": 8
+    },
+    "24_main_0_1": {
+      "f1": 0.4166662222226963,
+      "mean_delay_frames": 31.6,
+      "n_gt": 10,
+      "n_pred": 16,
+      "pos": 0.0,
+      "system_fn": 3,
+      "system_fp": 11,
+      "system_tp": 5
+    },
+    "26_assy_0_1": {
+      "f1": 0.5833329201391816,
+      "mean_delay_frames": 307.85714285714283,
+      "n_gt": 9,
+      "n_pred": 17,
+      "pos": 0.0,
+      "system_fn": 0,
+      "system_fp": 10,
+      "system_tp": 7
+    },
+    "26_assy_1_5": {
+      "f1": 0.5517237384069481,
+      "mean_delay_frames": 622.875,
+      "n_gt": 8,
+      "n_pred": 21,
+      "pos": 0.0,
+      "system_fn": 0,
+      "system_fp": 13,
+      "system_tp": 8
+    },
+    "26_main_0_1": {
+      "f1": 0.2777775000002778,
+      "mean_delay_frames": 444.0,
+      "n_gt": 8,
+      "n_pred": 30,
+      "pos": 0.0,
+      "system_fn": 1,
+      "system_fp": 25,
+      "system_tp": 5
+    }
+  },
+  "summary": {
+    "f1": {
+      "ci95": [
+        0.40129259455273697,
+        0.5571041913891983
+      ],
+      "mean_over_videos": 0.4792388583357901
+    },
+    "mean_delay_frames": {
+      "ci95": [
+        188.5470238095238,
+        366.22690476190473
+      ],
+      "mean_over_videos": 267.63191964285716
+    },
+    "pos": {
+      "ci95": [
+        0.0,
+        0.11111111111111112
+      ],
+      "mean_over_videos": 0.03993055555555556
+    }
+  },
+  "summary_no_errors": {
+    "n_videos": 12,
+    "summary": {
+      "f1": {
+        "ci95": [
+          0.36940416653027774,
+          0.5476775521992956
+        ],
+        "mean_over_videos": 0.43458748249973783
+      },
+      "mean_delay_frames": {
+        "ci95": [
+          174.98309523809525,
+          305.52785714285716
+        ],
+        "mean_over_videos": 242.95019841269837
+      },
+      "pos": {
+        "ci95": [
+          0.0,
+          0.16666666666666669
+        ],
+        "mean_over_videos": 0.0462962962962963
+      }
+    }
+  },
+  "summary_with_errors": {
+    "n_videos": 4,
+    "summary": {
+      "f1": {
+        "ci95": [
+          0.5292349932030851,
+          0.7586202259218076
+        ],
+        "mean_over_videos": 0.6131929858439469
+      },
+      "mean_delay_frames": {
+        "ci95": [
+          209.16666666666669,
+          528.15625
+        ],
+        "mean_over_videos": 341.67708333333337
+      },
+      "pos": {
+        "ci95": [
+          0.0,
+          0.06250000000000003
+        ],
+        "mean_over_videos": 0.020833333333333343
+      }
+    }
+  },
+  "totals": {
+    "n_gt": 143,
+    "n_pred": 355,
+    "system_fn": 13,
+    "system_fp": 246,
+    "system_tp": 109
+  },
+  "videos_with_error_steps": [
+    "05_assy_2_2",
+    "20_assy_3_6",
+    "24_assy_2_4",
+    "26_assy_1_5"
+  ]
+}

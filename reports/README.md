@@ -30,3 +30,7 @@ Current contents:
   annotation is on disk (see `industreal_dev_v1/data_audit.json`).
 - `industreal_dev_v2_mstcn/` — development result: causal vs non-causal MS-TCN++ on the same
   feature cache; first measured causal-vs-offline gap.
+- `industreal_dev_v3_psr/` — development result: online procedure-step metrics (POS, system F1,
+  detection delay, IndustReal definitions) from a leave-one-participant-out step-completion head
+  on the val recordings' PSR labels; `completions_val.csv` holds every ground-truth and emitted
+  completion, `psr_audit.json` the label cross-checks.

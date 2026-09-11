@@ -1,0 +1,106 @@
+{
+  "decoder": "causal EMA + hysteresis; install = up-crossing of theta_on, remove = down-crossing of theta_off",
+  "device": "cuda",
+  "features": {
+    "autocast_fp16": true,
+    "device": "cuda",
+    "dim": 768,
+    "dtype": "float16",
+    "embedding": "concat(CLS, mean patch tokens)",
+    "extractor": "facebookresearch/dinov2 via torch.hub",
+    "frame_size_wh": [
+      392,
+      224
+    ],
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "model": "dinov2_vits14",
+    "normalisation": "ImageNet mean/std",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "stride": 1,
+    "torch": "2.13.0+cu130",
+    "weights": {
+      "bytes": 88283115,
+      "file": "dinov2_vits14_pretrain.pth",
+      "sha256": "b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9"
+    }
+  },
+  "folds": {
+    "05": {
+      "decoder": {
+        "ema": 0.8,
+        "theta_off": 0.1,
+        "theta_on": 0.9
+      },
+      "grid_best": 0.8105042293691892,
+      "train_videos": 13
+    },
+    "14": {
+      "decoder": {
+        "ema": 0.95,
+        "theta_off": 0.4,
+        "theta_on": 0.8
+      },
+      "grid_best": 0.8674512075246303,
+      "train_videos": 12
+    },
+    "20": {
+      "decoder": {
+        "ema": 0.9,
+        "theta_off": 0.2,
+        "theta_on": 0.8
+      },
+      "grid_best": 0.7919482264814709,
+      "train_videos": 13
+    },
+    "24": {
+      "decoder": {
+        "ema": 0.9,
+        "theta_off": 0.2,
+        "theta_on": 0.8
+      },
+      "grid_best": 0.7893168322042727,
+      "train_videos": 13
+    },
+    "26": {
+      "decoder": {
+        "ema": 0.9,
+        "theta_off": 0.2,
+        "theta_on": 0.8
+      },
+      "grid_best": 0.7970875775365817,
+      "train_videos": 13
+    }
+  },
+  "head": "11-way multi-label logistic regression on frozen frame features (BCE, full-batch Adam)",
+  "protocol": "leave-one-participant-out over the val participants; decoder selected on each fold's training videos",
+  "spec": {
+    "emas": [
+      0.0,
+      0.8,
+      0.9,
+      0.95,
+      0.98,
+      0.99
+    ],
+    "epochs": 300,
+    "lr": 0.005,
+    "n_boot": 2000,
+    "seed": 0,
+    "selection_metric": "f1",
+    "theta_offs": [
+      0.1,
+      0.2,
+      0.3,
+      0.4
+    ],
+    "theta_ons": [
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "weight_decay": 0.001
+  },
+  "wall_seconds": 70.33080430000155
+}
