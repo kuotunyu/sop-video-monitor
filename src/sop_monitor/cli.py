@@ -230,6 +230,37 @@ def train_baseline_cmd(
     typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
 
 
+@app.command("train-mstcn")
+def train_mstcn_cmd(
+    features: Annotated[
+        Path,
+        typer.Option(help="Feature cache dir, e.g. artifacts/features/industreal/dinov2_vits14_s1"),
+    ],
+    labels_dir: Annotated[Path, typer.Option()] = Path("data/external/industreal/labels"),
+    out: Annotated[Path, typer.Option(help="Run directory for predictions/config/metrics")] = Path(
+        "reports/industreal_dev_v2_mstcn"
+    ),
+    device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
+    epochs: Annotated[int, typer.Option()] = 50,
+    eval_every: Annotated[int, typer.Option()] = 5,
+    n_boot: Annotated[int, typer.Option()] = 2000,
+    seed: Annotated[int, typer.Option()] = 0,
+) -> None:
+    """Train causal and non-causal MS-TCN++ heads on train, select epochs on val, write the run dir."""
+    from sop_monitor.features import resolve_device
+    from sop_monitor.mstcn import MSTCNSpec, run_mstcn_baseline
+
+    spec = MSTCNSpec(epochs=epochs, eval_every=eval_every, seed=seed, n_boot=n_boot)
+    result = run_mstcn_baseline(features, labels_dir, out, spec, device=resolve_device(device))
+    typer.echo(result["tables"])
+    for name, log in result["config"]["training"].items():  # type: ignore[index, union-attr]
+        typer.echo(
+            f"{name}: best epoch {log['best_epoch']}, {log['parameters']} parameters, "
+            f"{log['train_seconds']:.0f}s"
+        )
+    typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
+
+
 def _check_run(run_dir: Path, write: bool) -> list[str]:
     """Recompute a run's metrics from its prediction table; return the list of mismatches."""
     from sop_monitor.baseline import (
