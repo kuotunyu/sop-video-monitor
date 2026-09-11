@@ -7,7 +7,7 @@ import pytest
 from typer.testing import CliRunner
 
 from sop_monitor.baseline import PredictionRow, render_tables, score_predictions, write_predictions
-from sop_monitor.cli import NOT_YET_EXIT_CODE, app
+from sop_monitor.cli import app
 
 runner = CliRunner()
 
@@ -64,10 +64,13 @@ def test_score_predictions_checks_and_regenerates_tables(tmp_path: Path) -> None
     assert (run_dir / "tables.md").read_text(encoding="utf-8") != "stale"
 
 
-def test_ha_vid_split_exits_not_yet() -> None:
+def test_ha_vid_split_needs_both_archives() -> None:
     result = runner.invoke(app, ["freeze-splits", "--dataset", "ha-vid"])
-    assert result.exit_code == NOT_YET_EXIT_CODE
-    assert "not yet" in result.output
+    assert result.exit_code == 1
+    assert "--official and --temporal are required" in result.output
+    result = runner.invoke(app, ["freeze-splits", "--dataset", "other"])
+    assert result.exit_code == 1
+    assert "unknown dataset" in result.output
 
 
 def test_check_sop_exports_and_judges_a_sequence(tmp_path: Path) -> None:

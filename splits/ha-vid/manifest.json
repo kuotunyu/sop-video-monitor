@@ -1,0 +1,65 @@
+{
+  "dataset": "HA-ViD",
+  "excluded_recordings": [
+    "S02A08I21"
+  ],
+  "license": "CC BY-NC 4.0",
+  "n_val": 6,
+  "seed": 0,
+  "sources": {
+    "official_zip": "ActionSegmentation_data.zip",
+    "temporal_zip": "HAViD_temporalAnnotation.zip"
+  },
+  "split_rule": "test = official test subjects (splits/test.split1.bundle); val = n_val subjects drawn with the seed from the official train subjects with the fewest recordings; train = rest; all three views of a recording share its split",
+  "splits": {
+    "test": {
+      "recordings": 41,
+      "subjects": [
+        "S02",
+        "S04",
+        "S05",
+        "S19",
+        "S22",
+        "S24",
+        "S26"
+      ],
+      "videos": 123
+    },
+    "train": {
+      "recordings": 143,
+      "subjects": [
+        "S03",
+        "S06",
+        "S07",
+        "S09",
+        "S11",
+        "S13",
+        "S14",
+        "S15",
+        "S16",
+        "S17",
+        "S20",
+        "S21",
+        "S23",
+        "S25",
+        "S27",
+        "S28",
+        "S29"
+      ],
+      "videos": 429
+    },
+    "val": {
+      "recordings": 18,
+      "subjects": [
+        "S01",
+        "S08",
+        "S10",
+        "S12",
+        "S18",
+        "S30"
+      ],
+      "videos": 54
+    }
+  },
+  "test_sha256": "57a824f204e229cdb8b22bfa8f0b796d8ba795551ac70c88700624bc2048f71b"
+}

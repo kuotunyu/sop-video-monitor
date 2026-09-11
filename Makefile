@@ -1,18 +1,20 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
+HAVID ?= data/external/ha-vid
 FEATURES ?= artifacts/features/industreal/dinov2_vitb14_s1
 FEATURES_VITS ?= artifacts/features/industreal/dinov2_vits14_s1
 
 # ---- CI path (no data, no torch) -------------------------------------------------------------
 
-reproduce-lite:  ## Recompute every committed run from its prediction table, check tables and SOP checks, verify the split hash, run the unit tests.
+reproduce-lite:  ## Recompute every committed run from its prediction table, check tables and SOP checks, verify the split hashes, run the unit tests.
 	$(UV) run sop-monitor reproduce-lite
 	$(UV) run sop-monitor verify-splits --directory splits/industreal
+	$(UV) run sop-monitor verify-splits --directory splits/ha-vid
 	$(UV) run pytest -q
 
 test:
@@ -24,11 +26,18 @@ lint:
 
 verify-splits:
 	$(UV) run sop-monitor verify-splits --directory splits/industreal
+	$(UV) run sop-monitor verify-splits --directory splits/ha-vid
 
 # ---- Data path: needs the local IndustReal copy and `uv sync --all-extras --group baseline` ----
 
-audit:  ## Probe local videos, cross-check labels, inventory HA-ViD public files, refresh data/manifest.json.
+audit:  ## Probe local IndustReal videos, cross-check labels, inventory HA-ViD public files, refresh data/manifest.json (hashes every archive, several minutes).
 	$(UV) run sop-monitor audit-industreal --root $(INDUSTREAL) --out reports/data_audit.json --manifest data/manifest.json
+
+audit-havid:  ## HA-ViD W1 audit: temporal annotations x official split x probed mp4s -> reports/havid_audit.json (needs the extracted HAViD_rgb).
+	$(UV) run sop-monitor audit-havid --temporal $(HAVID)/HAViD_temporalAnnotation.zip --official $(HAVID)/ActionSegmentation_data.zip --rgb-dir $(HAVID)/HAViD_rgb --out reports/havid_audit.json
+
+freeze-havid:  ## Freeze splits/ha-vid from the official subject split (test = official test subjects, val = 6 light train subjects, seed 0).
+	$(UV) run sop-monitor freeze-splits --dataset ha-vid --official $(HAVID)/ActionSegmentation_data.zip --temporal $(HAVID)/HAViD_temporalAnnotation.zip --out-dir splits
 
 features:  ## Frozen DINOv2 ViT-B/14 frame features for the train and val videos (current default; test untouched).
 	$(UV) run sop-monitor extract-features --root $(INDUSTREAL) --split train --split val --model dinov2_vitb14 --stride 1 --batch-size 128

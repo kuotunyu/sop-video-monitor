@@ -142,7 +142,8 @@ def audit_ha_vid_public(root: Path) -> dict[str, object]:
         "usable_for_training": bool(videos) and bool(annotations),
         "blocker": None
         if videos and annotations
-        else "no HA-ViD videos or HR-SAT annotations on disk; the request-form delivery has not arrived",
+        else "the public files hold no videos or HR-SAT annotations; "
+        "the delivered archives are audited in reports/havid_audit.json",
     }
 
 

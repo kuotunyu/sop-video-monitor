@@ -2,7 +2,8 @@
 
 Everything under `reports/` is a **development result** on the IndustReal *validation* split
 (metric-donor dataset, spec 3.1): real videos, real model outputs, but val is also where the
-protocol was iterated. There is no formal (frozen test split) result and no HA-ViD result yet.
+protocol was iterated. There is no formal (frozen test split) result and no HA-ViD model result
+yet; the HA-ViD delivery itself is audited in [`havid_audit.md`](havid_audit.md) (W1).
 
 Start here: **`industreal_dev_v11_psr_epochsel_f1/`** is the current best configuration; every
 other directory is either a step on the way to it, a control, or a negative result kept as evidence.
@@ -40,7 +41,8 @@ paper's B3 reports POS 0.797 / F1 0.883 / delay 22.4 s on the test split.
 | `sop_checks_<run>.json` (v6+) | precedence / omission checks of ground-truth and predicted completions against `sop/industreal/learned_precedence_*.json` | `sop-monitor check-psr-run` |
 
 `reports/data_audit.json` is the shared on-disk audit of the IndustReal copy and the HA-ViD
-public files (`sop-monitor audit-industreal`); it is not tied to a run.
+public files (`sop-monitor audit-industreal`); `reports/havid_audit.json` + `havid_audit.md` audit
+the delivered HA-ViD archives (`sop-monitor audit-havid`). Neither is tied to a run.
 
 `sop-monitor reproduce-lite` (what CI runs) recomputes every `metrics.json`, `tables.md` and
 `sop_checks_*.json` from the committed tables and fails on any drift.

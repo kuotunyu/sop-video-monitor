@@ -1,6 +1,24 @@
 {
   "files": [
     {
+      "bytes": 12863201931,
+      "dataset": "HA-ViD",
+      "file": "ActionSegmentation_data.zip",
+      "sha256": "58f9e1341114fafa2562eeedebcfb6b0f9fe25e9e7a82cf3ba23c1b68cf551b8"
+    },
+    {
+      "bytes": 29578930717,
+      "dataset": "HA-ViD",
+      "file": "HAViD_rgb.zip",
+      "sha256": "ba993fa91d918dbb9763105a2aa3b109f61f823d40dd3f9592857007772f81cd"
+    },
+    {
+      "bytes": 2553796,
+      "dataset": "HA-ViD",
+      "file": "HAViD_temporalAnnotation.zip",
+      "sha256": "96f1737cf6ccf09ce7188c2da51a3537ff782f50ee764df3392d2b826722afb5"
+    },
+    {
       "bytes": 5335763,
       "dataset": "HA-ViD public",
       "file": "instructions.zip",

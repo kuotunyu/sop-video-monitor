@@ -2,7 +2,7 @@
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-> **狀態：IndustReal 開發線已收斂到可重算的最佳設定；HA-ViD 主力線仍被 request form 阻擋；沒有任何正式（frozen test split）成果。**
+> **狀態：IndustReal 開發線已收斂到可重算的最佳設定；HA-ViD 已於 2026-09-12 取得並完成 W1 資料稽核與 split 凍結，模型線尚未開始；沒有任何正式（frozen test split）成果。**
 > 目前最佳開發結果（validation split，不是 headline）：frozen DINOv2 ViT-B/14 特徵 + causal MS-TCN++ state head +
 > procedure-prior decoder，decoder／延遲預算／訓練長度全部在 out-of-fold 上選，POS 0.642 ± 0.035、
 > F1 0.821 ± 0.004、mean delay 23.6 s（[`reports/industreal_dev_v11_psr_epochsel_f1/`](reports/industreal_dev_v11_psr_epochsel_f1/)）。
@@ -23,13 +23,14 @@ backpressure 實測曲線。**以上是設計目標，不是現況。** 現況�
 
 | 資料集 | 角色 | 授權 | 本機狀態 |
 |---|---|---|---|
-| HA-ViD | 主力 | CC BY-NC 4.0 | 只有公開的 3 張 precedence graph（OWL）與 7 份說明 PDF；**沒有影片、沒有 HR-SAT 標註**，request form 未送 |
+| HA-ViD | 主力 | CC BY-NC 4.0 | 作者交付的 Dropbox 資料夾已下載：3 222 支 RGB 影片（h264、1280×720、15 fps；其中 203 段標註錄影 × 3 視角 = 609 支、14 h，frame 數與標註完全一致）、HR-SAT temporal／collaboration 標註、官方 action-segmentation split 與 I3D 特徵；`wrong` 標籤只有 67 段（test subjects 內 16 段 → ADR 0001 trigger B）；split 已凍結在 `splits/ha-vid/`。depth／skeleton／object-detection 未下載 |
 | IMPACT | 備援 | code Apache-2.0；data CC BY-NC-SA 4.0 | 未申請 |
 | IndustReal | 指標捐贈／開發 | Apache-2.0 | 86 支 RGB 影片、action 標註、52 支 train/val recording 的 PSR 標註（六包壓縮檔已驗證 MD5）；test 的壓縮檔沒下載 |
 
-實測稽核在 [`reports/data_audit.json`](reports/data_audit.json)，外部檔案的名稱／大小／SHA-256 在
+實測稽核在 [`reports/data_audit.json`](reports/data_audit.json)（IndustReal）與
+[`reports/havid_audit.md`](reports/havid_audit.md)（HA-ViD W1），外部檔案的名稱／大小／SHA-256 在
 [`data/manifest.json`](data/manifest.json)，資料落點與授權處理在 [`data/README.md`](data/README.md)。
-原始影片、標註、快取特徵、權重一律不進 repo。
+原始影片、標註、快取特徵、權重、下載連結一律不進 repo。
 
 ### 程式（`src/sop_monitor/`，都有單元測試）
 
@@ -38,6 +39,7 @@ backpressure 實測曲線。**以上是設計目標，不是現況。** 現況�
 | `video.py`、`features.py` | PyAV probe／循序解碼；官方 `facebookresearch/dinov2` 權重的 frozen frame embedding（ViT-S/B/L，`[CLS ; mean patch]`），fp16 快取，權重 SHA-256 記錄在 `meta.json` |
 | `industreal.py`、`splits.py` | IndustReal action 標註解析、participant-disjoint split 凍結與 test list SHA-256 契約（`splits/industreal/`）、標註 → 逐影格對齊 |
 | `industreal_psr.py` | PSR 標註解析與三個 CSV 的交叉核對、官方 state→step 規則轉錄、從 recording 壓縮檔只抽標註、JPEG 名稱位移偵測 |
+| `havid.py` | HA-ViD id 與 HR-SAT 標籤解析、temporal／collaboration 標註（inclusive、連續）、官方 split／mapping／groundTruth 交叉核對（頭尾各裁 5 frames）、`wrong` 統計、mp4 probe 與三視角配對、subject-wise split 凍結 |
 | `baseline.py`、`mstcn.py` | 離線 TAS 線：linear head、causal／非 causal MS-TCN++、預測表與從預測表重算指標 |
 | `psr_baseline.py` | 線上 PSR 線：linear 與 causal MS-TCN++ state head、EMA／hysteresis／dwell／procedure-prior decoder、out-of-fold 的 decoder／延遲預算／epoch 選擇、多 seed、completion 表與計分 |
 | `metrics/offline.py`、`metrics/reference_mstcn.py` | MoF、Edit、F1@k（MS-TCN 定義）與獨立參考轉錄的交叉核對；participant bootstrap |
@@ -50,7 +52,7 @@ CLI `sop-monitor` 的命令依流程分組：
 
 | 階段 | 命令 |
 |---|---|
-| 資料 | `audit-industreal`、`freeze-splits`、`verify-splits`、`extract-psr-labels` |
+| 資料 | `audit-industreal`、`audit-havid`、`freeze-splits`（`--dataset industreal | ha-vid`）、`verify-splits`、`extract-psr-labels` |
 | 特徵 | `extract-features` |
 | 離線 TAS | `train-baseline`、`train-mstcn` |
 | 線上 PSR | `train-psr`、`learn-sop`、`check-psr-run` |
@@ -64,8 +66,8 @@ CLI `sop-monitor` 的命令依流程分組：
 
 ## 還沒有什麼
 
-- HA-ViD 影片、HR-SAT parser、HA-ViD split、特徵、任何 HA-ViD 指標（等 request form）。
-- Frozen test split 上的任何數字（需要明確決定後一次性執行）。
+- HA-ViD 的特徵抽取、任何模型與指標（資料與 split 已就緒，尚未開跑）。
+- Frozen test split 上的任何數字（IndustReal 與 HA-ViD 皆需要明確決定後一次性執行）。
 - RTSP 重播（mediamtx）、decode thread、batch collector、watchdog、shared-memory ring buffer、backpressure 曲線（W4）。
 - ASFormer、late fusion、VideoMAE-V2 clip 特徵、view-ablation、任何圖（W2–W3）。
 - duration bounds 檔、synthetic 違規生成器與 synthetic 表、偏差偵測的 precision／recall（W3）。

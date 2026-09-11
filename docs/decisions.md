@@ -63,3 +63,31 @@ violate the learned order in their ground truth; a precision-tuned decoder flags
 empty placeholder directories from the W0 skeleton were removed; `reports/README.md` is the
 navigation table with the status of every run; historical PSR protocols stay reproducible through
 `make psr-lopo / psr-train / psr-nested`, the current best through `make psr`.
+
+## 2026-09-12 — HA-ViD has arrived; what was taken and what was left
+
+The authors granted access (password-protected Dropbox folder; link and password stay out of the
+repository). Downloaded into `data/external/ha-vid/`: the temporal annotations, the
+action-segmentation benchmark folder (official splits, mapping, per-frame ground truth, I3D
+features) and the RGB videos. Left on the server: depth, skeletons, the object-detection frames
+(110 GB, outside the non-goals), the action-recognition clip datasets and the pretrained
+checkpoints. Everything measured about the delivery is in `reports/havid_audit.{json,md}`.
+
+## 2026-09-12 — the HA-ViD frozen split follows the official subject split
+
+`splits/ha-vid/` is frozen with the same hash contract as IndustReal: **test** = the official test
+subjects (S02, S04, S05, S19, S22, S24, S26; 41 recordings, 123 videos) so that the paper's
+MS-TCN/DTGRM/BCN numbers remain comparable; **val** = 6 subjects drawn with seed 0 from the
+official train subjects that have only three annotated recordings (S01, S08, S10, S12, S18, S30),
+so the recording-rich subjects stay in **train** (17 subjects, 143 recordings). The one annotated
+recording that the official bundles list nowhere (`S02A08I21`, a test subject) is excluded from
+every split. The test split is not evaluated without an explicit decision (same rule as
+IndustReal); development results are reported on val.
+
+## 2026-09-12 — trigger B of ADR 0001 fires: HA-ViD's native errors are too few for a headline
+
+The released annotations carry the paper's `wrong` label as `w`, primitive-task level only:
+67 segments in all, 16 inside the official test subjects (7 of their 41 recordings). That is under
+the 20-segment threshold set in ADR 0001, so HA-ViD stays the main dataset, the native error
+table will report exact counts with Wilson intervals and be labelled underpowered, and the headline
+violation metrics will come from the synthetic order-violation table, marked as synthetic.

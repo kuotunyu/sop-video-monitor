@@ -1,7 +1,7 @@
 {
   "ha_vid_public": {
     "annotation_files": 0,
-    "blocker": "no HA-ViD videos or HR-SAT annotations on disk; the request-form delivery has not arrived",
+    "blocker": "the public files hold no videos or HR-SAT annotations; the delivered archives are audited in reports/havid_audit.json",
     "by_suffix": {
       ".owl": 3,
       ".pdf": 7,

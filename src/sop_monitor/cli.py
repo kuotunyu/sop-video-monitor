@@ -19,8 +19,6 @@ app = typer.Typer(
     help="Multi-camera SOP sequence monitoring (development build).",
 )
 
-NOT_YET_EXIT_CODE = 2
-
 
 @app.command("freeze-splits")
 def freeze_splits(
@@ -28,10 +26,32 @@ def freeze_splits(
     labels_dir: Annotated[
         Path | None, typer.Option(help="IndustReal label CSV directory (train/val/test.csv)")
     ] = None,
+    official: Annotated[
+        Path | None, typer.Option(help="HA-ViD ActionSegmentation/data zip (official bundles)")
+    ] = None,
+    temporal: Annotated[
+        Path | None, typer.Option(help="HA-ViD HAViD_temporalAnnotation.zip")
+    ] = None,
     out_dir: Annotated[str, typer.Option(help="Where train/val/test.csv land")] = "splits",
     seed: Annotated[int, typer.Option()] = 0,
+    n_val: Annotated[int, typer.Option(help="HA-ViD: validation subjects drawn from train")] = 6,
 ) -> None:
     """Rebuild the subject-wise split and write splits/*.csv + test_sha256.txt (spec 4.1)."""
+    if dataset == "ha-vid":
+        if official is None or temporal is None:
+            typer.echo("--official and --temporal are required for ha-vid")
+            raise typer.Exit(code=1)
+        from sop_monitor.havid import freeze_havid_splits
+
+        manifest = freeze_havid_splits(official, temporal, Path(out_dir) / "ha-vid", seed, n_val)
+        for name, info in manifest["splits"].items():  # type: ignore[union-attr]
+            typer.echo(
+                f"{name}: {info['videos']} videos, {info['recordings']} recordings, "
+                f"{len(info['subjects'])} subjects"
+            )
+        typer.echo(f"excluded recordings: {manifest['excluded_recordings']}")
+        typer.echo(f"test_sha256: {manifest['test_sha256']}")
+        return
     if dataset == "industreal":
         if labels_dir is None:
             typer.echo("--labels-dir is required for industreal")
@@ -46,8 +66,8 @@ def freeze_splits(
             )
         typer.echo(f"test_sha256: {manifest['test_sha256']}")
         return
-    typer.echo("not yet: HA-ViD freeze-splits waits for the access request (spec 3.2)")
-    raise typer.Exit(code=NOT_YET_EXIT_CODE)
+    typer.echo(f"unknown dataset {dataset!r} (industreal | ha-vid)")
+    raise typer.Exit(code=1)
 
 
 @app.command("verify-splits")
@@ -134,6 +154,9 @@ def audit_industreal_cmd(
     ha_vid: Annotated[Path, typer.Option(help="HA-ViD public files directory")] = Path(
         "data/external/ha-vid-public"
     ),
+    ha_vid_delivered: Annotated[
+        Path, typer.Option(help="Directory with the HA-ViD archives delivered by the authors")
+    ] = Path("data/external/ha-vid"),
     out: Annotated[Path, typer.Option(help="Audit JSON path")] = Path("reports/data_audit.json"),
     manifest: Annotated[
         Path | None, typer.Option(help="Also write data/manifest.json (names, sizes, SHA-256)")
@@ -163,11 +186,62 @@ def audit_industreal_cmd(
         entries += (
             [("HA-ViD public", p) for p in sorted(ha_vid.glob("*.zip"))] if ha_vid.is_dir() else []
         )
+        entries += (
+            [("HA-ViD", p) for p in sorted(ha_vid_delivered.glob("*.zip"))]
+            if ha_vid_delivered.is_dir()
+            else []
+        )
         write_json(manifest, build_manifest(entries))
         typer.echo(f"manifest: {len(entries)} files -> {manifest}")
     if industreal["problems"]:  # type: ignore[index]
         for problem in industreal["problems"]:  # type: ignore[index]
             typer.echo(f"problem: {problem}")
+        raise typer.Exit(code=1)
+
+
+@app.command("audit-havid")
+def audit_havid_cmd(
+    temporal: Annotated[Path, typer.Option(help="HAViD_temporalAnnotation.zip")] = Path(
+        "data/external/ha-vid/HAViD_temporalAnnotation.zip"
+    ),
+    official: Annotated[
+        Path | None,
+        typer.Option(help="ActionSegmentation/data folder zip (splits, mapping.txt, groundTruth)"),
+    ] = None,
+    rgb_dir: Annotated[
+        Path | None, typer.Option(help="Directory holding the extracted HA-ViD mp4s (needs PyAV)")
+    ] = None,
+    out: Annotated[Path, typer.Option(help="Audit JSON path")] = Path("reports/havid_audit.json"),
+) -> None:
+    """Cross-check the HA-ViD temporal annotations, the official split and the videos on disk."""
+    from sop_monitor.audit import write_json
+    from sop_monitor.havid import audit_havid
+
+    payload = audit_havid(temporal, official, rgb_dir)
+    write_json(out, payload)
+    annotations = payload["annotations"]
+    typer.echo(
+        f"HA-ViD annotations: {annotations['recordings']} recordings, "  # type: ignore[index]
+        f"{annotations['subjects']} subjects, "  # type: ignore[index]
+        f"{annotations['frames']['total']} frames, "  # type: ignore[index]
+        f"wrong segments={annotations['wrong']['segments']}"  # type: ignore[index]
+    )
+    if "official_split" in payload:
+        split = payload["official_split"]
+        typer.echo(
+            f"official split: subject_disjoint={split['subject_disjoint']}, "  # type: ignore[index]
+            f"groundTruth trim={split['ground_truth_trim_frames']}"  # type: ignore[index]
+        )
+    if "videos" in payload:
+        videos = payload["videos"]
+        typer.echo(
+            f"videos: {videos['annotated_videos_found']} annotated mp4s found, "  # type: ignore[index]
+            f"{videos['recordings_with_all_three_views']} recordings with all three views, "  # type: ignore[index]
+            f"{videos['annotated_hours']:.2f} h"  # type: ignore[index]
+        )
+    for problem in payload["problems"]:  # type: ignore[union-attr]
+        typer.echo(f"problem: {problem}")
+    if payload["problems"]:
         raise typer.Exit(code=1)
 
 
