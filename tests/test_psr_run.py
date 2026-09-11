@@ -203,3 +203,43 @@ def test_delay_caps_produce_one_run_per_budget(dataset: tuple[Path, Path], tmp_p
     assert fold["decoders"]["linear_plain_cap30"]["delay_cap_s"] == 30.0
     assert fold["pareto"]["linear_plain"], "the out-of-fold Pareto front is recorded"
     assert all("delay_s" in p and "f1" in p for p in fold["pareto"]["linear_plain"])
+
+
+def test_nested_epoch_selection_uses_heldout_bce(
+    dataset: tuple[Path, Path], tmp_path: Path
+) -> None:
+    from dataclasses import replace
+
+    from sop_monitor.psr_baseline import train_state_mstcn
+
+    features, psr = dataset
+    spec = replace(TINY, mstcn_epochs=2, mstcn_epoch_grid=(1, 2))
+    result = run_psr_baseline(
+        features,
+        psr,
+        tmp_path / "epochs",
+        spec,
+        heads=("mstcn",),
+        decoders=("plain",),
+        train_ids={"01_assy_0_1", "02_assy_0_1", "03_assy_0_1"},
+        eval_ids={"04_assy_0_1"},
+        selection="nested",
+    )
+    config = result["config"]
+    selection = config["training"]["mstcn/train->eval/epoch_selection"]
+    assert selection["grid"] == [1, 2] and selection["chosen"] in (1, 2)
+    assert set(selection["mean_heldout_bce"]) == {"1", "2"}
+    assert config["folds"]["train->eval"]["mstcn_epochs_used"] == selection["chosen"]
+    assert config["training"]["mstcn/train->eval"]["epochs"] == selection["chosen"]
+    inner = [k for k in config["training"] if "/inner" in k]
+    assert len(inner) == 3 and all("heldout_bce" in config["training"][k] for k in inner)
+    # Direct call: snapshots exist only at the requested epochs and match the eval videos.
+    from sop_monitor.psr_baseline import load_psr_videos
+
+    videos = load_psr_videos(features, psr)
+    _, log, snapshots = train_state_mstcn(
+        videos[:3], replace(TINY, mstcn_epochs=3), "cpu", eval_videos=videos[3:], eval_epochs=(2, 3)
+    )
+    assert sorted(snapshots) == [2, 3] and len(snapshots[2]) == 1
+    assert snapshots[2][0].shape == (60, 11)
+    assert set(log["heldout_bce"]) == {"2", "3"}

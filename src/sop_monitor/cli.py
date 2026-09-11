@@ -312,6 +312,12 @@ def train_psr_cmd(
         list[str] | None, typer.Option(help="plain | prior_dwell (repeatable; default both)")
     ] = None,
     mstcn_epochs: Annotated[int, typer.Option()] = 40,
+    mstcn_epoch_grid: Annotated[
+        list[int] | None,
+        typer.Option(
+            help="Nested epoch selection grid for the MS-TCN++ head (repeatable; nested only)"
+        ),
+    ] = None,
     train_split: Annotated[
         Path | None, typer.Option(help="Split CSV of training recordings (with --eval-split)")
     ] = None,
@@ -347,6 +353,7 @@ def train_psr_cmd(
     spec = PSRSpec(
         epochs=epochs,
         mstcn_epochs=mstcn_epochs,
+        mstcn_epoch_grid=tuple(mstcn_epoch_grid or ()),
         n_boot=n_boot,
         delay_caps_s=tuple(delay_cap or ()),
     )

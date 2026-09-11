@@ -352,6 +352,11 @@ class PSRSpec:
     lr: float = 5e-3
     mstcn_epochs: int = 40
     mstcn_lr: float = 5e-4
+    # Nested epoch selection (selection="nested" only): the inner-fold heads train up to
+    # max(grid) epochs, the held-out BCE is measured at every epoch in the grid, and the epoch
+    # with the lowest mean held-out BCE is used for the out-of-fold probabilities and the final
+    # fit. Empty = fixed ``mstcn_epochs``.
+    mstcn_epoch_grid: tuple[int, ...] = ()
     seed: int = 0
     n_boot: int = 2000
     # Widened once (0.98 / 0.99 and 0.95 / 0.1 added) after the first leave-one-out run showed
@@ -488,9 +493,18 @@ class MSTCNStateHead:
 
 
 def train_state_mstcn(
-    train_videos: Sequence[PSRVideo], spec: PSRSpec, device: str
-) -> tuple[MSTCNStateHead, dict[str, object]]:
-    """Causal MS-TCN++ trained with per-stage BCE + truncated-MSE smoothing, fixed epoch count."""
+    train_videos: Sequence[PSRVideo],
+    spec: PSRSpec,
+    device: str,
+    eval_videos: Sequence[PSRVideo] = (),
+    eval_epochs: Sequence[int] = (),
+) -> tuple[MSTCNStateHead, dict[str, object], dict[int, list[np.ndarray]]]:
+    """Causal MS-TCN++ trained with per-stage BCE + truncated-MSE smoothing for ``mstcn_epochs``.
+
+    With ``eval_videos`` and ``eval_epochs`` the held-out BCE (last stage) is logged and the
+    held-out probabilities are snapshotted at those epochs, which is what nested epoch selection
+    consumes. Returns ``(head, log, snapshots)``; ``snapshots[epoch]`` is one array per eval video.
+    """
     import torch
     from torch.nn import functional as F
 
@@ -505,19 +519,28 @@ def train_state_mstcn(
     model = build_model(x_all.shape[1], N_COMPONENTS, mstcn_spec, causal=True, activation="sigmoid")
     model = model.to(device)
     optimiser = torch.optim.Adam(model.parameters(), lr=spec.mstcn_lr)
-    tensors = [
-        (
+
+    def to_tensor(v: PSRVideo) -> torch.Tensor:
+        return (
             torch.from_numpy(((v.features.astype(np.float32) - mean) / std).astype(np.float32))
             .T.unsqueeze(0)
-            .to(device),
-            torch.from_numpy(v.targets.T.astype(np.float32)).unsqueeze(0).to(device),
+            .to(device)
         )
+
+    tensors = [
+        (to_tensor(v), torch.from_numpy(v.targets.T.astype(np.float32)).unsqueeze(0).to(device))
         for v in train_videos
+    ]
+    held = [
+        (to_tensor(v), torch.from_numpy(v.targets.astype(np.float32)).to(device))
+        for v in eval_videos
     ]
     order = np.random.default_rng(spec.seed)
     losses: list[float] = []
+    heldout_bce: dict[int, float] = {}
+    snapshots: dict[int, list[np.ndarray]] = {}
     started = time.perf_counter()
-    for _ in range(spec.mstcn_epochs):
+    for epoch in range(1, spec.mstcn_epochs + 1):
         model.train()
         total = 0.0
         for i in order.permutation(len(tensors)):
@@ -538,13 +561,26 @@ def train_state_mstcn(
             optimiser.step()
             total += float(loss.item())
         losses.append(total / len(tensors))
-    log = {
+        if held and epoch in eval_epochs:
+            model.eval()
+            probs_at: list[np.ndarray] = []
+            bces: list[float] = []
+            with torch.inference_mode():
+                for x, targets in held:
+                    logits = model(x)[-1][0].T  # (T, C)
+                    bces.append(float(F.binary_cross_entropy_with_logits(logits, targets).item()))
+                    probs_at.append(torch.sigmoid(logits).cpu().numpy().astype(np.float32))
+            heldout_bce[epoch] = float(np.mean(bces))
+            snapshots[epoch] = probs_at
+    log: dict[str, object] = {
         "epochs": spec.mstcn_epochs,
         "final_train_loss": losses[-1],
         "parameters": sum(p.numel() for p in model.parameters()),
         "train_seconds": time.perf_counter() - started,
     }
-    return MSTCNStateHead(model, mean, std, device), log
+    if heldout_bce:
+        log["heldout_bce"] = {str(e): b for e, b in sorted(heldout_bce.items())}
+    return MSTCNStateHead(model, mean, std, device), log, snapshots
 
 
 # ---------------------------------------------------------------------------------------------
@@ -645,7 +681,7 @@ def _fit_heads(
             device,
         )
     if "mstcn" in heads:
-        predictors["mstcn"], logs[f"mstcn/{log_key}"] = train_state_mstcn(train, spec, device)
+        predictors["mstcn"], logs[f"mstcn/{log_key}"], _ = train_state_mstcn(train, spec, device)
     return predictors, logs
 
 
@@ -672,7 +708,7 @@ def _select_nested(
     heads: Sequence[str],
     decoders: Sequence[str],
     log_key: str,
-) -> tuple[dict[str, tuple[DecoderConfig, float]], dict[str, object]]:
+) -> tuple[dict[str, list[GridPoint]], dict[str, object], int]:
     """Select every decoder on out-of-fold probabilities of the training recordings.
 
     Each inner fold fits the heads on the other training participants and predicts its own;
@@ -683,14 +719,46 @@ def _select_nested(
     fold_priors: list[dict[str, ProcedurePrior] | None] = [None] * len(train)
     logs: dict[str, object] = {}
     position = {v.video_id: i for i, v in enumerate(train)}
+    epoch_grid = tuple(sorted(spec.mstcn_epoch_grid)) if "mstcn" in heads else ()
+    # With an epoch grid the inner MS-TCN++ heads train to max(grid) and snapshot their held-out
+    # probabilities at every grid epoch; the epoch with the lowest mean held-out BCE wins.
+    snapshots_by_fold: list[tuple[list[PSRVideo], dict[int, list[np.ndarray]]]] = []
+    bce_by_epoch: dict[int, list[float]] = defaultdict(list)
     for k, (inner_train, inner_held) in enumerate(inner_folds(train)):
-        predictors, fold_logs = _fit_heads(inner_train, spec, device, heads, f"{log_key}/inner{k}")
+        fold_heads = [h for h in heads if not (h == "mstcn" and epoch_grid)]
+        predictors, fold_logs = _fit_heads(
+            inner_train, spec, device, fold_heads, f"{log_key}/inner{k}"
+        )
+        if epoch_grid:
+            _, mstcn_log, snapshots = train_state_mstcn(
+                inner_train,
+                replace(spec, mstcn_epochs=max(epoch_grid)),
+                device,
+                eval_videos=inner_held,
+                eval_epochs=epoch_grid,
+            )
+            fold_logs[f"mstcn/{log_key}/inner{k}"] = mstcn_log
+            snapshots_by_fold.append((list(inner_held), snapshots))
+            for epoch, bce in mstcn_log["heldout_bce"].items():  # type: ignore[union-attr]
+                bce_by_epoch[int(epoch)].append(float(bce) * len(inner_held))
         logs.update(fold_logs)
         priors = {kind: learn_prior(inner_train, kind) for kind in ("assy", "main")}
         for v in inner_held:
             fold_priors[position[v.video_id]] = priors
             for head, predictor in predictors.items():
                 oof[head][position[v.video_id]] = predictor.predict_proba(v.features)  # type: ignore[attr-defined]
+    chosen_epochs = spec.mstcn_epochs
+    if epoch_grid:
+        mean_bce = {e: sum(v) / len(train) for e, v in bce_by_epoch.items()}
+        chosen_epochs = min(mean_bce, key=lambda e: (mean_bce[e], e))
+        for held_videos, snapshots in snapshots_by_fold:
+            for v, probs in zip(held_videos, snapshots[chosen_epochs], strict=True):
+                oof["mstcn"][position[v.video_id]] = probs
+        logs[f"mstcn/{log_key}/epoch_selection"] = {
+            "grid": list(epoch_grid),
+            "mean_heldout_bce": {str(e): mean_bce[e] for e in sorted(mean_bce)},
+            "chosen": chosen_epochs,
+        }
     selected: dict[str, list[GridPoint]] = {}
     for head in heads:
         probs = [p for p in oof[head]]
@@ -708,7 +776,7 @@ def _select_nested(
                 priors_per_video,
                 spec.min_dwells if with_prior else (0,),
             )
-    return selected, logs
+    return selected, logs, chosen_epochs
 
 
 def _fit_and_decode(
@@ -730,9 +798,10 @@ def _fit_and_decode(
     priors = {kind: learn_prior(train, kind) for kind in ("assy", "main")}
     nested: dict[str, tuple[DecoderConfig, float]] = {}
     if selection == "nested":
-        nested, training_logs = _select_nested(
+        nested, training_logs, chosen_epochs = _select_nested(
             train, spec, device, heads, decoders, f"{fold_name}{run_suffix}"
         )
+        spec = replace(spec, mstcn_epochs=chosen_epochs)
     predictors, final_logs = _fit_heads(train, spec, device, heads, f"{fold_name}{run_suffix}")
     training_logs.update(final_logs)
     fold: dict[str, object] = {
@@ -740,6 +809,7 @@ def _fit_and_decode(
         "train_participants": sorted({v.participant for v in train}),
         "eval_videos": len(test),
         "selection": selection,
+        "mstcn_epochs_used": spec.mstcn_epochs,
         "prior": {
             kind: {
                 "active": prior.active.tolist(),
