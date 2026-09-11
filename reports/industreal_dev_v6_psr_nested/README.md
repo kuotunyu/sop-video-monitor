@@ -100,7 +100,32 @@ Determinism: a separate `train-psr --selection nested --seed 0` run on the same 
 all 750 seed-0 completion rows of the committed table exactly (the ground truth and every
 `<head>_<decoder>_s0` prediction).
 
-## 6. What this settles and what it does not
+## 6. SOP checks on the completion sequences (`sop_checks_<run>.json`)
+
+`sop-monitor learn-sop` learned one precedence graph per recording kind from the 36 train
+recordings (an edge only where every co-occurring training recording agrees, ≥ 3 recordings,
+transitively reduced): assembly 11 steps / 20 edges (chassis, pins and rear chassis before
+brackets and wheels), maintenance 8 steps / 14 edges (removals before re-installs). `check-psr-run`
+then ran `sop_graph.check_order` on the ground-truth and the predicted completion sequences of
+every val recording. A recording is "flagged" when at least one step precedes an unfinished
+predecessor; omissions are listed but not used for flagging (partial procedures always omit
+something under a union graph).
+
+| | GT flagged | pred flagged | both | only GT | only pred | neither |
+|---|---|---|---|---|---|---|
+| `mstcn_prior_dwell_s0` | 3 / 16 | 0 / 16 | 0 | 3 | 0 | 13 |
+| `linear_prior_dwell_s0` | 3 / 16 | 6 / 16 | 3 | 0 | 3 | 10 |
+
+The three ground-truth deviations are real: `05_assy_2_2` (rear wheel, bracket and bracket screw
+completed before the re-installed rear chassis — the remove-and-reinstall recording) and
+`14_main_2_2` / `26_main_0_1` (rear rear chassis pin installed before its predecessor). The
+conservative MS-TCN++ decoder suppresses exactly the out-of-order events and flags nothing; the
+linear decoder catches all three and raises three false alarms (`14_main_0_1`, `14_main_2_3`,
+`26_assy_1_5`). Sixteen recordings and three positives are counts, not rates — this is the first
+end-to-end "video → completions → precedence check → deviation" output of the project, not a
+violation-detection result.
+
+## 7. What this settles and what it does not
 
 - Settled: decoder selection must be out-of-fold; with it, the val numbers are stable across
   seeds and the v4-vs-v5 discrepancy dissolves into selection noise.

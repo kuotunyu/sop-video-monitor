@@ -42,4 +42,9 @@ Current contents:
   val recordings; decoder still selected on the training recordings.
 - `industreal_dev_v6_psr_nested/` — development result: as v5 but every decoder is selected on
   out-of-fold predictions of the training recordings (grouped 4-fold by participant) and the
-  whole run is repeated for seeds 0, 1, 2 with a cross-seed summary.
+  whole run is repeated for seeds 0, 1, 2 with a cross-seed summary; `sop_checks_<run>.json`
+  holds the precedence / omission checks of ground-truth and predicted completions against the
+  graphs learned from the train labels (`sop/industreal/learned_precedence_*.json`).
+- `industreal_dev_v7_psr_latency/` — development result: as v6 with decoders chosen under a
+  latency budget (best out-of-fold F1 among settings whose mean delay is within 15 s or 30 s),
+  plus the out-of-fold F1-vs-delay Pareto front per head × decoder in `config.json`.

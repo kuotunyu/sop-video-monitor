@@ -7,7 +7,9 @@
 > task precedence graph 的匯出與順序／遺漏／時長檢查、離線指標（含獨立參考實作交叉核對）與對照官方
 > 程式碼重寫的線上指標，以及四個在 IndustReal **validation split** 上的開發 baseline：frozen DINOv2 +
 > linear head、causal 與非 causal MS-TCN++、leave-one-participant-out 的 step-completion head
-> （第一組真實的 POS／F1／delay）、以及 causal MS-TCN++ state head 加 procedure prior 的 decoder。
+> （第一組真實的 POS／F1／delay）、以及 causal MS-TCN++ state head 加 procedure prior 的 decoder，
+> 後續在 36 支 train recording 上重訓、改用 out-of-fold 選 decoder、加延遲預算並以多 seed 回報；
+> 另從 train 標註學到 step precedence graph，把順序／遺漏檢查跑在真實預測的 completion 序列上。
 > 全部可從已 commit 的預測表重算。
 > 沒有：HA-ViD 影片或 HR-SAT 標註（request form 尚未到貨）、任何 frozen test split 上的正式數字、
 > RTSP 串流、ASFormer、多視角融合、複核 UI、VLM。
@@ -29,7 +31,8 @@ left／front／top 三路固定視角影片以 RTSP 重播進入系統，經 PyA
 | `metrics/reference_mstcn.py` | 參考 `eval.py` 控制流程的獨立轉錄，只用來交叉核對；隨機輸入與真實預測表上都與 `offline.py` 一致 |
 | `metrics/online.py` | IndustReal PSR 指標：POS（unrestricted Damerau-Levenshtein，substitute 成本 2、以 GT 長度正規化）、system-level F1、mean detection delay；2026-09-11 已逐條對照官方 `PSR/psr_utils.py` 重寫並以手算案例測試，三處刻意偏離（無較晚候選時的配對、無 delay 時不補 100 frames、重複步驟允許同一影格配對）寫在 docstring；在 16 支 val recording 的真實標註上，GT 對 GT 得 POS 1／F1 1／delay 0，整體平移 30 影格得 delay 30 |
 | `mstcn.py` | MS-TCN++（prediction generation + 3 refinement stages）；`causal=True` 時所有 kernel-3 卷積只做左側 padding，測試以數值驗證未來影格不影響輸出；非因果版本為離線對照 |
-| `industreal_psr.py`、`psr_baseline.py` | PSR 標註解析（三個 CSV 互相交叉核對、對照 `sop/industreal/procedure_info.json`）、官方 state→step 轉換的轉錄、從 recording 壓縮檔只抽標註；11 路 multi-label state head + causal EMA／hysteresis decoder → step completion events；每支影片以 `psr_performance` 計分並附 participant bootstrap |
+| `industreal_psr.py`、`psr_baseline.py` | PSR 標註解析（三個 CSV 互相交叉核對、對照 `sop/industreal/procedure_info.json`、JPEG 名稱位移偵測）、官方 state→step 轉換的轉錄、從 recording 壓縮檔只抽標註；linear 與 causal MS-TCN++ 兩種 state head、EMA／hysteresis／dwell／procedure-prior decoder → step completion events；decoder 可在訓練影片 in-sample 選或以 out-of-fold 預測選（可加延遲預算），多 seed 回報；每支影片以 `psr_performance` 計分並附 participant bootstrap |
+| `industreal_sop.py` | 從 train-split PSR 標註學 step precedence graph（同 kind 的 recording 中一律先後才連邊、transitive reduction），匯出成與 HA-ViD 相同的 JSON 格式（`sop/industreal/learned_precedence_{assy,main}.json`），並把 `sop_graph.check_order` 跑在 GT 與預測的 completion 序列上，輸出每支影片的順序違規／遺漏與影片層級的一致性計數 |
 | `splits.py`、`industreal.py` | test list SHA-256 契約；IndustReal 標註解析、participant-disjoint split 重建與凍結（`splits/industreal/`，從本機標註重跑結果與已 commit 檔案逐位元一致）；標註 → 逐影格標籤對齊（半開區間、重疊取最新 onset） |
 | `sop_graph.py` | HR-SAT OWL 解析、JSON 匯出（`sop/ha-vid/{cylinder,gear,general}_plate.json`）、拓撲排序、順序／遺漏／未知步驟檢查、時長區間檢查 |
 | `video.py` | PyAV probe 與循序解碼（含 swscale 縮放），影格索引從 0 起算 |
@@ -39,7 +42,9 @@ left／front／top 三路固定視角影片以 RTSP 重播進入系統，經 PyA
 | `stream/ring_buffer.py` | `WAIT`／`DROP_OLDEST`／`ADAPTIVE` 三種 backpressure 策略與 `skipped_frames` 計數（in-process 版本） |
 
 CLI（`sop-monitor`）：`freeze-splits`、`check-sop`、`export-sop`、`audit-industreal`、`extract-features`、
-`train-baseline`、`train-mstcn`、`extract-psr-labels`、`train-psr`、`score-predictions`、`reproduce-lite`。CI 跑 `ruff`、`pytest` 與 `reproduce-lite`（不裝 torch）。
+`train-baseline`、`train-mstcn`、`extract-psr-labels`、`train-psr`、`learn-sop`、`check-psr-run`、
+`verify-splits`、`score-predictions`、`reproduce-lite`。CI 跑 `ruff`、`pytest`、`reproduce-lite` 與
+`verify-splits`（不裝 torch）。
 
 ### 目前的資料與結果
 
