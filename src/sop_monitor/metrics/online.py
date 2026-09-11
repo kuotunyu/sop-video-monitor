@@ -22,6 +22,10 @@ Deviations from the reference, both deliberate and documented in the tests:
    earlier counterpart instead, so an early prediction becomes the FP the docstring intends.
 2. A video without a single matched completion has no delay; the reference substitutes
    100 frames, this module returns ``None`` and leaves aggregation to the caller.
+3. When a step id occurs more than once, the reference only matches candidates *strictly* later
+   than the target, so a prediction at exactly the ground-truth frame is skipped and the ground
+   truth scored against itself is not perfect. Here "at or after" is used, which is what the
+   single-occurrence path (``delta >= 0`` is a TP with delay 0) already implies.
 """
 
 from __future__ import annotations
@@ -112,14 +116,14 @@ class Completion:
 def _match(
     candidates: list[int], candidate_times: np.ndarray, targets: list[int], target_times: np.ndarray
 ) -> list[int]:
-    """For each target pick the unused candidate closest *after* it, else the closest before it."""
+    """For each target pick the unused candidate closest at-or-after it, else the closest before it."""
     if len(candidates) < len(targets):
         raise ValueError("need at least as many candidates as targets")
     unused = list(candidates)
     matched: list[int] = []
     for target in targets:
         t = target_times[target]
-        later = [c for c in unused if candidate_times[c] > t]
+        later = [c for c in unused if candidate_times[c] >= t]
         pool = later if later else unused
         best = min(pool, key=lambda c: abs(candidate_times[c] - t))
         unused.remove(best)

@@ -174,7 +174,8 @@ def gt_sanity(gts: Mapping[str, Sequence[Completion]]) -> dict[str, dict[str, fl
 
     ``identity`` must give POS 1, F1 ≈ 1 and delay 0; ``shift_plus_30_frames`` must keep POS/F1
     and report a 30-frame delay; ``drop_last`` costs one FN per video; ``swap_first_two``
-    exchanges the times of the first two completions (one transposition, POS ``1 - 1/n``).
+    exchanges the times of the first two completions (at most one transposition, POS
+    ``1 - 1/n``; nothing changes when the two share a frame).
     """
 
     def swap(gt: Sequence[Completion]) -> list[Completion]:
@@ -220,9 +221,11 @@ class PSRSpec:
     lr: float = 5e-3
     seed: int = 0
     n_boot: int = 2000
-    emas: tuple[float, ...] = (0.0, 0.8, 0.9, 0.95)
-    theta_ons: tuple[float, ...] = (0.6, 0.7, 0.8, 0.9)
-    theta_offs: tuple[float, ...] = (0.2, 0.3, 0.4)
+    # Widened once (0.98 / 0.99 and 0.95 / 0.1 added) after the first leave-one-out run showed
+    # FP-dominated errors; selection still happens on each fold's training videos only.
+    emas: tuple[float, ...] = (0.0, 0.8, 0.9, 0.95, 0.98, 0.99)
+    theta_ons: tuple[float, ...] = (0.6, 0.7, 0.8, 0.9, 0.95)
+    theta_offs: tuple[float, ...] = (0.1, 0.2, 0.3, 0.4)
     selection_metric: str = "f1"
 
 

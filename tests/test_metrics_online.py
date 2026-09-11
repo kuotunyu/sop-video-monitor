@@ -111,3 +111,11 @@ def test_no_matched_completion_gives_no_delay() -> None:
     assert out["mean_delay_frames"] is None
     assert (out["system_tp"], out["system_fp"], out["system_fn"]) == (0, 0, 4)
     assert out["pos"] == 0.0
+
+
+def test_repeated_steps_scored_against_themselves_are_perfect() -> None:
+    gt = [Completion(536, 9), Completion(536, 15), Completion(992, 9), Completion(992, 15)]
+    out = psr_performance(gt, list(gt))
+    assert (out["system_tp"], out["system_fp"], out["system_fn"]) == (4, 0, 0)
+    assert out["mean_delay_frames"] == 0.0
+    assert out["pos"] == 1.0
