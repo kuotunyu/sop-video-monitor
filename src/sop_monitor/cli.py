@@ -313,7 +313,7 @@ def _check_psr_run(run_dir: Path, write: bool) -> list[str]:
         seed=int(boot.get("seed", 0)),  # type: ignore[union-attr]
     )
     mismatches: list[str] = []
-    for key in ("summary", "per_video", "totals", "n_videos", "n_participants"):
+    for key in ("summary", "per_video", "totals", "gt_sanity", "n_videos", "n_participants"):
         if json.dumps(recomputed[key], sort_keys=True) != json.dumps(
             committed.get(key), sort_keys=True
         ):

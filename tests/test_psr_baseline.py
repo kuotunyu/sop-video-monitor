@@ -92,3 +92,13 @@ def test_completions_round_trip_and_scoring(tmp_path: Path) -> None:
     }
     assert result["summary"]["mean_delay_frames"]["mean_over_videos"] == 20.0
     assert result["summary"]["pos"]["ci95"][0] <= result["summary"]["pos"]["mean_over_videos"]
+
+
+def test_gt_sanity_cases_behave_as_documented() -> None:
+    result = score_completions(_rows(), n_boot=5, seed=0)
+    sanity = result["gt_sanity"]
+    assert sanity["identity"]["pos"] == 1.0 and sanity["identity"]["mean_delay_frames"] == 0.0
+    assert sanity["shift_plus_30_frames"]["mean_delay_frames"] == 30.0
+    assert sanity["shift_plus_30_frames"]["pos"] == 1.0
+    assert sanity["drop_last"]["system_fn"] == 2.0  # one per video
+    assert sanity["swap_first_two"]["pos"] == pytest.approx(1 - 1 / 3)

@@ -34,7 +34,10 @@ from sop_monitor.industreal_psr import (
     INCORRECT,
     INSTALL,
     N_COMPONENTS,
+    PROCEDURE_INFO,
     REMOVE,
+    audit_recording,
+    load_procedure_info,
     load_psr_labels,
     load_psr_raw,
 )
@@ -160,7 +163,50 @@ def score_completions(
         "summary": summary,
         "totals": totals,
         "per_video": per_video,
+        "gt_sanity": gt_sanity(
+            {v: sorted(by_video[v]["gt"], key=lambda c: c.frame) for v in sorted(by_video)}
+        ),
     }
+
+
+def gt_sanity(gts: Mapping[str, Sequence[Completion]]) -> dict[str, dict[str, float]]:
+    """Metric behaviour on the real label structures under controlled perturbations of the GT.
+
+    ``identity`` must give POS 1, F1 ≈ 1 and delay 0; ``shift_plus_30_frames`` must keep POS/F1
+    and report a 30-frame delay; ``drop_last`` costs one FN per video; ``swap_first_two``
+    exchanges the times of the first two completions (one transposition, POS ``1 - 1/n``).
+    """
+
+    def swap(gt: Sequence[Completion]) -> list[Completion]:
+        if len(gt) < 2:
+            return list(gt)
+        return [Completion(gt[1].frame, gt[0].step), Completion(gt[0].frame, gt[1].step), *gt[2:]]
+
+    cases = {
+        "identity": lambda gt: list(gt),
+        "shift_plus_30_frames": lambda gt: [Completion(c.frame + 30, c.step) for c in gt],
+        "drop_last": lambda gt: list(gt[:-1]),
+        "swap_first_two": swap,
+    }
+    out: dict[str, dict[str, float]] = {}
+    for name, perturb in cases.items():
+        # Perturbed completions are re-sorted by frame, as the decoder's emissions would be.
+        results = [
+            psr_performance(gt, sorted(perturb(gt), key=lambda c: c.frame))
+            for gt in gts.values()
+            if gt
+        ]
+        delays = [
+            float(r["mean_delay_frames"]) for r in results if r["mean_delay_frames"] is not None
+        ]  # type: ignore[arg-type]
+        out[name] = {
+            "pos": float(np.mean([float(r["pos"]) for r in results])),  # type: ignore[arg-type]
+            "f1": float(np.mean([float(r["f1"]) for r in results])),  # type: ignore[arg-type]
+            "mean_delay_frames": float(np.mean(delays)) if delays else float("nan"),
+            "system_fp": float(sum(int(r["system_fp"]) for r in results)),  # type: ignore[arg-type]
+            "system_fn": float(sum(int(r["system_fn"]) for r in results)),  # type: ignore[arg-type]
+        }
+    return out
 
 
 # ---------------------------------------------------------------------------------------------
@@ -189,6 +235,7 @@ class PSRVideo:
     targets: np.ndarray  # float32[n_sampled, N_COMPONENTS], 1 where correctly installed
     gt: list[Completion]  # PSR_labels.csv (correct steps only)
     has_errors: bool
+    n_frames: int
 
 
 def load_psr_videos(features_dir: Path, psr_dir: Path) -> list[PSRVideo]:
@@ -212,6 +259,7 @@ def load_psr_videos(features_dir: Path, psr_dir: Path) -> list[PSRVideo]:
                 targets=(states == 1).astype(np.float32),
                 gt=load_psr_labels(rec_dir / "PSR_labels.csv"),
                 has_errors=any(c.step % 3 == INCORRECT for c in with_errors),
+                n_frames=n_frames,
             )
         )
     return videos
@@ -285,6 +333,10 @@ def run_psr_baseline(
     spec = spec or PSRSpec()
     started = time.perf_counter()
     videos = load_psr_videos(features_dir, psr_dir)
+    steps = load_procedure_info(PROCEDURE_INFO)
+    audits = [audit_recording(psr_dir / v.video_id, v.n_frames, steps) for v in videos]
+    if any(a["problems"] for a in audits):
+        raise ValueError(f"PSR label problems: {[a for a in audits if a['problems']]}")
     participants = sorted({v.participant for v in videos})
     if len(participants) < 2:
         raise ValueError("leave-one-participant-out needs at least two participants")
@@ -317,6 +369,9 @@ def run_psr_baseline(
                 for c in pred
             )
     out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "psr_audit.json").write_text(
+        json.dumps(audits, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     write_completions(out_dir / "completions_val.csv", rows)
     metrics = score_completions(rows, n_boot=spec.n_boot, seed=spec.seed)
     error_videos = sorted(v.video_id for v in videos if v.has_errors)

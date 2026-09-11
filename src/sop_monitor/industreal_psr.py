@@ -26,6 +26,8 @@ from sop_monitor.metrics.online import Completion
 N_COMPONENTS = 11
 INSTALL, INCORRECT, REMOVE = 0, 1, 2
 PSR_FILES = ("PSR_labels.csv", "PSR_labels_with_errors.csv", "PSR_labels_raw.csv")
+PROCEDURE_INFO = Path(__file__).resolve().parents[2] / "sop" / "industreal" / "procedure_info.json"
+"""Committed copy of the reference ``procedure_info.json`` (see ``sop/industreal/NOTICE.md``)."""
 
 
 @dataclass(frozen=True)
