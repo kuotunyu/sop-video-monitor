@@ -5,9 +5,10 @@
 > **狀態：第一段流程已可重現，尚無正式研究成果。**
 > 目前有：IndustReal 影片與標註的稽核與對齊、凍結的 participant-disjoint split、HA-ViD 三張
 > task precedence graph 的匯出與順序／遺漏／時長檢查、離線指標（含獨立參考實作交叉核對）與對照官方
-> 程式碼重寫的線上指標，以及三個在 IndustReal **validation split** 上的開發 baseline：frozen DINOv2 +
+> 程式碼重寫的線上指標，以及四個在 IndustReal **validation split** 上的開發 baseline：frozen DINOv2 +
 > linear head、causal 與非 causal MS-TCN++、leave-one-participant-out 的 step-completion head
-> （第一組真實的 POS／F1／delay）。全部可從已 commit 的預測表重算。
+> （第一組真實的 POS／F1／delay）、以及 causal MS-TCN++ state head 加 procedure prior 的 decoder。
+> 全部可從已 commit 的預測表重算。
 > 沒有：HA-ViD 影片或 HR-SAT 標註（request form 尚未到貨）、任何 frozen test split 上的正式數字、
 > RTSP 串流、ASFormer、多視角融合、複核 UI、VLM。
 
@@ -55,7 +56,9 @@ CLI（`sop-monitor`）：`freeze-splits`、`check-sop`、`export-sop`、`audit-i
   [`reports/industreal_dev_v2_mstcn/`](reports/industreal_dev_v2_mstcn/) 在同一份特徵上比較
   causal 與非 causal 的 MS-TCN++；[`reports/industreal_dev_v3_psr/`](reports/industreal_dev_v3_psr/)
   用 val 的 PSR 標註做 leave-one-participant-out 的 step-completion head，給出第一組真實的線上指標
-  （POS／system F1／detection delay）。三者都包含真實預測表、`metrics.json`、`tables.md` 與報告。
+  （POS／system F1／detection delay）；[`reports/industreal_dev_v4_psr_mstcn/`](reports/industreal_dev_v4_psr_mstcn/)
+  在同一協定下比較 linear 與 causal MS-TCN++ state head、以及加上 dwell time 與從訓練 fold 學到的
+  procedure prior 的 decoder。全部都包含真實預測表、`metrics.json`、`tables.md` 與報告。
   數字在 val 上量測，val 同時也是選超參數／epoch／decoder 的依據；frozen test split 沒有被讀取。
   IndustReal 的數字不會進任何 HA-ViD 表格（設計規格 §3.3）。
 - **正式研究成果**：無。

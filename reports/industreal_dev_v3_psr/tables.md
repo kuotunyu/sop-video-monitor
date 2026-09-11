@@ -1,12 +1,12 @@
 Development result on `val` (16 videos, 5 participants), leave-one-participant-out; 95% CI = participant bootstrap (2000 draws, seed 0).
 
-| subset | videos | POS | F1 (system) | mean delay (s) | TP / FP / FN |
-|---|---|---|---|---|---|
-| all | 16 | 0.040 [0.000, 0.111] | 0.479 [0.401, 0.557] | 26.8 [18.9, 36.6] | 109 / 246 / 13 |
-| no_errors | 12 | 0.046 [0.000, 0.167] | 0.435 [0.369, 0.548] | 24.3 [17.5, 30.6] | — |
-| with_errors | 4 | 0.021 [0.000, 0.063] | 0.613 [0.529, 0.759] | 34.2 [20.9, 52.8] | — |
+| run | subset | videos | POS | F1 (system) | mean delay (s) | TP / FP / FN |
+|---|---|---|---|---|---|---|
+| pred | all | 16 | 0.040 [0.000, 0.111] | 0.479 [0.401, 0.557] | 26.8 [18.9, 36.6] | 109 / 246 / 13 |
+| pred | no_errors | 12 | 0.046 [0.000, 0.167] | 0.435 [0.369, 0.548] | 24.3 [17.5, 30.6] | — |
+| pred | with_errors | 4 | 0.021 [0.000, 0.063] | 0.613 [0.529, 0.759] | 34.2 [20.9, 52.8] | — |
 
-Per-video:
+Per-video, `pred`:
 
 | video | POS | F1 | delay (s) | TP / FP / FN | n_gt / n_pred |
 |---|---|---|---|---|---|
@@ -29,10 +29,10 @@ Per-video:
 
 Decoder selected per fold (on that fold's training videos):
 
-| held-out participant | ema | theta_on | theta_off |
-|---|---|---|---|
-| 05 | 0.8 | 0.9 | 0.1 |
-| 14 | 0.95 | 0.8 | 0.4 |
-| 20 | 0.9 | 0.8 | 0.2 |
-| 24 | 0.9 | 0.8 | 0.2 |
-| 26 | 0.9 | 0.8 | 0.2 |
+| held-out participant | run | ema | theta_on | theta_off | min_dwell |
+|---|---|---|---|---|---|
+| 05 | pred | 0.8 | 0.9 | 0.1 | 0 |
+| 14 | pred | 0.95 | 0.8 | 0.4 | 0 |
+| 20 | pred | 0.9 | 0.8 | 0.2 | 0 |
+| 24 | pred | 0.9 | 0.8 | 0.2 | 0 |
+| 26 | pred | 0.9 | 0.8 | 0.2 | 0 |

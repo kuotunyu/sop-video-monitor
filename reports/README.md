@@ -34,3 +34,6 @@ Current contents:
   detection delay, IndustReal definitions) from a leave-one-participant-out step-completion head
   on the val recordings' PSR labels; `completions_val.csv` holds every ground-truth and emitted
   completion, `psr_audit.json` the label cross-checks.
+- `industreal_dev_v4_psr_mstcn/` — development result: the same protocol with a causal
+  MS-TCN++ state head and a decoder that adds a minimum dwell time and a procedure prior learned
+  from each fold's training labels; four runs (head × decoder) in one completions table.
