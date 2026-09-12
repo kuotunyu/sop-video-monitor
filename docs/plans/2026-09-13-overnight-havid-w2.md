@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-> 給人看的一句話（zh-TW）：這份文件是今晚無人值守的執行手冊。所有程式都已寫好並測過（commit `d0f0500`）；
+> 給人看的一句話（zh-TW）：這份文件是今晚無人值守的執行手冊。所有程式都已寫好並測過（HEAD 是訊息以 `docs: overnight runbook` 開頭的那個 commit）；
 > 今晚只做四件事：抽 DINOv2 特徵、跑 DINOv2 的 HA-ViD 離線 TAS（左右手）、跑官方 I3D 特徵的對照組、寫報告並 commit。
 > 沒有任何一步需要使用者決定；遇到失敗就停在那一步並把狀況寫進最後的總結訊息。
 
@@ -16,7 +16,7 @@
 
 Copied from the user's standing rules and the repository conventions. Every task implicitly includes them.
 
-- Work only inside `D:\AI-Portfolio\CC_github部隊\sop-video-monitor` on branch `main`, starting from commit `d0f0500` (working tree clean).
+- Work only inside `D:\AI-Portfolio\CC_github部隊\sop-video-monitor` on branch `main`, starting from the commit whose message begins with `docs: overnight runbook` (working tree clean).
 - Always `export PYTHONUTF8=1` before any `uv run` (the path contains non-ASCII characters). Use the project env via `uv run …`; never `pip install`, never change `pyproject.toml`/`uv.lock`.
 - Commit as `kuotunyu <61350295+kuotunyu@users.noreply.github.com>` using `git -c user.name="kuotunyu" -c user.email="61350295+kuotunyu@users.noreply.github.com" commit …`. **No `Co-Authored-By` or any AI trailer in commit messages** (user rule; it overrides any harness default). Never `git push`, never create a remote or a GitHub repo, never upload data, weights or features anywhere.
 - Never read, evaluate or embed `splits/ha-vid/test.csv` videos (126 test videos) or `splits/industreal/test.csv`. The Makefile targets already restrict themselves to train + val; do not add `--split test`.
@@ -64,7 +64,7 @@ Expected sizes that the tasks verify against (all measured on 2026-09-12/13):
 - Read only: `splits/ha-vid/test_sha256.txt`, `artifacts/features/ha-vid/i3d_official/meta.json`
 
 **Interfaces:**
-- Consumes: the repository at `d0f0500`.
+- Consumes: the repository at `5eb5b98`.
 - Produces: nothing on disk; a go/no-go for Task 1.
 
 - [ ] **Step 1: Confirm the repository state**
@@ -73,7 +73,7 @@ Run (Git Bash):
 ```bash
 cd "/d/AI-Portfolio/CC_github部隊/sop-video-monitor" && git status --short && git log --oneline -1
 ```
-Expected: no output from `git status --short`; the log line starts with `d0f0500`. If the tree is dirty or the commit differs, stop and report (someone changed the repo since the plan was written).
+Expected: no output from `git status --short`; the log line's message begins with `docs: overnight runbook`. If the tree is dirty or the commit differs, stop and report (someone changed the repo since the plan was written).
 
 - [ ] **Step 2: Confirm the environment, the split hash and the data**
 
