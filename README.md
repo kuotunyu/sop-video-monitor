@@ -2,7 +2,7 @@
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-> **狀態：IndustReal 開發線已收斂到可重算的最佳設定；HA-ViD 已於 2026-09-12 取得並完成 W1 資料稽核與 split 凍結，模型線尚未開始；沒有任何正式（frozen test split）成果。**
+> **狀態：IndustReal 開發線已收斂到可重算的最佳設定；HA-ViD 已於 2026-09-12 取得並完成 W1 資料稽核與 split 凍結，第一批 val 上的離線 TAS 基線已出（`reports/havid_dev_v1_tas_*`、`v2_i3d_*`）；沒有任何正式（frozen test split）成果。**
 > 目前最佳開發結果（validation split，不是 headline）：frozen DINOv2 ViT-B/14 特徵 + causal MS-TCN++ state head +
 > procedure-prior decoder，decoder／延遲預算／訓練長度全部在 out-of-fold 上選，POS 0.642 ± 0.035、
 > F1 0.821 ± 0.004、mean delay 23.6 s（[`reports/industreal_dev_v11_psr_epochsel_f1/`](reports/industreal_dev_v11_psr_epochsel_f1/)）。
@@ -62,12 +62,12 @@ CLI `sop-monitor` 的命令依流程分組：
 
 ### 結果
 
-所有結果都是 IndustReal validation split 上的**開發結果**；哪個 run 回答哪個問題、哪個已被取代、哪個是負面結果，
+所有結果都是 IndustReal 或 HA-ViD validation split 上的**開發結果**；哪個 run 回答哪個問題、哪個已被取代、哪個是負面結果，
 見 [`reports/README.md`](reports/README.md) 的總表。**正式研究成果：無。**
 
 ## 還沒有什麼
 
-- HA-ViD 的特徵抽取、任何模型與指標（資料與 split 已就緒，尚未開跑）。
+- HA-ViD 的線上 PSR 式指標（completion 定義未定）、synthetic 違規表、aa 層與 ASFormer；目前只有 val 上的離線 TAS 基線。
 - Frozen test split 上的任何數字（IndustReal 與 HA-ViD 皆需要明確決定後一次性執行）。
 - RTSP 重播（mediamtx）、decode thread、batch collector、watchdog、shared-memory ring buffer、backpressure 曲線（W4）。
 - ASFormer、late fusion、VideoMAE-V2 clip 特徵、view-ablation、任何圖（W2–W3）。

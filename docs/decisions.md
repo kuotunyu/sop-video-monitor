@@ -91,3 +91,20 @@ The released annotations carry the paper's `wrong` label as `w`, primitive-task 
 the 20-segment threshold set in ADR 0001, so HA-ViD stays the main dataset, the native error
 table will report exact counts with Wilson intervals and be labelled underpowered, and the headline
 violation metrics will come from the synthetic order-violation table, marked as synthetic.
+
+## 2026-09-13 — first HA-ViD baselines: per-view MS-TCN++ with late fusion, DINOv2 vs I3D
+
+Protocol: frozen `splits/ha-vid` (train 17 subjects → val 6 subjects), primitive-task labels of
+one hand per run, class ids from the official `mapping.txt`, one MS-TCN++ per camera view
+(causal and non-causal), epoch selected on val MoF, late fusion = mean of the per-view posteriors
+(`reports/havid_dev_v1_tas_{lh,rh}`, `reports/havid_dev_v2_i3d_{lh,rh}`).
+Fusion vs best single causal view (F1@10, left / right hand, DINOv2): 29.1 vs 27.2 /
+30.3 vs 26.6, inside overlapping intervals. DINOv2 ViT-B/14 vs the authors' I3D features,
+fusion_causal F1@10 (left / right): 29.1 vs 28.7 / 30.3 vs 23.0; on the right hand the I3D fusion
+also has a lower Edit (21.0 vs 33.5, intervals not overlapping); with a weak side view in the
+average (causal Edit 16.2) the I3D fusion falls below its own front view alone (Edit 30.5). Decision: DINOv2 ViT-B/14 is the default frame
+feature for the HA-ViD line — equal on the left hand, better on the right-hand causal fusion, and
+it covers every annotated frame (the I3D features drop five at each end). Plain posterior
+averaging is kept as the fusion baseline but is not assumed safe: a weighted or learned fusion is
+the next fusion experiment. The causal-vs-offline gap for the DINOv2 fusion is 14.4 / 11.0 F1@10
+points. All of this is a development result on val; the frozen test subjects were not read.
