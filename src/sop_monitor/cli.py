@@ -264,15 +264,40 @@ def extract_features_cmd(
     device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
     batch_size: Annotated[int, typer.Option()] = 256,
     overwrite: Annotated[bool, typer.Option()] = False,
+    dataset: Annotated[str, typer.Option(help="industreal | ha-vid")] = "industreal",
+    split_dir: Annotated[
+        Path, typer.Option(help="HA-ViD: frozen split directory whose train/val videos to embed")
+    ] = Path("splits/ha-vid"),
+    rgb_dir: Annotated[
+        Path,
+        typer.Option(help="HA-ViD: directory holding the extracted mp4s (searched recursively)"),
+    ] = Path("data/external/ha-vid/HAViD_rgb"),
 ) -> None:
     """Cache frozen DINOv2 frame features for the labelled videos of the chosen splits."""
     from sop_monitor.features import extract_videos
-    from sop_monitor.industreal import LABEL_FILES, read_labels, segments_by_video
 
     videos: list[Path] = []
-    for name in split or ["train", "val"]:
-        for video_id in sorted(segments_by_video(read_labels(root / "labels" / LABEL_FILES[name]))):
-            videos.append(root / "rgb" / f"{video_id}.mp4")
+    if dataset == "ha-vid":
+        from sop_monitor.havid_tas import read_split
+
+        on_disk = {p.stem: p for p in rgb_dir.rglob("*.mp4")}
+        for name in split or ["train", "val"]:
+            for row in read_split(split_dir / f"{name}.csv"):
+                if row["video_id"] not in on_disk:
+                    typer.echo(f"missing mp4 for {row['video_id']} under {rgb_dir}")
+                    raise typer.Exit(code=1)
+                videos.append(on_disk[row["video_id"]])
+    elif dataset == "industreal":
+        from sop_monitor.industreal import LABEL_FILES, read_labels, segments_by_video
+
+        for name in split or ["train", "val"]:
+            for video_id in sorted(
+                segments_by_video(read_labels(root / "labels" / LABEL_FILES[name]))
+            ):
+                videos.append(root / "rgb" / f"{video_id}.mp4")
+    else:
+        typer.echo(f"unknown dataset {dataset!r} (industreal | ha-vid)")
+        raise typer.Exit(code=1)
     cache_dir = out / f"{model}_s{stride}"
     stats = extract_videos(videos, cache_dir, model, device, stride, batch_size, overwrite)
     total_seconds = sum(s.seconds for s in stats)
@@ -293,6 +318,80 @@ def extract_features_cmd(
     (cache_dir / "extraction_log.json").write_text(
         json.dumps(log, indent=2) + "\n", encoding="utf-8"
     )
+
+
+@app.command("export-official-features")
+def export_official_features_cmd(
+    official: Annotated[Path, typer.Option(help="HA-ViD ActionSegmentation/data zip")] = Path(
+        "data/external/ha-vid/ActionSegmentation_data.zip"
+    ),
+    split_dir: Annotated[
+        Path | None,
+        typer.Option(help="Only export the train/val videos of this split directory"),
+    ] = Path("splits/ha-vid"),
+    out: Annotated[Path, typer.Option(help="npz cache directory")] = Path(
+        "artifacts/features/ha-vid/i3d_official"
+    ),
+) -> None:
+    """Export the official HA-ViD I3D features into the npz layout used by the training commands."""
+    from sop_monitor.havid_tas import export_official_features, read_split
+
+    videos = None
+    if split_dir is not None:
+        videos = [
+            row["video_id"]
+            for name in ("train", "val")
+            for row in read_split(split_dir / f"{name}.csv")
+        ]
+    written = export_official_features(official, out, videos)
+    typer.echo(f"{written} feature file(s) exported -> {out}")
+
+
+@app.command("train-havid-tas")
+def train_havid_tas_cmd(
+    features: Annotated[
+        Path,
+        typer.Option(help="npz cache dir, e.g. artifacts/features/ha-vid/dinov2_vitb14_s1"),
+    ],
+    out: Annotated[Path, typer.Option(help="Run directory for predictions/config/metrics")],
+    split_dir: Annotated[Path, typer.Option()] = Path("splits/ha-vid"),
+    temporal: Annotated[Path, typer.Option(help="HAViD_temporalAnnotation.zip")] = Path(
+        "data/external/ha-vid/HAViD_temporalAnnotation.zip"
+    ),
+    official: Annotated[Path, typer.Option(help="ActionSegmentation/data zip (mapping)")] = Path(
+        "data/external/ha-vid/ActionSegmentation_data.zip"
+    ),
+    hand: Annotated[str, typer.Option(help="lh | rh")] = "lh",
+    level: Annotated[str, typer.Option(help="pt | aa")] = "pt",
+    device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
+    epochs: Annotated[int, typer.Option()] = 50,
+    eval_every: Annotated[int, typer.Option()] = 5,
+    n_boot: Annotated[int, typer.Option()] = 2000,
+    seed: Annotated[int, typer.Option()] = 0,
+) -> None:
+    """Per-view causal and offline MS-TCN++ plus late fusion on HA-ViD train -> val (spec W2)."""
+    from sop_monitor.features import resolve_device
+    from sop_monitor.havid_tas import HavidTASSpec, run_havid_tas
+    from sop_monitor.mstcn import MSTCNSpec
+
+    if hand not in ("lh", "rh") or level not in ("pt", "aa"):
+        typer.echo("--hand must be lh or rh and --level pt or aa")
+        raise typer.Exit(code=1)
+    spec = HavidTASSpec(
+        hand=hand,
+        level=level,
+        mstcn=MSTCNSpec(epochs=epochs, eval_every=eval_every, seed=seed, n_boot=n_boot),
+    )
+    result = run_havid_tas(
+        features, split_dir, temporal, official, out, spec, device=resolve_device(device)
+    )
+    typer.echo(result["tables"])
+    for name, log in result["config"]["training"].items():  # type: ignore[index, union-attr]
+        typer.echo(
+            f"{name}: best epoch {log['best_epoch']}, {log['parameters']} parameters, "
+            f"{log['train_seconds']:.0f}s"
+        )
+    typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
 
 
 @app.command("train-baseline")

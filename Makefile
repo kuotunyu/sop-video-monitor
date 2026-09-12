@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-i3d
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -58,7 +58,23 @@ psr:  ## Current best PSR configuration (industreal_dev_v11): ViT-B/14, MS-TCN++
 psr-latency:  ## Head x decoder ablation under 15 s / 30 s budgets (industreal_dev_v7/v8/v9; set FEATURES and OUT).
 	$(UV) run sop-monitor train-psr --features $(FEATURES) --psr-dir $(INDUSTREAL)/psr --train-split splits/industreal/train.csv --eval-split splits/industreal/val.csv --selection nested --seed 0 --seed 1 --seed 2 --delay-cap 15 --delay-cap 30 --out $(or $(OUT),reports/industreal_dev_v8_psr_vitb)
 
-reproduce: audit features-vits baseline mstcn features extract-psr learn-sop psr reproduce-lite  ## Full path, about 1.5 h on an RTX 4090.
+# ---- HA-ViD line: needs the delivered archives (data/README.md) and splits/ha-vid --------------
+
+features-havid:  ## DINOv2 ViT-B/14 frame features for the HA-ViD train + val videos (483 mp4s, three views; test untouched).
+	$(UV) run sop-monitor extract-features --dataset ha-vid --split-dir splits/ha-vid --rgb-dir $(HAVID)/HAViD_rgb --out artifacts/features/ha-vid --model dinov2_vitb14 --stride 1 --batch-size 128
+
+i3d-havid:  ## Export the official I3D features of the train + val videos into the same npz cache layout.
+	$(UV) run sop-monitor export-official-features --official $(HAVID)/ActionSegmentation_data.zip --split-dir splits/ha-vid --out artifacts/features/ha-vid/i3d_official
+
+havid-tas:  ## havid_dev_v1: per-view MS-TCN++ (causal + offline) and late fusion on DINOv2 ViT-B/14, primitive tasks, both hands.
+	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand lh --out reports/havid_dev_v1_tas_lh
+	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand rh --out reports/havid_dev_v1_tas_rh
+
+havid-tas-i3d:  ## havid_dev_v2: the same protocol on the official I3D features (control).
+	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/i3d_official --hand lh --out reports/havid_dev_v2_i3d_lh
+	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/i3d_official --hand rh --out reports/havid_dev_v2_i3d_rh
+
+reproduce: audit features-vits baseline mstcn features extract-psr learn-sop psr reproduce-lite  ## Full IndustReal path, about 1.5 h on an RTX 4090.
 
 # ---- Offline TAS line (industreal_dev_v1, v2; ViT-S/14 features) ------------------------------
 

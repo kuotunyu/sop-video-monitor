@@ -40,6 +40,7 @@ backpressure 實測曲線。**以上是設計目標，不是現況。** 現況�
 | `industreal.py`、`splits.py` | IndustReal action 標註解析、participant-disjoint split 凍結與 test list SHA-256 契約（`splits/industreal/`）、標註 → 逐影格對齊 |
 | `industreal_psr.py` | PSR 標註解析與三個 CSV 的交叉核對、官方 state→step 規則轉錄、從 recording 壓縮檔只抽標註、JPEG 名稱位移偵測 |
 | `havid.py` | HA-ViD id 與 HR-SAT 標籤解析、temporal／collaboration 標註（inclusive、連續）、官方 split／mapping／groundTruth 交叉核對（頭尾各裁 5 frames）、`wrong` 統計、mp4 probe 與三視角配對、subject-wise split 凍結 |
+| `havid_tas.py` | HA-ViD 離線 TAS 線：每個視角各訓 causal／非 causal MS-TCN++、三視角 late fusion、以 recording 為鍵的預測表；官方 I3D 特徵匯出成同一種 npz 快取 |
 | `baseline.py`、`mstcn.py` | 離線 TAS 線：linear head、causal／非 causal MS-TCN++、預測表與從預測表重算指標 |
 | `psr_baseline.py` | 線上 PSR 線：linear 與 causal MS-TCN++ state head、EMA／hysteresis／dwell／procedure-prior decoder、out-of-fold 的 decoder／延遲預算／epoch 選擇、多 seed、completion 表與計分 |
 | `metrics/offline.py`、`metrics/reference_mstcn.py` | MoF、Edit、F1@k（MS-TCN 定義）與獨立參考轉錄的交叉核對；participant bootstrap |
@@ -53,8 +54,8 @@ CLI `sop-monitor` 的命令依流程分組：
 | 階段 | 命令 |
 |---|---|
 | 資料 | `audit-industreal`、`audit-havid`、`freeze-splits`（`--dataset industreal | ha-vid`）、`verify-splits`、`extract-psr-labels` |
-| 特徵 | `extract-features` |
-| 離線 TAS | `train-baseline`、`train-mstcn` |
+| 特徵 | `extract-features`（`--dataset industreal | ha-vid`）、`export-official-features` |
+| 離線 TAS | `train-baseline`、`train-mstcn`（IndustReal）、`train-havid-tas`（HA-ViD，每視角 + fusion） |
 | 線上 PSR | `train-psr`、`learn-sop`、`check-psr-run` |
 | SOP graph | `export-sop`、`check-sop` |
 | 重算 | `score-predictions`、`reproduce-lite` |
