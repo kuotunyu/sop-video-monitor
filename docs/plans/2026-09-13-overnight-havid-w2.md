@@ -64,7 +64,7 @@ Expected sizes that the tasks verify against (all measured on 2026-09-12/13):
 - Read only: `splits/ha-vid/test_sha256.txt`, `artifacts/features/ha-vid/i3d_official/meta.json`
 
 **Interfaces:**
-- Consumes: the repository at `5eb5b98`.
+- Consumes: the repository at the `docs: overnight runbook…` commit (clean tree).
 - Produces: nothing on disk; a go/no-go for Task 1.
 
 - [ ] **Step 1: Confirm the repository state**
