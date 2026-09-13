@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -128,3 +128,9 @@ tune-havid-sop-sheet:  ## Leave-one-subject-out tuning at instruction-sheet gran
 havid-sop-v8:  ## havid_dev_v8: SOP checks at instruction-sheet granularity with the knowledge tuned out of fold (set SUPPORT, AGREEMENT, LOWQ, HIGHQ from oof.json).
 	$(UV) run sop-monitor learn-havid-sop --temporal $(HAVID)/HAViD_temporalAnnotation.zip --split-dir splits/ha-vid --granularity sheet --out sop/ha-vid/sheet --min-support $(or $(SUPPORT),20) --min-agreement $(or $(AGREEMENT),1.0) --low-q $(or $(LOWQ),0.01) --high-q $(or $(HIGHQ),0.99)
 	$(UV) run sop-monitor havid-sop --pred-lh reports/havid_dev_v3_tas_f1sel_lh --pred-rh reports/havid_dev_v3_tas_f1sel_rh --run-name fusion_causal --graphs sop/ha-vid/sheet --granularity sheet --out reports/havid_dev_v8_sop_sheet
+
+havid-tas-lookahead:  ## havid_dev_v9 inputs: causal networks with 15 / 45 / 90 frames of look-ahead (1 / 3 / 6 s output delay), seeds 0-2, both hands, no offline twins.
+	for seed in 0 1 2; do for la in 15 45 90; do for hand in lh rh; do $(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand $$hand --selection-metric f1@10 --seed $$seed --lookahead-frames $$la --no-offline --out reports/havid_dev_v9_tas_la$${la}_$${hand}_s$$seed || exit 1; done; done; done
+
+havid-lookahead-summary:  ## havid_dev_v9: mean +- std over seeds per look-ahead and hand.
+	for la in 15 45 90; do for hand in lh rh; do $(UV) run sop-monitor summarise-havid-seeds --run reports/havid_dev_v9_tas_la$${la}_$${hand}_s0 --run reports/havid_dev_v9_tas_la$${la}_$${hand}_s1 --run reports/havid_dev_v9_tas_la$${la}_$${hand}_s2 --out reports/havid_dev_v9_tas_lookahead_la$${la}_$${hand} || exit 1; done; done

@@ -185,3 +185,42 @@ def test_official_features_export_and_loader(tmp_path: Path) -> None:
         load_havid_videos(out, paths["splits"] / "val.csv", temporal["view0_lh_pt"], ids, 2)
     with pytest.raises(FileNotFoundError):
         export_official_features(paths["official"], out, ["S09A04I01M0"])
+
+
+def test_lookahead_delays_targets_and_realigns_outputs(tmp_path: Path) -> None:
+    from sop_monitor.baseline import VideoFeatures
+    from sop_monitor.havid_tas import advance_outputs, delay_labels
+
+    video = VideoFeatures("r", "S01", np.arange(5), np.zeros((5, 2)), np.array([1, 1, 2, 2, 3]))
+    assert delay_labels([video], 0)[0] is video
+    assert delay_labels([video], 2)[0].gt.tolist() == [1, 1, 1, 1, 2]
+    assert delay_labels([video], 9)[0].gt.tolist() == [1, 1, 1, 1, 1]
+    with pytest.raises(ValueError):
+        delay_labels([video], -1)
+    probs = np.arange(10, dtype=float).reshape(5, 2)
+    assert advance_outputs(probs, 2)[:, 0].tolist() == [4.0, 6.0, 8.0, 8.0, 8.0]
+    assert advance_outputs(probs, 7)[:, 0].tolist() == [8.0] * 5
+    # a perfect delayed causal network, re-aligned, reproduces the original labels exactly
+    delayed = delay_labels([video], 2)[0].gt
+    one_hot = np.eye(4)[delayed]
+    assert advance_outputs(one_hot, 2).argmax(axis=1)[:3].tolist() == video.gt[:3].tolist()
+
+    paths = build(tmp_path)
+    result = run_havid_tas(
+        paths["features"],
+        paths["splits"],
+        paths["temporal"],
+        paths["official"],
+        tmp_path / "la",
+        HavidTASSpec(mstcn=SMALL, lookahead=3, offline=False),
+        device="cpu",
+    )
+    runs = set(result["metrics"]["runs"])
+    assert runs == {"majority", "fusion_causal", "fusion_geo_causal", "fusion_conf_causal"} | {
+        f"view{v}_causal" for v in range(3)
+    }
+    assert (
+        result["config"]["spec"]["lookahead"] == 3 and result["config"]["spec"]["offline"] is False
+    )
+    assert "t + 3" in result["config"]["runs"]["view0_causal"]
+    assert len(read_predictions(tmp_path / "la" / "predictions_val.csv")) == N_FRAMES

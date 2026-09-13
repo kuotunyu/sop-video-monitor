@@ -58,6 +58,11 @@ class HavidTASSpec:
     level: str = "pt"
     views: tuple[int, ...] = VIEWS
     mstcn: MSTCNSpec = field(default_factory=MSTCNSpec)
+    lookahead: int = 0
+    """Frames of future context the causal networks may use: the label of frame t is read from the
+    causal output at t + lookahead (a fixed output delay of lookahead / 15 s)."""
+    offline: bool = True
+    """Also train the non-causal (offline) twin of every view."""
 
     @property
     def subdataset(self) -> str:
@@ -174,6 +179,42 @@ def fuse_views(stack: np.ndarray, eps: float = 1e-8) -> dict[str, np.ndarray]:
     return {"": mean, "_geo": geo, "_conf": conf}
 
 
+def delay_labels(videos: Sequence[VideoFeatures], frames: int) -> list[VideoFeatures]:
+    """Copies whose per-frame targets are delayed by ``frames``: target[t] = gt[t - frames].
+
+    A causal network trained on these copies learns to name, at time t, the step of frame
+    t - frames, i.e. it may use ``frames`` frames of future context for every labelled frame.
+    The first ``frames`` targets repeat the first label.
+    """
+    if frames < 0:
+        raise ValueError("look-ahead must be non-negative")
+    if frames == 0:
+        return list(videos)
+    out: list[VideoFeatures] = []
+    for v in videos:
+        head = np.full(min(frames, len(v.gt)), v.gt[0], dtype=v.gt.dtype)
+        out.append(
+            VideoFeatures(
+                v.video_id,
+                v.participant,
+                v.frames,
+                v.features,
+                np.concatenate([head, v.gt])[: len(v.gt)],
+            )
+        )
+    return out
+
+
+def advance_outputs(probs: np.ndarray, frames: int) -> np.ndarray:
+    """Re-align a delayed causal output: row t becomes the output emitted at t + ``frames``;
+    rows past the end repeat the last output (the end of the video gives no further frames)."""
+    if frames == 0:
+        return probs
+    shifted = probs[frames:]
+    tail = np.repeat(probs[-1:], len(probs) - len(shifted), axis=0)
+    return np.concatenate([shifted, tail]) if len(shifted) else tail
+
+
 def _check_aligned(
     reference: Sequence[VideoFeatures], videos: Sequence[VideoFeatures], view: int
 ) -> None:
@@ -226,13 +267,23 @@ def run_havid_tas(
             counts = {"train_videos": len(train_videos), "train_frames": len(y_train)}
         else:
             _check_aligned(reference, eval_videos, view)
-        for name, causal in (("causal", True), ("offline", False)):
+        variants = [("causal", True)] + ([("offline", False)] if spec.offline else [])
+        for name, causal in variants:
             run = f"view{view}_{name}"
-            probs[run], logs[run] = train_mstcn(
-                train_videos, eval_videos, index, inverse, spec.mstcn, causal, device
+            shift = spec.lookahead if causal else 0
+            view_probs, logs[run] = train_mstcn(
+                delay_labels(train_videos, shift),
+                delay_labels(eval_videos, shift),
+                index,
+                inverse,
+                spec.mstcn,
+                causal,
+                device,
             )
+            probs[run] = [advance_outputs(p, shift) for p in view_probs]
     assert reference is not None
-    for name in ("causal", "offline"):
+    trained_variants = ("causal", "offline") if spec.offline else ("causal",)
+    for name in trained_variants:
         for rule in FUSION_RULES:
             probs[f"fusion{rule}_{name}"] = []
         for i in range(len(reference)):
@@ -263,15 +314,25 @@ def run_havid_tas(
     cache_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.is_file() else {}
     descriptions = {"majority": "constant most frequent training label"}
     for view in spec.views:
-        descriptions[f"view{view}_causal"] = (
-            f"MS-TCN++ on the {VIEW_NAMES[view]} view (view {view}), left-only padding: "
-            "frame t sees frames <= t (online)"
-        )
-        descriptions[f"view{view}_offline"] = (
-            f"MS-TCN++ on the {VIEW_NAMES[view]} view (view {view}), symmetric padding: "
-            "sees future frames (not an online result)"
-        )
-    for name, tail in (("causal", ", online"), ("offline", "")):
+        if spec.lookahead:
+            descriptions[f"view{view}_causal"] = (
+                f"MS-TCN++ on the {VIEW_NAMES[view]} view (view {view}), left-only padding, "
+                f"output delayed by {spec.lookahead} frames: frame t is labelled from frames "
+                f"<= t + {spec.lookahead} ({spec.lookahead / 15:.1f} s latency)"
+            )
+        else:
+            descriptions[f"view{view}_causal"] = (
+                f"MS-TCN++ on the {VIEW_NAMES[view]} view (view {view}), left-only padding: "
+                "frame t sees frames <= t (online)"
+            )
+        if spec.offline:
+            descriptions[f"view{view}_offline"] = (
+                f"MS-TCN++ on the {VIEW_NAMES[view]} view (view {view}), symmetric padding: "
+                "sees future frames (not an online result)"
+            )
+    tails = {"causal": ", online", "offline": ""}
+    for name in trained_variants:
+        tail = tails[name]
         descriptions[f"fusion_{name}"] = (
             f"mean of the per-view {name} posteriors (late fusion{tail})"
         )
@@ -293,6 +354,8 @@ def run_havid_tas(
             "hand": spec.hand,
             "level": spec.level,
             "views": list(spec.views),
+            "lookahead": spec.lookahead,
+            "offline": spec.offline,
             "mstcn": asdict(spec.mstcn),
         },
         "split_dir": str(split_dir),

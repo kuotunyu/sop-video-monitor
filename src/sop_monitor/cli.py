@@ -368,6 +368,10 @@ def train_havid_tas_cmd(
     eval_every: Annotated[int, typer.Option()] = 5,
     n_boot: Annotated[int, typer.Option()] = 2000,
     seed: Annotated[int, typer.Option()] = 0,
+    lookahead_frames: Annotated[
+        int, typer.Option(help="Future frames the causal networks may use (output delay)")
+    ] = 0,
+    offline: Annotated[bool, typer.Option(help="Also train the non-causal twins")] = True,
     selection_metric: Annotated[
         str,
         typer.Option(
@@ -389,6 +393,8 @@ def train_havid_tas_cmd(
     spec = HavidTASSpec(
         hand=hand,
         level=level,
+        lookahead=lookahead_frames,
+        offline=offline,
         mstcn=MSTCNSpec(
             epochs=epochs,
             eval_every=eval_every,
