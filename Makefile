@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary havid-online-v10 havid-step-recall-v9 review-queue review-ui stream-bench-decode stream-bench-dinov2
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary havid-online-v10 havid-step-recall-v9 havid-final-L0 havid-final-lstar review-queue review-ui stream-bench-decode stream-bench-dinov2
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -140,6 +140,16 @@ havid-online-v10:  ## havid_dev_v10: val replayed frame by frame through the onl
 
 havid-step-recall-v9:  ## havid_dev_v9 step table: val frame recall per sheet step, causal fusion at look-ahead 0 / 15 / 45 / 90 and offline fusion, both hands x seeds 0-2.
 	v3=""; for s in "" _s1 _s2; do for h in lh rh; do v3="$$v3,reports/havid_dev_v3_tas_f1sel_$$h$$s"; done; done; groups="--group L0=fusion_causal@$${v3#,}"; for la in 15 45 90; do d=""; for s in 0 1 2; do for h in lh rh; do d="$$d,reports/havid_dev_v9_tas_la$${la}_$${h}_s$$s"; done; done; groups="$$groups --group L$$la=fusion_causal@$${d#,}"; done; $(UV) run sop-monitor havid-step-recall $$groups --group offline=fusion_offline@$${v3#,} --out reports/havid_dev_v9_step_recall
+
+# ---- HA-ViD final networks for the one-time test (docs/havid_test_protocol.md) -----------------
+# Retrained with checkpoints; runs and weights live under artifacts/ (ignored). The reproducibility
+# gate compares their predictions_val.csv with the committed dev runs of the same setting and seed.
+
+havid-final-L0:  ## Final causal L=0 networks with offline twins, both hands, seeds 0-2 (dev twins: havid_dev_v3_tas_f1sel_*).
+	for seed in 0 1 2; do for hand in lh rh; do $(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand $$hand --selection-metric f1@10 --seed $$seed --checkpoint-dir artifacts/checkpoints/havid_final_L0_$${hand}_s$$seed --out artifacts/final_runs/havid_final_L0_$${hand}_s$$seed || exit 1; done; done
+
+havid-final-lstar:  ## Final causal networks at the selected look-ahead LSTAR (frames), both hands, seeds 0-2 (dev twins: havid_dev_v9_tas_la$(LSTAR)_*).
+	test -n "$(LSTAR)" || { echo "set LSTAR"; exit 1; }; for seed in 0 1 2; do for hand in lh rh; do $(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand $$hand --selection-metric f1@10 --seed $$seed --lookahead-frames $(LSTAR) --no-offline --checkpoint-dir artifacts/checkpoints/havid_final_L$(LSTAR)_$${hand}_s$$seed --out artifacts/final_runs/havid_final_L$(LSTAR)_$${hand}_s$$seed || exit 1; done; done
 
 # ---- W5 review (docs/review.md) -------------------------------------------------------------
 
