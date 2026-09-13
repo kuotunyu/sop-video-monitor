@@ -14,6 +14,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED_UNDER_DATA = {"data/README.md", "data/manifest.json"}
+SHARE_LINK_PATTERNS = ("dropbox" + ".com/scl/", "rl" + "key=")
 DATA_SUFFIXES = {
     ".mp4",
     ".avi",
@@ -73,7 +74,9 @@ def test_no_access_links_or_env_files_are_tracked() -> None:
             ".csv",
         }:
             continue
+        if path == "tests/test_repository_hygiene.py":
+            continue  # this file names the patterns it searches for
         text = (ROOT / path).read_text(encoding="utf-8", errors="ignore")
-        if "dropbox.com/scl/" in text or "rlkey=" in text:
+        if any(pattern in text for pattern in SHARE_LINK_PATTERNS):
             suspicious.append(path)
     assert suspicious == [], f"files containing a Dropbox share link: {suspicious}"
