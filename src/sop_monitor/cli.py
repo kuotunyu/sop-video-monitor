@@ -769,6 +769,9 @@ def learn_havid_sop_cmd(
     ] = 1.0,
     low_q: Annotated[float, typer.Option(help="Lower duration quantile")] = 0.05,
     high_q: Annotated[float, typer.Option(help="Upper duration quantile")] = 0.95,
+    granularity: Annotated[
+        str, typer.Option(help="pt (HR-SAT primitive task) | sheet (instruction-sheet step)")
+    ] = "pt",
 ) -> None:
     """Learn per-plate precedence graphs, mandatory steps and duration bounds from the train split."""
     from sop_monitor.havid_sop import learn_havid_sop
@@ -782,6 +785,7 @@ def learn_havid_sop_cmd(
         low_q,
         high_q,
         min_agreement=min_agreement,
+        granularity=granularity,
     )
     typer.echo(
         f"{summary['recordings']} train recordings, plates {summary['plates']}, "
@@ -801,11 +805,14 @@ def tune_havid_sop_cmd(
         "data/external/ha-vid/HAViD_temporalAnnotation.zip"
     ),
     split_dir: Annotated[Path, typer.Option()] = Path("splits/ha-vid"),
+    granularity: Annotated[
+        str, typer.Option(help="pt (HR-SAT primitive task) | sheet (instruction-sheet step)")
+    ] = "pt",
 ) -> None:
     """Choose the graph rule and the duration window by leave-one-subject-out on the train split."""
     from sop_monitor.havid_sop import tune_havid_sop
 
-    payload = tune_havid_sop(temporal, split_dir, out)
+    payload = tune_havid_sop(temporal, split_dir, out, granularity)
     typer.echo(
         "| min support | min agreement | edges | coverage | rec. false alarms | step false alarms | score |"
     )
@@ -840,6 +847,9 @@ def havid_sop_cmd(
             help="Absorb predicted segments shorter than this into their neighbour (0 = off)"
         ),
     ] = 0,
+    granularity: Annotated[
+        str, typer.Option(help="pt (HR-SAT primitive task) | sheet (instruction-sheet step)")
+    ] = "pt",
 ) -> None:
     """Val step sequences (ground truth and predicted), SOP checks, synthetic violations, native w."""
     from sop_monitor.havid_sop import render_sop_tables, run_havid_sop
@@ -853,6 +863,7 @@ def havid_sop_cmd(
         out,
         seed,
         min_segment_frames,
+        granularity,
     )
     typer.echo(render_sop_tables(payload))
     typer.echo(f"-> {out}")

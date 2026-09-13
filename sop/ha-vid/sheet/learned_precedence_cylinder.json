@@ -1,0 +1,46 @@
+{
+  "edges": {
+    "precedesPT": [
+      [
+        "ibacb",
+        "scccb"
+      ],
+      [
+        "ibscb",
+        "ibacb"
+      ],
+      [
+        "ickcb",
+        "scccb"
+      ],
+      [
+        "ickcb",
+        "sshc"
+      ],
+      [
+        "scccb",
+        "lck"
+      ]
+    ]
+  },
+  "nodes": {
+    "ibacb": "PrimitiveTask",
+    "ibscb": "PrimitiveTask",
+    "icbck": "PrimitiveTask",
+    "iccck": "PrimitiveTask",
+    "ickcb": "PrimitiveTask",
+    "ickcc": "PrimitiveTask",
+    "ishc": "PrimitiveTask",
+    "ishck": "PrimitiveTask",
+    "lck": "PrimitiveTask",
+    "pbabs": "PrimitiveTask",
+    "pbsba": "PrimitiveTask",
+    "pcbbx": "PrimitiveTask",
+    "pckbx": "PrimitiveTask",
+    "pcsbx": "PrimitiveTask",
+    "scbcc": "PrimitiveTask",
+    "scccb": "PrimitiveTask",
+    "sshc": "PrimitiveTask"
+  },
+  "source": "learned from 39 HA-ViD train recordings of the cylinder plate (min support 10, min agreement 1.0)"
+}

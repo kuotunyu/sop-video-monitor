@@ -2,7 +2,7 @@
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-> **狀態：IndustReal 開發線已收斂到可重算的最佳設定；HA-ViD 已於 2026-09-12 取得並完成 W1 資料稽核與 split 凍結，第一批 val 上的離線 TAS 基線已出（`reports/havid_dev_v1_tas_*`、`v2_i3d_*`）；沒有任何正式（frozen test split）成果。**
+> **狀態：IndustReal 開發線已收斂到可重算的最佳設定；HA-ViD 已於 2026-09-12 取得並完成 W1 資料稽核與 split 凍結，val 上已有離線 TAS 基線（三 seed，`reports/havid_dev_v7_tas_seeds_*`）與從 train 學出的 SOP 檢查層（`reports/havid_dev_v8_sop_sheet`）；沒有任何正式（frozen test split）成果。**
 > 目前最佳開發結果（validation split，不是 headline）：frozen DINOv2 ViT-B/14 特徵 + causal MS-TCN++ state head +
 > procedure-prior decoder，decoder／延遲預算／訓練長度全部在 out-of-fold 上選，POS 0.642 ± 0.035、
 > F1 0.821 ± 0.004、mean delay 23.6 s（[`reports/industreal_dev_v11_psr_epochsel_f1/`](reports/industreal_dev_v11_psr_epochsel_f1/)）。
@@ -69,11 +69,11 @@ CLI `sop-monitor` 的命令依流程分組：
 
 ## 還沒有什麼
 
-- HA-ViD 的線上 PSR 式指標（completion 定義未定）、synthetic 違規表、aa 層與 ASFormer；目前只有 val 上的離線 TAS 基線。
+- HA-ViD 的線上 PSR 式指標（completion 定義未定）、aa 層；辨識器目前是 causal fusion F1@10 約 30（三 seed 平均），是整條線的瓶頸。
 - Frozen test split 上的任何數字（IndustReal 與 HA-ViD 皆需要明確決定後一次性執行）。
 - RTSP 重播（mediamtx）、decode thread、batch collector、watchdog、shared-memory ring buffer、backpressure 曲線（W4）。
-- ASFormer、late fusion、VideoMAE-V2 clip 特徵、view-ablation、任何圖（W2–W3）。
-- W3 剩餘：以說明書的 step 粒度合併同一子組件的螺絲步驟、偏差佇列、更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
+- ASFormer、學習式 fusion、VideoMAE-V2 clip 特徵、任何圖（W2–W3）；三視角 late fusion 與單視角對照已在 `reports/havid_dev_v1`–`v7`。
+- W3 剩餘：偏差佇列、更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟；`v8` 的說明書粒度把 ground truth 的順序誤報降到 4/18，但預測序列仍全數被標記）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
 - 複核 UI、deviation queue、VLM verifier（W5）。
 - `MODEL_CARD.md`、`docs/claims_audit.md`、`docs/what_this_does_not_show.md`（W6）；GitHub／Hugging Face 上尚未發布。
 

@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -121,3 +121,10 @@ havid-tas-seeds:  ## Seeds 1 and 2 of the v3 protocol for both hands (havid_dev_
 havid-seeds-summary:  ## havid_dev_v7: mean +- std over seeds 0-2 of the v3 protocol, per hand (reports/havid_dev_v7_tas_seeds_{lh,rh}).
 	$(UV) run sop-monitor summarise-havid-seeds --run reports/havid_dev_v3_tas_f1sel_lh --run reports/havid_dev_v3_tas_f1sel_lh_s1 --run reports/havid_dev_v3_tas_f1sel_lh_s2 --out reports/havid_dev_v7_tas_seeds_lh
 	$(UV) run sop-monitor summarise-havid-seeds --run reports/havid_dev_v3_tas_f1sel_rh --run reports/havid_dev_v3_tas_f1sel_rh_s1 --run reports/havid_dev_v3_tas_f1sel_rh_s2 --out reports/havid_dev_v7_tas_seeds_rh
+
+tune-havid-sop-sheet:  ## Leave-one-subject-out tuning at instruction-sheet granularity (hole index and tool dropped) -> reports/havid_dev_v8_sop_sheet/oof.json.
+	$(UV) run sop-monitor tune-havid-sop --temporal $(HAVID)/HAViD_temporalAnnotation.zip --split-dir splits/ha-vid --granularity sheet --out reports/havid_dev_v8_sop_sheet/oof.json
+
+havid-sop-v8:  ## havid_dev_v8: SOP checks at instruction-sheet granularity with the knowledge tuned out of fold (set SUPPORT, AGREEMENT, LOWQ, HIGHQ from oof.json).
+	$(UV) run sop-monitor learn-havid-sop --temporal $(HAVID)/HAViD_temporalAnnotation.zip --split-dir splits/ha-vid --granularity sheet --out sop/ha-vid/sheet --min-support $(or $(SUPPORT),20) --min-agreement $(or $(AGREEMENT),1.0) --low-q $(or $(LOWQ),0.01) --high-q $(or $(HIGHQ),0.99)
+	$(UV) run sop-monitor havid-sop --pred-lh reports/havid_dev_v3_tas_f1sel_lh --pred-rh reports/havid_dev_v3_tas_f1sel_rh --run-name fusion_causal --graphs sop/ha-vid/sheet --granularity sheet --out reports/havid_dev_v8_sop_sheet

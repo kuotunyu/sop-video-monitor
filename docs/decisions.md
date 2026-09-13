@@ -175,3 +175,16 @@ seeds 0–2 against the v7 numbers, and a difference smaller than about 3 points
 improvement. Fusion: no rule dominates (geometric best on F1@10 for both hands, confidence-weighted
 best on Edit), and fusion adds only +0.5 / +1.4 F1@10 over the best single causal view; the
 causal-vs-offline gap (≈ 12–13 points) is the real lever.
+
+## 2026-09-14 — SOP steps are instruction-sheet steps, not HR-SAT primitive tasks
+
+HR-SAT labels encode the hole index and the tool (`sshc1dh`); the instruction sheets repeat such
+steps per hole without fixing the hole order or requiring the tool. `havid_sop.sheet_step` drops
+both (73 labels → 51 steps). Tuned out of fold on train with the same grid and rule as v5, the
+order check's recording-level false alarms fall from 32 % to 8 % (step level 5.6 % → 2.0 %) at
+94 % coverage, and the [1, 99] % duration window reaches 5.0 % step false alarms. On val
+(`reports/havid_dev_v8_sop_sheet`) the clean ground-truth recordings flagged fall to 4 / 18
+(order), 8 / 18 (duration, 4.3 % of steps) and 1 / 18 (omission), recall unchanged at 100 %; two of
+the four order-flagged recordings contain native `w` annotations. Decision: `sop/ha-vid/sheet/`
+(sheet granularity, support 10, agreement 1.0, [1, 99] %) is the HA-ViD SOP knowledge; the
+primitive-task level remains the recogniser's output and is mapped before the checks.

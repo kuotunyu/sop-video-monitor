@@ -81,6 +81,91 @@ PLATE_SIGNATURES: dict[str, tuple[str, ...]] = {
 
 KINDS = ("order", "omission", "duration")
 HANDS = ("lh", "rh")
+GRANULARITIES = ("pt", "sheet")
+
+HRSAT_VERBS = frozenset("adghilmprs")
+HRSAT_OBJECTS = frozenset(
+    [
+        "ba",
+        "bs",
+        "bx",
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "cb",
+        "cc",
+        "ck",
+        "cs",
+        "dh",
+        "dp",
+        "ft",
+        "g1",
+        "g2",
+        "g3",
+        "gl",
+        "gs",
+        "gw",
+        "hd",
+        "hq",
+        "hw",
+        "ib",
+        "ir",
+        "lb",
+        "n1",
+        "n2",
+        "n3",
+        "n4",
+        "n5",
+        "n6",
+        "nt",
+        "pl",
+        "ps",
+        "sb",
+        "sh",
+        "sp",
+        "us",
+        "wn",
+        "ws",
+    ]
+)
+"""Two-character object and tool codes of the HR-SAT labels (paper Figure 9)."""
+
+
+def sheet_step(label: str) -> str:
+    """The instruction-sheet step of a primitive-task label: hole index and tool dropped.
+
+    HR-SAT labels are ``<verb><manipulated>[<target>[<tool>]]`` with two-character codes. The
+    instruction sheets repeat steps such as "Screw M8 screw into cylinder bracket hole" once per
+    hole without fixing the hole order or requiring the tool, so ``sshc1dh`` / ``sshc3`` /
+    ``sshc4dp`` all become ``sshc``, and ``sntftwn`` becomes ``sntft``. ``null`` and ``w`` are
+    returned unchanged; anything that does not parse raises.
+    """
+    if label in (NULL, WRONG):
+        return label
+    rest = label[1:]
+    codes = [rest[i : i + 2] for i in range(0, len(rest), 2)]
+    if (
+        label[:1] not in HRSAT_VERBS
+        or len(rest) % 2
+        or not 1 <= len(codes) <= 3
+        or any(code not in HRSAT_OBJECTS for code in codes)
+    ):
+        raise ValueError(f"not an HR-SAT primitive-task label: {label!r}")
+
+    def strip(code: str) -> str:
+        return code[0] if code[1].isdigit() else code
+
+    return label[0] + "".join(strip(code) for code in codes[:2])
+
+
+def at_granularity(steps: Sequence[Step], granularity: str) -> list[Step]:
+    """``pt``: the steps unchanged; ``sheet``: labels mapped by :func:`sheet_step`."""
+    if granularity == "pt":
+        return list(steps)
+    if granularity == "sheet":
+        return [Step(sheet_step(s.label), s.start, s.end, s.hands) for s in steps]
+    raise ValueError(f"granularity must be one of {GRANULARITIES}, got {granularity!r}")
 
 
 @dataclass(frozen=True)
@@ -621,6 +706,16 @@ def evaluate_run(run_dir: Path, graphs_dir: Path, seed: int) -> dict[str, object
     graphs, bounds, mandatory = load_knowledge(graphs_dir)
     sequences, plates = read_steps(run_dir / "steps_val.csv")
     wrong = read_wrong(run_dir / "wrong_val.csv", sequences["gt"])
+    sources = {
+        source: synthetic_table(sequences[source], plates, graphs, bounds, mandatory, seed)
+        for source in sorted(sequences)
+    }
+    native = wrong_table(wrong["gt"], wrong["pred"])
+    with_w = {rec for rec, hands in wrong["gt"].items() if any(hands[hand] for hand in HANDS)}
+    native["recording_level"] = {
+        source: native_vs_checks(table["clean"]["per_recording"], with_w)  # type: ignore[index]
+        for source, table in sources.items()
+    }
     return {
         "graphs": {
             plate: {
@@ -631,12 +726,38 @@ def evaluate_run(run_dir: Path, graphs_dir: Path, seed: int) -> dict[str, object
             }
             for plate in PLATES
         },
-        "sources": {
-            source: synthetic_table(sequences[source], plates, graphs, bounds, mandatory, seed)
-            for source in sorted(sequences)
-        },
-        "wrong": wrong_table(wrong["gt"], wrong["pred"]),
+        "sources": sources,
+        "wrong": native,
     }
+
+
+def native_vs_checks(
+    per_recording: Mapping[str, Mapping[str, object]], with_wrong: set[str]
+) -> dict[str, object]:
+    """Recording level: how often each check flags recordings with and without a native ``w``.
+
+    A recording is flagged by ``order`` when it has a violation, by ``omission`` when a mandatory
+    step is missing, by ``duration`` when a step is out of its window, by ``any`` for any of the
+    three. The rows are counts, not a detector evaluation: ``w`` marks an erroneous primitive task,
+    which need not break order, completeness or timing.
+    """
+    kinds = {
+        "order": lambda r: bool(r["violations"]),
+        "omission": lambda r: bool(r["omissions"]),
+        "duration": lambda r: bool(r["durations"]),
+    }
+    groups = {
+        "with_wrong": sorted(r for r in per_recording if r in with_wrong),
+        "without_wrong": sorted(r for r in per_recording if r not in with_wrong),
+    }
+    out: dict[str, object] = {name: {"recordings": len(recs)} for name, recs in groups.items()}
+    for name, recs in groups.items():
+        entry: dict[str, object] = out[name]  # type: ignore[assignment]
+        for kind, flagged in kinds.items():
+            entry[kind] = sum(1 for r in recs if flagged(per_recording[r]))
+        entry["any"] = sum(1 for r in recs if any(f(per_recording[r]) for f in kinds.values()))
+    out["recordings_with_wrong"] = groups["with_wrong"]
+    return out
 
 
 def _pct(value: float | None) -> str:
@@ -702,6 +823,26 @@ def render_sop_tables(payload: Mapping[str, object]) -> str:
         f"| {wrong['gt_segments']} | {wrong['detected']} | {_pct(wrong['recall'])} {_ci(wrong['recall_ci95'])} "  # type: ignore[arg-type]
         f"| {wrong['pred_segments']} | {wrong['false_pred_segments']} | {_pct(wrong['precision'])} {_ci(wrong['precision_ci95'])} |",  # type: ignore[arg-type]
     ]
+    recording_level: Mapping[str, Mapping[str, Mapping[str, int]]] = wrong.get(
+        "recording_level", {}
+    )  # type: ignore[assignment]
+    if recording_level:
+        lines += [
+            "",
+            "Recording level, unperturbed sequences: recordings flagged by each check, split by whether "
+            "the ground truth contains a native `w` segment (counts only; `w` need not break order, "
+            "completeness or timing):",
+            "",
+            "| source | group | recordings | order | omission | duration | any |",
+            "|---|---|---|---|---|---|---|",
+        ]
+        for source, groups in recording_level.items():
+            for group in ("with_wrong", "without_wrong"):
+                g = groups[group]
+                lines.append(
+                    f"| {source} | {group.replace('_', ' ')} | {g['recordings']} | {g['order']} "
+                    f"| {g['omission']} | {g['duration']} | {g['any']} |"
+                )
     return "\n".join(lines) + "\n"
 
 
@@ -714,8 +855,15 @@ def run_havid_sop(
     out_dir: Path,
     seed: int = 0,
     min_segment_frames: int = 0,
+    granularity: str = "pt",
 ) -> dict[str, object]:
     """Build the val step sequences (ground truth and predicted), evaluate, write the run directory."""
+    knowledge_meta = json.loads((graphs_dir / "mandatory_steps.json").read_text(encoding="utf-8"))
+    learned_at = knowledge_meta.get("meta", {}).get("granularity", "pt")
+    if learned_at != granularity:
+        raise ValueError(
+            f"{graphs_dir} was learned at granularity {learned_at!r}, not {granularity!r}"
+        )
     val = sorted({row["recording"] for row in read_split(split_dir / "val.csv")})
     gt = gt_segments(temporal_zip, val)
     pred = predicted_segments(run_dirs, run_name, min_segment_frames)
@@ -724,7 +872,14 @@ def run_havid_sop(
     gt_sequences = sequences_of(gt)
     plates = {rec: plate_of(s.label for s in steps) for rec, steps in gt_sequences.items()}
     out_dir.mkdir(parents=True, exist_ok=True)
-    write_steps(out_dir / "steps_val.csv", {"gt": gt_sequences, "pred": sequences_of(pred)}, plates)
+    write_steps(
+        out_dir / "steps_val.csv",
+        {
+            "gt": {r: at_granularity(s, granularity) for r, s in gt_sequences.items()},
+            "pred": {r: at_granularity(s, granularity) for r, s in sequences_of(pred).items()},
+        },
+        plates,
+    )
     write_wrong(out_dir / "wrong_val.csv", {"gt": gt, "pred": pred})
     payload = evaluate_run(out_dir, graphs_dir, seed)
     payload["config"] = {
@@ -733,6 +888,7 @@ def run_havid_sop(
         "run": run_name,
         "seed": seed,
         "min_segment_frames": min_segment_frames,
+        "granularity": granularity,
         "fps": FPS,
         "val_recordings": len(val),
     }
@@ -838,15 +994,26 @@ def tune_knowledge(
     }
 
 
-def tune_havid_sop(temporal_zip: Path, split_dir: Path, out_path: Path) -> dict[str, object]:
+def _train_sequences(
+    temporal_zip: Path, split_dir: Path, granularity: str
+) -> tuple[list[str], dict[str, list[Step]], dict[str, str]]:
+    """Train recordings, their step sequences at ``granularity`` and their plates."""
+    train = sorted({row["recording"] for row in read_split(split_dir / "train.csv")})
+    raw = sequences_of(gt_segments(temporal_zip, train))
+    plates = {rec: plate_of(s.label for s in steps) for rec, steps in raw.items()}
+    return train, {r: at_granularity(s, granularity) for r, s in raw.items()}, plates
+
+
+def tune_havid_sop(
+    temporal_zip: Path, split_dir: Path, out_path: Path, granularity: str = "pt"
+) -> dict[str, object]:
     """Run :func:`tune_knowledge` on the train split and write ``out_path`` (JSON)."""
     from sop_monitor.havid import parse_recording_id
 
-    train = sorted({row["recording"] for row in read_split(split_dir / "train.csv")})
-    sequences = sequences_of(gt_segments(temporal_zip, train))
-    plates = {rec: plate_of(s.label for s in steps) for rec, steps in sequences.items()}
+    _train, sequences, plates = _train_sequences(temporal_zip, split_dir, granularity)
     subjects = {rec: parse_recording_id(rec).subject for rec in sequences}
     payload = tune_knowledge(sequences, plates, subjects)
+    payload["granularity"] = granularity
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return payload
@@ -862,11 +1029,10 @@ def learn_havid_sop(
     high_q: float = 0.95,
     min_count: int = 5,
     min_agreement: float = 1.0,
+    granularity: str = "pt",
 ) -> dict[str, object]:
     """Learn graphs, mandatory steps and duration bounds from the train split; write them."""
-    train = sorted({row["recording"] for row in read_split(split_dir / "train.csv")})
-    sequences = sequences_of(gt_segments(temporal_zip, train))
-    plates = {rec: plate_of(s.label for s in steps) for rec, steps in sequences.items()}
+    train, sequences, plates = _train_sequences(temporal_zip, split_dir, granularity)
     graphs = learn_plate_graphs(sequences, plates, min_support, min_agreement)
     mandatory = mandatory_steps(sequences, plates, mandatory_fraction)
     bounds = learn_duration_bounds(sequences, plates, low_q, high_q, min_count)
@@ -875,6 +1041,7 @@ def learn_havid_sop(
         "recordings": len(train),
         "min_support": min_support,
         "min_agreement": min_agreement,
+        "granularity": granularity,
         "mandatory_fraction": mandatory_fraction,
         "duration_quantiles": [low_q, high_q],
         "duration_min_count": min_count,

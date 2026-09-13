@@ -114,27 +114,73 @@ Save this script once as `/tmp/summarise_v3.py` and run it with `reports/havid_d
 ```python
 import json, sys
 from pathlib import Path
+
 run = Path(sys.argv[1])
 m = json.loads((run / "metrics.json").read_text(encoding="utf-8"))
 c = json.loads((run / "config.json").read_text(encoding="utf-8"))
 metric = c["spec"]["mstcn"]["selection_metric"]
-print("hand", c["spec"]["hand"], "selection metric", metric, "n_classes", c["classes"]["n_classes"], "majority", c["classes"]["class_id_to_label"][str(c["classes"]["majority_class_id"])])
-print("train videos/frames", c["train_videos"], c["train_frames"], "eval videos/frames", c["eval_videos"], c["eval_frames"], "wall_seconds", round(c["wall_seconds"]))
+print(
+    "hand",
+    c["spec"]["hand"],
+    "selection metric",
+    metric,
+    "n_classes",
+    c["classes"]["n_classes"],
+    "majority",
+    c["classes"]["class_id_to_label"][str(c["classes"]["majority_class_id"])],
+)
+print(
+    "train videos/frames",
+    c["train_videos"],
+    c["train_frames"],
+    "eval videos/frames",
+    c["eval_videos"],
+    c["eval_frames"],
+    "wall_seconds",
+    round(c["wall_seconds"]),
+)
 for name, log in c["training"].items():
     curve = log["curve"]
-    print(f"{name}: best epoch {log['best_epoch']} val {metric} {log['best_val_' + metric]:.1f}; first {curve[0]['epoch']}:{curve[0][metric]:.1f} last {curve[-1]['epoch']}:{curve[-1][metric]:.1f}; params {log['parameters']}; {log['train_seconds']:.0f}s")
-def fmt(e): return f"{e['point']:.1f} [{e['ci95'][0]:.1f}, {e['ci95'][1]:.1f}]"
-order = ["majority", "view0_causal", "view1_causal", "view2_causal", "fusion_causal", "fusion_geo_causal", "fusion_conf_causal",
-         "view0_offline", "view1_offline", "view2_offline", "fusion_offline", "fusion_geo_offline", "fusion_conf_offline"]
+    print(
+        f"{name}: best epoch {log['best_epoch']} val {metric} {log['best_val_' + metric]:.1f}; first {curve[0]['epoch']}:{curve[0][metric]:.1f} last {curve[-1]['epoch']}:{curve[-1][metric]:.1f}; params {log['parameters']}; {log['train_seconds']:.0f}s"
+    )
+
+
+def fmt(e):
+    return f"{e['point']:.1f} [{e['ci95'][0]:.1f}, {e['ci95'][1]:.1f}]"
+
+
+order = [
+    "majority",
+    "view0_causal",
+    "view1_causal",
+    "view2_causal",
+    "fusion_causal",
+    "fusion_geo_causal",
+    "fusion_conf_causal",
+    "view0_offline",
+    "view1_offline",
+    "view2_offline",
+    "fusion_offline",
+    "fusion_geo_offline",
+    "fusion_conf_offline",
+]
 for run_name in order:
     r = m["runs"][run_name]
-    print(f"| {run_name} | {fmt(r['mof'])} | {fmt(r['edit'])} | {fmt(r['f1@10'])} | {fmt(r['f1@25'])} | {fmt(r['f1@50'])} |")
+    print(
+        f"| {run_name} | {fmt(r['mof'])} | {fmt(r['edit'])} | {fmt(r['f1@10'])} | {fmt(r['f1@25'])} | {fmt(r['f1@50'])} |"
+    )
 labels = c["classes"]["class_id_to_label"]
 print("top confusions (gt -> pred, frames) for fusion_causal:")
 for conf in m["confusions"][:6]:
     print("  ", labels[str(conf["gt"])], "->", labels[str(conf["pred"])], conf["frames"])
 pv = m["per_video"]["fusion_causal"]
-print("worst:", sorted(((round(s["mof"], 1), v) for v, s in pv.items()))[:3], "best:", sorted(((round(s["mof"], 1), v) for v, s in pv.items()), reverse=True)[:3])
+print(
+    "worst:",
+    sorted(((round(s["mof"], 1), v) for v, s in pv.items()))[:3],
+    "best:",
+    sorted(((round(s["mof"], 1), v) for v, s in pv.items()), reverse=True)[:3],
+)
 ```
 Run: `cd "/d/AI-Portfolio/CC_github部隊/sop-video-monitor" && export PYTHONUTF8=1 && uv run python /tmp/summarise_v3.py reports/havid_dev_v3_tas_f1sel_lh`
 Expected: `selection metric f1@10`, `train videos/frames 143 181015`, `eval videos/frames 18 17973`, 13 table rows.

@@ -1097,6 +1097,52 @@
       0.0,
       0.2425007574992425
     ],
+    "recording_level": {
+      "gt": {
+        "recordings_with_wrong": [
+          "S01A04I01",
+          "S01A06I01",
+          "S10A06I01",
+          "S12A06I01"
+        ],
+        "with_wrong": {
+          "any": 3,
+          "duration": 2,
+          "omission": 1,
+          "order": 2,
+          "recordings": 4
+        },
+        "without_wrong": {
+          "any": 11,
+          "duration": 9,
+          "omission": 0,
+          "order": 6,
+          "recordings": 14
+        }
+      },
+      "pred": {
+        "recordings_with_wrong": [
+          "S01A04I01",
+          "S01A06I01",
+          "S10A06I01",
+          "S12A06I01"
+        ],
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 14,
+          "order": 12,
+          "recordings": 14
+        }
+      }
+    },
     "underpowered": true
   }
 }

@@ -317,3 +317,50 @@ def test_smooth_segments_absorbs_blips_and_merges_neighbours() -> None:
     assert smooth_segments([S(0, 1, "x"), S(2, 9, "y")], 3) == [S(0, 9, "y")]
     assert smooth_segments([S(0, 1, "x"), S(2, 3, "y"), S(4, 4, "z")], 3) == [S(0, 4, "x")]
     assert smooth_segments([], 5) == []
+
+
+def test_sheet_granularity_drops_hole_index_and_tool() -> None:
+    from sop_monitor.havid_sop import at_granularity, sheet_step
+
+    assert sheet_step("sshc1dh") == "sshc" and sheet_step("sshc4") == "sshc"
+    assert sheet_step("sftg2ws") == "sftg" and sheet_step("sntftwn") == "sntft"
+    assert (
+        sheet_step("iibn2") == "iibn"
+        and sheet_step("rgw") == "rgw"
+        and sheet_step("pgwbx") == "pgwbx"
+    )
+    assert sheet_step("null") == "null" and sheet_step("w") == "w"
+    for bad in ("xshc1", "sshc1d", "szzc1", "sshc1dhwn"):
+        with pytest.raises(ValueError):
+            sheet_step(bad)
+    steps = [Step("sshc1dh", 0, 9, "lh"), Step("sshc2", 10, 19, "rh")]
+    assert [s.label for s in at_granularity(steps, "sheet")] == ["sshc", "sshc"]
+    assert at_granularity(steps, "pt") == steps
+    with pytest.raises(ValueError):
+        at_granularity(steps, "coarse")
+
+
+def test_native_vs_checks_counts_flags_by_group() -> None:
+    from sop_monitor.havid_sop import native_vs_checks
+
+    per_recording = {
+        "a": {"violations": 2, "omissions": [], "durations": 0},
+        "b": {"violations": 0, "omissions": ["x"], "durations": 1},
+        "c": {"violations": 0, "omissions": [], "durations": 0},
+    }
+    table = native_vs_checks(per_recording, {"a", "c"})
+    assert table["with_wrong"] == {
+        "recordings": 2,
+        "order": 1,
+        "omission": 0,
+        "duration": 0,
+        "any": 1,
+    }
+    assert table["without_wrong"] == {
+        "recordings": 1,
+        "order": 0,
+        "omission": 1,
+        "duration": 1,
+        "any": 1,
+    }
+    assert table["recordings_with_wrong"] == ["a", "c"]

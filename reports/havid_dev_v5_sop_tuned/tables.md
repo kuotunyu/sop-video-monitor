@@ -31,3 +31,12 @@ Native `w` (wrong) segments on val, both hands, predicted `w` overlapping a grou
 | ground-truth `w` segments | detected | recall | predicted `w` segments | false predicted | precision |
 |---|---|---|---|---|---|
 | 12 | 0 | 0.0 [0, 24] | 0 | 0 | — [0, 0] |
+
+Recording level, unperturbed sequences: recordings flagged by each check, split by whether the ground truth contains a native `w` segment (counts only; `w` need not break order, completeness or timing):
+
+| source | group | recordings | order | omission | duration | any |
+|---|---|---|---|---|---|---|
+| gt | with wrong | 4 | 2 | 1 | 2 | 3 |
+| gt | without wrong | 14 | 6 | 0 | 9 | 11 |
+| pred | with wrong | 4 | 3 | 4 | 4 | 4 |
+| pred | without wrong | 14 | 11 | 13 | 14 | 14 |

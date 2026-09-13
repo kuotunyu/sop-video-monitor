@@ -1,7 +1,9 @@
 {
   "config": {
     "fps": 15.0,
-    "graphs_dir": "sop/ha-vid",
+    "granularity": "sheet",
+    "graphs_dir": "sop/ha-vid/sheet",
+    "min_segment_frames": 0,
     "prediction_runs": {
       "lh": "reports/havid_dev_v3_tas_f1sel_lh",
       "rh": "reports/havid_dev_v3_tas_f1sel_rh"
@@ -12,77 +14,77 @@
   },
   "graphs": {
     "cylinder": {
-      "bounded": 23,
-      "edges": 53,
-      "mandatory": 4,
-      "nodes": 31
+      "bounded": 10,
+      "edges": 5,
+      "mandatory": 5,
+      "nodes": 17
     },
     "gear": {
-      "bounded": 15,
-      "edges": 18,
-      "mandatory": 5,
-      "nodes": 16
+      "bounded": 10,
+      "edges": 8,
+      "mandatory": 8,
+      "nodes": 11
     },
     "general": {
-      "bounded": 15,
-      "edges": 7,
-      "mandatory": 4,
-      "nodes": 16
+      "bounded": 12,
+      "edges": 1,
+      "mandatory": 6,
+      "nodes": 13
     }
   },
   "sources": {
     "gt": {
       "clean": {
-        "flagged_any": 17,
+        "flagged_any": 10,
         "flagged_by_kind": {
-          "duration": 14,
+          "duration": 8,
           "omission": 1,
-          "order": 16
+          "order": 4
         },
         "per_recording": {
           "S01A04I01": {
-            "durations": 5,
+            "durations": 1,
             "omissions": [],
             "plate": "cylinder",
             "steps": 18,
             "unknown": [
               "pbsbx"
             ],
-            "violations": 15
+            "violations": 0
           },
           "S01A05I01": {
-            "durations": 1,
+            "durations": 0,
             "omissions": [],
             "plate": "gear",
             "steps": 13,
             "unknown": [],
-            "violations": 1
+            "violations": 0
           },
           "S01A06I01": {
-            "durations": 1,
+            "durations": 0,
             "omissions": [],
             "plate": "general",
             "steps": 8,
             "unknown": [
               "pbx"
             ],
-            "violations": 1
+            "violations": 0
           },
           "S08A04I01": {
-            "durations": 3,
+            "durations": 1,
             "omissions": [],
             "plate": "gear",
             "steps": 17,
             "unknown": [],
-            "violations": 2
+            "violations": 0
           },
           "S08A05I01": {
-            "durations": 1,
+            "durations": 0,
             "omissions": [],
             "plate": "cylinder",
             "steps": 16,
             "unknown": [],
-            "violations": 16
+            "violations": 0
           },
           "S08A06I01": {
             "durations": 0,
@@ -90,15 +92,15 @@
             "plate": "general",
             "steps": 11,
             "unknown": [],
-            "violations": 1
+            "violations": 0
           },
           "S10A04I01": {
-            "durations": 3,
+            "durations": 1,
             "omissions": [],
             "plate": "gear",
             "steps": 15,
             "unknown": [],
-            "violations": 5
+            "violations": 2
           },
           "S10A05I01": {
             "durations": 0,
@@ -116,7 +118,7 @@
             "plate": "cylinder",
             "steps": 15,
             "unknown": [],
-            "violations": 14
+            "violations": 3
           },
           "S12A04I01": {
             "durations": 1,
@@ -124,7 +126,7 @@
             "plate": "general",
             "steps": 9,
             "unknown": [],
-            "violations": 1
+            "violations": 0
           },
           "S12A05I01": {
             "durations": 1,
@@ -132,10 +134,10 @@
             "plate": "gear",
             "steps": 13,
             "unknown": [],
-            "violations": 3
+            "violations": 0
           },
           "S12A06I01": {
-            "durations": 2,
+            "durations": 0,
             "omissions": [
               "ibacb",
               "ibscb",
@@ -149,7 +151,7 @@
               "pbscc",
               "pck"
             ],
-            "violations": 11
+            "violations": 9
           },
           "S18A04I01": {
             "durations": 2,
@@ -159,15 +161,15 @@
             "unknown": [
               "pckcb"
             ],
-            "violations": 16
+            "violations": 1
           },
           "S18A05I01": {
-            "durations": 1,
+            "durations": 0,
             "omissions": [],
             "plate": "general",
             "steps": 7,
             "unknown": [],
-            "violations": 1
+            "violations": 0
           },
           "S18A06I01": {
             "durations": 0,
@@ -175,28 +177,28 @@
             "plate": "gear",
             "steps": 9,
             "unknown": [],
-            "violations": 2
+            "violations": 0
           },
           "S30A04I01": {
-            "durations": 1,
+            "durations": 0,
             "omissions": [],
             "plate": "gear",
             "steps": 11,
             "unknown": [],
-            "violations": 2
+            "violations": 0
           },
           "S30A05I01": {
-            "durations": 3,
+            "durations": 2,
             "omissions": [],
             "plate": "cylinder",
             "steps": 13,
             "unknown": [
               "icccb"
             ],
-            "violations": 12
+            "violations": 0
           },
           "S30A06I01": {
-            "durations": 2,
+            "durations": 1,
             "omissions": [],
             "plate": "general",
             "steps": 11,
@@ -211,15 +213,15 @@
       "synthetic": {
         "duration": {
           "applicable": 18,
-          "clean_flagged": 14,
-          "clean_steps_flagged": 27,
+          "clean_flagged": 8,
+          "clean_steps_flagged": 10,
           "detected": 18,
           "false_alarm_ci95": [
-            0.5478497354769452,
-            0.90999218086618
+            0.24559231101389126,
+            0.6628393057174837
           ],
-          "false_alarm_rate": 0.7777777777777778,
-          "precision": 0.5625,
+          "false_alarm_rate": 0.4444444444444444,
+          "precision": 0.6923076923076923,
           "recall": 1.0,
           "recall_ci95": [
             0.8241154494176252,
@@ -234,17 +236,17 @@
             {
               "detected": true,
               "recording": "S01A05I01",
-              "target": 7
+              "target": 6
             },
             {
               "detected": true,
               "recording": "S01A06I01",
-              "target": 4
+              "target": 3
             },
             {
               "detected": true,
               "recording": "S08A04I01",
-              "target": 6
+              "target": 16
             },
             {
               "detected": true,
@@ -254,12 +256,12 @@
             {
               "detected": true,
               "recording": "S08A06I01",
-              "target": 9
+              "target": 4
             },
             {
               "detected": true,
               "recording": "S10A04I01",
-              "target": 11
+              "target": 4
             },
             {
               "detected": true,
@@ -279,22 +281,22 @@
             {
               "detected": true,
               "recording": "S12A05I01",
-              "target": 10
+              "target": 8
             },
             {
               "detected": true,
               "recording": "S12A06I01",
-              "target": 16
+              "target": 15
             },
             {
               "detected": true,
               "recording": "S18A04I01",
-              "target": 9
+              "target": 1
             },
             {
               "detected": true,
               "recording": "S18A05I01",
-              "target": 0
+              "target": 5
             },
             {
               "detected": true,
@@ -318,10 +320,10 @@
             }
           ],
           "step_false_alarm_ci95": [
-            0.08052091900983045,
-            0.16267287047022688
+            0.023375585411978244,
+            0.07686591985875656
           ],
-          "step_false_alarm_rate": 0.11538461538461539
+          "step_false_alarm_rate": 0.042735042735042736
         },
         "omission": {
           "applicable": 17,
@@ -347,37 +349,37 @@
             {
               "detected": true,
               "recording": "S01A05I01",
-              "target": "pgwbx"
+              "target": "sspg"
             },
             {
               "detected": true,
               "recording": "S01A06I01",
-              "target": "isbn3"
+              "target": "sntn"
             },
             {
               "detected": true,
               "recording": "S08A04I01",
-              "target": "igsft"
+              "target": "sspg"
             },
             {
               "detected": true,
               "recording": "S08A05I01",
-              "target": "ibacb"
+              "target": "scccb"
             },
             {
               "detected": true,
               "recording": "S08A06I01",
-              "target": "iirn1"
+              "target": "sntn"
             },
             {
               "detected": true,
               "recording": "S10A04I01",
-              "target": "iglft"
+              "target": "pgwbx"
             },
             {
               "detected": true,
               "recording": "S10A05I01",
-              "target": "iirn1"
+              "target": "sspn"
             },
             {
               "detected": true,
@@ -387,12 +389,12 @@
             {
               "detected": true,
               "recording": "S12A04I01",
-              "target": "iirn1"
+              "target": "sntn"
             },
             {
               "detected": true,
               "recording": "S12A05I01",
-              "target": "iglft"
+              "target": "sspg"
             },
             {
               "detected": true,
@@ -402,12 +404,12 @@
             {
               "detected": true,
               "recording": "S18A05I01",
-              "target": "iusn6"
+              "target": "iusn"
             },
             {
               "detected": true,
               "recording": "S18A06I01",
-              "target": "ipsft"
+              "target": "pgwbx"
             },
             {
               "detected": true,
@@ -422,24 +424,24 @@
             {
               "detected": true,
               "recording": "S30A06I01",
-              "target": "iibn2"
+              "target": "iibn"
             }
           ]
         },
         "order": {
-          "applicable": 18,
-          "clean_flagged": 16,
-          "clean_steps_flagged": 103,
-          "detected": 18,
+          "applicable": 17,
+          "clean_flagged": 4,
+          "clean_steps_flagged": 15,
+          "detected": 17,
           "false_alarm_ci95": [
-            0.6719975513339578,
-            0.9689811315464172
+            0.09000781913382,
+            0.4521502645230549
           ],
-          "false_alarm_rate": 0.8888888888888888,
-          "precision": 0.5294117647058824,
+          "false_alarm_rate": 0.2222222222222222,
+          "precision": 0.8095238095238095,
           "recall": 1.0,
           "recall_ci95": [
-            0.8241154494176252,
+            0.8156763396284354,
             1.0
           ],
           "recordings": [
@@ -451,7 +453,7 @@
             {
               "detected": true,
               "recording": "S01A05I01",
-              "target": 4
+              "target": 2
             },
             {
               "detected": true,
@@ -461,22 +463,22 @@
             {
               "detected": true,
               "recording": "S08A04I01",
-              "target": 10
+              "target": 9
             },
             {
               "detected": true,
               "recording": "S08A05I01",
-              "target": 10
+              "target": 2
             },
             {
               "detected": true,
               "recording": "S08A06I01",
-              "target": 3
+              "target": 9
             },
             {
               "detected": true,
               "recording": "S10A04I01",
-              "target": 2
+              "target": 0
             },
             {
               "detected": true,
@@ -486,7 +488,7 @@
             {
               "detected": true,
               "recording": "S10A06I01",
-              "target": 0
+              "target": 8
             },
             {
               "detected": true,
@@ -496,17 +498,12 @@
             {
               "detected": true,
               "recording": "S12A05I01",
-              "target": 6
-            },
-            {
-              "detected": true,
-              "recording": "S12A06I01",
-              "target": 9
+              "target": 4
             },
             {
               "detected": true,
               "recording": "S18A04I01",
-              "target": 6
+              "target": 4
             },
             {
               "detected": true,
@@ -521,12 +518,12 @@
             {
               "detected": true,
               "recording": "S30A04I01",
-              "target": 2
+              "target": 3
             },
             {
               "detected": true,
               "recording": "S30A05I01",
-              "target": 0
+              "target": 3
             },
             {
               "detected": true,
@@ -535,10 +532,10 @@
             }
           ],
           "step_false_alarm_ci95": [
-            0.3780413413251138,
-            0.5042332481495617
+            0.03922795977413022,
+            0.10305833496993475
           ],
-          "step_false_alarm_rate": 0.44017094017094016
+          "step_false_alarm_rate": 0.0641025641025641
         }
       }
     },
@@ -548,11 +545,11 @@
         "flagged_by_kind": {
           "duration": 18,
           "omission": 17,
-          "order": 17
+          "order": 12
         },
         "per_recording": {
           "S01A04I01": {
-            "durations": 12,
+            "durations": 10,
             "omissions": [
               "ibacb"
             ],
@@ -561,10 +558,10 @@
             "unknown": [
               "pgwbx"
             ],
-            "violations": 21
+            "violations": 5
           },
           "S01A05I01": {
-            "durations": 8,
+            "durations": 6,
             "omissions": [
               "iglft",
               "igsft",
@@ -575,31 +572,31 @@
             "unknown": [
               "scccb"
             ],
-            "violations": 5
+            "violations": 2
           },
           "S01A06I01": {
-            "durations": 14,
+            "durations": 13,
             "omissions": [
-              "iibn2",
-              "iirn1",
-              "isbn3",
-              "iusn6"
+              "iibn",
+              "iirn",
+              "isbn",
+              "iusn"
             ],
             "plate": "general",
             "steps": 17,
             "unknown": [],
-            "violations": 5
+            "violations": 0
           },
           "S08A04I01": {
-            "durations": 17,
+            "durations": 15,
             "omissions": [],
             "plate": "gear",
             "steps": 29,
             "unknown": [],
-            "violations": 10
+            "violations": 0
           },
           "S08A05I01": {
-            "durations": 10,
+            "durations": 9,
             "omissions": [
               "ibacb",
               "ickcb"
@@ -609,23 +606,23 @@
             "unknown": [
               "sntsb"
             ],
-            "violations": 20
+            "violations": 16
           },
           "S08A06I01": {
             "durations": 18,
             "omissions": [
-              "iibn2",
-              "iirn1",
-              "isbn3",
-              "iusn6"
+              "iibn",
+              "iirn",
+              "isbn",
+              "iusn"
             ],
             "plate": "general",
             "steps": 23,
             "unknown": [],
-            "violations": 16
+            "violations": 10
           },
           "S10A04I01": {
-            "durations": 27,
+            "durations": 24,
             "omissions": [
               "iglft",
               "ipsft"
@@ -633,23 +630,23 @@
             "plate": "gear",
             "steps": 38,
             "unknown": [],
-            "violations": 18
+            "violations": 0
           },
           "S10A05I01": {
-            "durations": 10,
+            "durations": 9,
             "omissions": [
-              "iibn2",
-              "iirn1",
-              "isbn3",
-              "iusn6"
+              "iibn",
+              "iirn",
+              "isbn",
+              "iusn"
             ],
             "plate": "general",
             "steps": 13,
             "unknown": [],
-            "violations": 7
+            "violations": 2
           },
           "S10A06I01": {
-            "durations": 25,
+            "durations": 19,
             "omissions": [
               "ibacb"
             ],
@@ -657,19 +654,18 @@
             "steps": 38,
             "unknown": [
               "iplft",
-              "sftg1ws",
-              "sftg2",
-              "sftg2ws"
+              "sftg"
             ],
-            "violations": 31
+            "violations": 1
           },
           "S12A04I01": {
-            "durations": 3,
+            "durations": 2,
             "omissions": [
-              "iibn2",
-              "iirn1",
-              "isbn3",
-              "iusn6"
+              "iibn",
+              "iirn",
+              "isbn",
+              "iusn",
+              "sntn"
             ],
             "plate": "general",
             "steps": 3,
@@ -677,17 +673,17 @@
             "violations": 0
           },
           "S12A05I01": {
-            "durations": 20,
+            "durations": 19,
             "omissions": [
               "iglft"
             ],
             "plate": "gear",
             "steps": 27,
             "unknown": [],
-            "violations": 3
+            "violations": 0
           },
           "S12A06I01": {
-            "durations": 12,
+            "durations": 11,
             "omissions": [
               "ibacb"
             ],
@@ -696,10 +692,10 @@
             "unknown": [
               "pgwbx"
             ],
-            "violations": 22
+            "violations": 2
           },
           "S18A04I01": {
-            "durations": 2,
+            "durations": 1,
             "omissions": [
               "ibacb",
               "ibscb",
@@ -709,39 +705,29 @@
             "steps": 10,
             "unknown": [
               "pgwbx",
-              "sftg2",
-              "sspg3dp",
-              "sspn4dp"
+              "sftg",
+              "sspg",
+              "sspn"
             ],
-            "violations": 3
+            "violations": 0
           },
           "S18A05I01": {
-            "durations": 2,
+            "durations": 1,
             "omissions": [
-              "iibn2",
-              "iirn1",
-              "isbn3",
-              "iusn6"
+              "iibn",
+              "iirn",
+              "isbn",
+              "iusn",
+              "sntn"
             ],
             "plate": "general",
             "steps": 4,
             "unknown": [
-              "sftg1"
+              "sftg"
             ],
-            "violations": 2
+            "violations": 1
           },
           "S18A06I01": {
-            "durations": 7,
-            "omissions": [
-              "iglft",
-              "iplft"
-            ],
-            "plate": "gear",
-            "steps": 12,
-            "unknown": [],
-            "violations": 3
-          },
-          "S30A04I01": {
             "durations": 6,
             "omissions": [
               "iglft",
@@ -750,7 +736,18 @@
             "plate": "gear",
             "steps": 12,
             "unknown": [],
-            "violations": 3
+            "violations": 2
+          },
+          "S30A04I01": {
+            "durations": 5,
+            "omissions": [
+              "iglft",
+              "iplft"
+            ],
+            "plate": "gear",
+            "steps": 12,
+            "unknown": [],
+            "violations": 2
           },
           "S30A05I01": {
             "durations": 12,
@@ -760,17 +757,17 @@
             "plate": "cylinder",
             "steps": 24,
             "unknown": [],
-            "violations": 24
+            "violations": 4
           },
           "S30A06I01": {
-            "durations": 19,
+            "durations": 16,
             "omissions": [
-              "isbn3"
+              "isbn"
             ],
             "plate": "general",
             "steps": 24,
             "unknown": [],
-            "violations": 14
+            "violations": 9
           }
         },
         "steps": 354
@@ -781,7 +778,7 @@
         "duration": {
           "applicable": 18,
           "clean_flagged": 18,
-          "clean_steps_flagged": 224,
+          "clean_steps_flagged": 196,
           "detected": 18,
           "false_alarm_ci95": [
             0.8241154494176252,
@@ -798,32 +795,32 @@
             {
               "detected": true,
               "recording": "S01A04I01",
-              "target": 14
+              "target": 2
             },
             {
               "detected": true,
               "recording": "S01A05I01",
-              "target": 9
+              "target": 7
             },
             {
               "detected": true,
               "recording": "S01A06I01",
-              "target": 12
+              "target": 9
             },
             {
               "detected": true,
               "recording": "S08A04I01",
-              "target": 11
+              "target": 18
             },
             {
               "detected": true,
               "recording": "S08A05I01",
-              "target": 17
+              "target": 10
             },
             {
               "detected": true,
               "recording": "S08A06I01",
-              "target": 9
+              "target": 4
             },
             {
               "detected": true,
@@ -863,48 +860,48 @@
             {
               "detected": true,
               "recording": "S18A05I01",
-              "target": 3
+              "target": 2
             },
             {
               "detected": true,
               "recording": "S18A06I01",
-              "target": 8
-            },
-            {
-              "detected": true,
-              "recording": "S30A04I01",
               "target": 7
             },
             {
               "detected": true,
+              "recording": "S30A04I01",
+              "target": 0
+            },
+            {
+              "detected": true,
               "recording": "S30A05I01",
-              "target": 8
+              "target": 0
             },
             {
               "detected": true,
               "recording": "S30A06I01",
-              "target": 0
+              "target": 23
             }
           ],
           "step_false_alarm_ci95": [
-            0.5813764242038227,
-            0.6813096357735527
+            0.5015861661372794,
+            0.6046060708748511
           ],
-          "step_false_alarm_rate": 0.632768361581921
+          "step_false_alarm_rate": 0.5536723163841808
         },
         "omission": {
-          "applicable": 10,
+          "applicable": 13,
           "clean_flagged": 17,
-          "detected": 10,
+          "detected": 13,
           "false_alarm_ci95": [
             0.7424220019799247,
             0.9901250641690756
           ],
           "false_alarm_rate": 0.9444444444444444,
-          "precision": 0.37037037037037035,
+          "precision": 0.43333333333333335,
           "recall": 1.0,
           "recall_ci95": [
-            0.7224598312333834,
+            0.7718981569447083,
             1.0
           ],
           "recordings": [
@@ -921,7 +918,7 @@
             {
               "detected": true,
               "recording": "S08A04I01",
-              "target": "ipsft"
+              "target": "iglft"
             },
             {
               "detected": true,
@@ -950,47 +947,57 @@
             },
             {
               "detected": true,
+              "recording": "S18A04I01",
+              "target": "sshc"
+            },
+            {
+              "detected": true,
+              "recording": "S18A05I01",
+              "target": "sspn"
+            },
+            {
+              "detected": true,
               "recording": "S18A06I01",
-              "target": "pgwbx"
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S30A04I01",
+              "target": "sspg"
             },
             {
               "detected": true,
               "recording": "S30A06I01",
-              "target": "iibn2"
+              "target": "iusn"
             }
           ]
         },
         "order": {
-          "applicable": 15,
-          "clean_flagged": 17,
-          "clean_steps_flagged": 207,
-          "detected": 15,
+          "applicable": 12,
+          "clean_flagged": 12,
+          "clean_steps_flagged": 56,
+          "detected": 12,
           "false_alarm_ci95": [
-            0.7424220019799247,
-            0.9901250641690756
+            0.4374906934425036,
+            0.8372144563633714
           ],
-          "false_alarm_rate": 0.9444444444444444,
-          "precision": 0.46875,
+          "false_alarm_rate": 0.6666666666666666,
+          "precision": 0.5,
           "recall": 1.0,
           "recall_ci95": [
-            0.7961107336956521,
+            0.7574992425007574,
             1.0
           ],
           "recordings": [
             {
               "detected": true,
               "recording": "S01A04I01",
-              "target": 10
+              "target": 2
             },
             {
               "detected": true,
               "recording": "S01A05I01",
               "target": 0
-            },
-            {
-              "detected": true,
-              "recording": "S01A06I01",
-              "target": 10
             },
             {
               "detected": true,
@@ -1004,18 +1011,13 @@
             },
             {
               "detected": true,
-              "recording": "S08A06I01",
-              "target": 15
-            },
-            {
-              "detected": true,
               "recording": "S10A04I01",
-              "target": 14
+              "target": 16
             },
             {
               "detected": true,
               "recording": "S10A06I01",
-              "target": 0
+              "target": 5
             },
             {
               "detected": true,
@@ -1025,7 +1027,7 @@
             {
               "detected": true,
               "recording": "S12A06I01",
-              "target": 5
+              "target": 2
             },
             {
               "detected": true,
@@ -1035,29 +1037,24 @@
             {
               "detected": true,
               "recording": "S18A06I01",
-              "target": 1
+              "target": 6
             },
             {
               "detected": true,
               "recording": "S30A04I01",
-              "target": 4
+              "target": 1
             },
             {
               "detected": true,
               "recording": "S30A05I01",
-              "target": 0
-            },
-            {
-              "detected": true,
-              "recording": "S30A06I01",
-              "target": 17
+              "target": 2
             }
           ],
           "step_false_alarm_ci95": [
-            0.53277134836392,
-            0.634900604813128
+            0.12387366867187477,
+            0.19984945351403094
           ],
-          "step_false_alarm_rate": 0.5847457627118644
+          "step_false_alarm_rate": 0.15819209039548024
         }
       }
     }
@@ -1112,17 +1109,17 @@
           "S12A06I01"
         ],
         "with_wrong": {
-          "any": 4,
-          "duration": 3,
+          "any": 3,
+          "duration": 1,
           "omission": 1,
-          "order": 4,
+          "order": 2,
           "recordings": 4
         },
         "without_wrong": {
-          "any": 13,
-          "duration": 11,
+          "any": 7,
+          "duration": 7,
           "omission": 0,
-          "order": 12,
+          "order": 2,
           "recordings": 14
         }
       },
@@ -1137,14 +1134,14 @@
           "any": 4,
           "duration": 4,
           "omission": 4,
-          "order": 4,
+          "order": 3,
           "recordings": 4
         },
         "without_wrong": {
           "any": 14,
           "duration": 14,
           "omission": 13,
-          "order": 13,
+          "order": 9,
           "recordings": 14
         }
       }

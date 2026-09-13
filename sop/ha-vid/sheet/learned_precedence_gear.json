@@ -1,0 +1,52 @@
+{
+  "edges": {
+    "precedesPT": [
+      [
+        "iglft",
+        "rgw"
+      ],
+      [
+        "igsft",
+        "rgw"
+      ],
+      [
+        "igsft",
+        "sntft"
+      ],
+      [
+        "iplft",
+        "rgw"
+      ],
+      [
+        "iplft",
+        "sntft"
+      ],
+      [
+        "pgwbx",
+        "rgw"
+      ],
+      [
+        "sftg",
+        "igsft"
+      ],
+      [
+        "sspg",
+        "rgw"
+      ]
+    ]
+  },
+  "nodes": {
+    "iglft": "PrimitiveTask",
+    "igsft": "PrimitiveTask",
+    "iplft": "PrimitiveTask",
+    "ipsft": "PrimitiveTask",
+    "ispg": "PrimitiveTask",
+    "ispgw": "PrimitiveTask",
+    "pgwbx": "PrimitiveTask",
+    "rgw": "PrimitiveTask",
+    "sftg": "PrimitiveTask",
+    "sntft": "PrimitiveTask",
+    "sspg": "PrimitiveTask"
+  },
+  "source": "learned from 50 HA-ViD train recordings of the gear plate (min support 10, min agreement 1.0)"
+}

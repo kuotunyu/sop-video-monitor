@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "duration_min_count": 5,
+    "duration_quantiles": [
+      0.01,
+      0.99
+    ],
+    "fps": 15.0,
+    "granularity": "sheet",
+    "licence": "derived from HA-ViD annotations, CC BY-NC 4.0",
+    "mandatory_fraction": 0.9,
+    "min_agreement": 1.0,
+    "min_support": 10,
+    "recordings": 143,
+    "source": "HA-ViD train split (splits/ha-vid/train.csv), primitive tasks of both hands"
+  },
+  "steps": {
+    "cylinder": [
+      "ibacb",
+      "ibscb",
+      "ickcb",
+      "scccb",
+      "sshc"
+    ],
+    "gear": [
+      "iglft",
+      "igsft",
+      "iplft",
+      "ipsft",
+      "pgwbx",
+      "sftg",
+      "sntft",
+      "sspg"
+    ],
+    "general": [
+      "iibn",
+      "iirn",
+      "isbn",
+      "iusn",
+      "sntn",
+      "sspn"
+    ]
+  }
+}
