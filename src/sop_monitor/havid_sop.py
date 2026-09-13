@@ -97,6 +97,7 @@ class Step:
 
 def plate_of(labels: Iterable[str]) -> str:
     """The plate whose object codes dominate ``labels``; raises when no plate clearly wins."""
+    labels = list(labels)
     votes = {
         plate: sum(label.count(code) for label in labels for code in codes)
         for plate, codes in PLATE_SIGNATURES.items()

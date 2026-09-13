@@ -40,6 +40,7 @@ def test_plate_is_read_off_the_label_vocabulary() -> None:
     assert plate_of(["pckbx", "icbck", "sshc1", "ibscb"]) == "cylinder"
     assert plate_of(["iglft", "sspg3", "sftg1"]) == "gear"
     assert plate_of(["iibn2", "sntn5", "pbx"]) == "general"
+    assert plate_of(label for label in ["iibn2", "sntn5", "pbx"]) == "general"  # generators too
     with pytest.raises(ValueError, match="ambiguous"):
         plate_of(["null"])
 

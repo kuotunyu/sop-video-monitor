@@ -1,0 +1,252 @@
+{
+  "edges": {
+    "precedesPT": [
+      [
+        "ibacb",
+        "icbck"
+      ],
+      [
+        "ibscb",
+        "ibacb"
+      ],
+      [
+        "icbck",
+        "scccb"
+      ],
+      [
+        "iccck",
+        "scccb"
+      ],
+      [
+        "ickcb",
+        "scccb"
+      ],
+      [
+        "ickcb",
+        "sshc4"
+      ],
+      [
+        "ishc1",
+        "sshc1dh"
+      ],
+      [
+        "ishc1",
+        "sshc1dp"
+      ],
+      [
+        "ishc1",
+        "sshc2dh"
+      ],
+      [
+        "ishc1",
+        "sshc2dp"
+      ],
+      [
+        "ishc1",
+        "sshc3dp"
+      ],
+      [
+        "ishc1",
+        "sshc4dh"
+      ],
+      [
+        "ishc1",
+        "sshc4dp"
+      ],
+      [
+        "ishc2",
+        "ishc1"
+      ],
+      [
+        "ishc2",
+        "ishc3"
+      ],
+      [
+        "ishc4",
+        "sshc1dh"
+      ],
+      [
+        "ishc4",
+        "sshc1dp"
+      ],
+      [
+        "ishc4",
+        "sshc2dh"
+      ],
+      [
+        "ishc4",
+        "sshc2dp"
+      ],
+      [
+        "ishc4",
+        "sshc3dh"
+      ],
+      [
+        "ishc4",
+        "sshc3dp"
+      ],
+      [
+        "ishc4",
+        "sshc4dh"
+      ],
+      [
+        "ishc4",
+        "sshc4dp"
+      ],
+      [
+        "lck",
+        "ishc1"
+      ],
+      [
+        "lck",
+        "ishc3"
+      ],
+      [
+        "lck",
+        "sshc1"
+      ],
+      [
+        "lck",
+        "sshc2"
+      ],
+      [
+        "lck",
+        "sshc3"
+      ],
+      [
+        "pcbbx",
+        "ibscb"
+      ],
+      [
+        "pcbbx",
+        "ickcb"
+      ],
+      [
+        "pcbbx",
+        "pckbx"
+      ],
+      [
+        "pckbx",
+        "icbck"
+      ],
+      [
+        "pckbx",
+        "ishc2"
+      ],
+      [
+        "pckbx",
+        "ishc4"
+      ],
+      [
+        "scccb",
+        "lck"
+      ],
+      [
+        "sshc1",
+        "sshc2dp"
+      ],
+      [
+        "sshc2",
+        "sshc1dh"
+      ],
+      [
+        "sshc2",
+        "sshc1dp"
+      ],
+      [
+        "sshc2",
+        "sshc2dh"
+      ],
+      [
+        "sshc2",
+        "sshc2dp"
+      ],
+      [
+        "sshc2",
+        "sshc3dp"
+      ],
+      [
+        "sshc2",
+        "sshc4dh"
+      ],
+      [
+        "sshc2",
+        "sshc4dp"
+      ],
+      [
+        "sshc3",
+        "sshc1dh"
+      ],
+      [
+        "sshc3",
+        "sshc2dp"
+      ],
+      [
+        "sshc3",
+        "sshc3dh"
+      ],
+      [
+        "sshc3",
+        "sshc3dp"
+      ],
+      [
+        "sshc3",
+        "sshc4dp"
+      ],
+      [
+        "sshc4",
+        "sshc1dh"
+      ],
+      [
+        "sshc4",
+        "sshc2dp"
+      ],
+      [
+        "sshc4",
+        "sshc3dh"
+      ],
+      [
+        "sshc4",
+        "sshc3dp"
+      ],
+      [
+        "sshc4",
+        "sshc4dp"
+      ]
+    ]
+  },
+  "nodes": {
+    "ibacb": "PrimitiveTask",
+    "ibscb": "PrimitiveTask",
+    "icbck": "PrimitiveTask",
+    "iccck": "PrimitiveTask",
+    "ickcb": "PrimitiveTask",
+    "ickcc": "PrimitiveTask",
+    "ishc1": "PrimitiveTask",
+    "ishc2": "PrimitiveTask",
+    "ishc3": "PrimitiveTask",
+    "ishc4": "PrimitiveTask",
+    "ishck": "PrimitiveTask",
+    "lck": "PrimitiveTask",
+    "pbabs": "PrimitiveTask",
+    "pbsba": "PrimitiveTask",
+    "pcbbx": "PrimitiveTask",
+    "pckbx": "PrimitiveTask",
+    "pcsbx": "PrimitiveTask",
+    "scbcc": "PrimitiveTask",
+    "scccb": "PrimitiveTask",
+    "sshc1": "PrimitiveTask",
+    "sshc1dh": "PrimitiveTask",
+    "sshc1dp": "PrimitiveTask",
+    "sshc2": "PrimitiveTask",
+    "sshc2dh": "PrimitiveTask",
+    "sshc2dp": "PrimitiveTask",
+    "sshc3": "PrimitiveTask",
+    "sshc3dh": "PrimitiveTask",
+    "sshc3dp": "PrimitiveTask",
+    "sshc4": "PrimitiveTask",
+    "sshc4dh": "PrimitiveTask",
+    "sshc4dp": "PrimitiveTask"
+  },
+  "source": "learned from 39 HA-ViD train recordings of the cylinder plate"
+}

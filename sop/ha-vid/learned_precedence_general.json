@@ -1,0 +1,53 @@
+{
+  "edges": {
+    "precedesPT": [
+      [
+        "isbn3",
+        "sntsb"
+      ],
+      [
+        "isbn3",
+        "sntsbwn"
+      ],
+      [
+        "isbn3",
+        "ssbnt"
+      ],
+      [
+        "llb",
+        "sspn4"
+      ],
+      [
+        "sntn5",
+        "sntn5wn"
+      ],
+      [
+        "sspn4",
+        "sntn5wn"
+      ],
+      [
+        "sspn4",
+        "sntsbwn"
+      ]
+    ]
+  },
+  "nodes": {
+    "iibn2": "PrimitiveTask",
+    "iirn1": "PrimitiveTask",
+    "isbn3": "PrimitiveTask",
+    "ispn4": "PrimitiveTask",
+    "iusn6": "PrimitiveTask",
+    "llb": "PrimitiveTask",
+    "rhd": "PrimitiveTask",
+    "rhq": "PrimitiveTask",
+    "rhw": "PrimitiveTask",
+    "sntn5": "PrimitiveTask",
+    "sntn5wn": "PrimitiveTask",
+    "sntsb": "PrimitiveTask",
+    "sntsbwn": "PrimitiveTask",
+    "ssbnt": "PrimitiveTask",
+    "sspn4": "PrimitiveTask",
+    "sspn4dp": "PrimitiveTask"
+  },
+  "source": "learned from 54 HA-ViD train recordings of the general plate"
+}

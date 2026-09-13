@@ -1,0 +1,97 @@
+{
+  "edges": {
+    "precedesPT": [
+      [
+        "iglft",
+        "rgw"
+      ],
+      [
+        "igsft",
+        "rgw"
+      ],
+      [
+        "igsft",
+        "sntft"
+      ],
+      [
+        "igsft",
+        "sntftwn"
+      ],
+      [
+        "iplft",
+        "rgw"
+      ],
+      [
+        "iplft",
+        "sntft"
+      ],
+      [
+        "iplft",
+        "sntftwn"
+      ],
+      [
+        "ipsft",
+        "sntftwn"
+      ],
+      [
+        "ispgw",
+        "sspg3dp"
+      ],
+      [
+        "pgwbx",
+        "sspg3"
+      ],
+      [
+        "sftg1",
+        "rgw"
+      ],
+      [
+        "sftg1ws",
+        "iglft"
+      ],
+      [
+        "sftg2",
+        "rgw"
+      ],
+      [
+        "sftg2",
+        "sntft"
+      ],
+      [
+        "sftg2",
+        "sntftwn"
+      ],
+      [
+        "sftg2ws",
+        "iglft"
+      ],
+      [
+        "sspg3",
+        "rgw"
+      ],
+      [
+        "sspg3dp",
+        "rgw"
+      ]
+    ]
+  },
+  "nodes": {
+    "iglft": "PrimitiveTask",
+    "igsft": "PrimitiveTask",
+    "iplft": "PrimitiveTask",
+    "ipsft": "PrimitiveTask",
+    "ispg3": "PrimitiveTask",
+    "ispgw": "PrimitiveTask",
+    "pgwbx": "PrimitiveTask",
+    "rgw": "PrimitiveTask",
+    "sftg1": "PrimitiveTask",
+    "sftg1ws": "PrimitiveTask",
+    "sftg2": "PrimitiveTask",
+    "sftg2ws": "PrimitiveTask",
+    "sntft": "PrimitiveTask",
+    "sntftwn": "PrimitiveTask",
+    "sspg3": "PrimitiveTask",
+    "sspg3dp": "PrimitiveTask"
+  },
+  "source": "learned from 50 HA-ViD train recordings of the gear plate"
+}
