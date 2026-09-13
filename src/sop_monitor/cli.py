@@ -828,6 +828,35 @@ def _check_havid_sop_run(run_dir: Path, write: bool) -> list[str]:
     return mismatches
 
 
+def _check_havid_online_run(run_dir: Path, write: bool) -> list[str]:
+    """Recompute an online SOP replay's summary from its committed deviation and recording CSVs."""
+    from sop_monitor.havid_online import (
+        read_rows,
+        render_online_tables,
+        summarise_online,
+        summary_grid,
+    )
+
+    committed = json.loads((run_dir / "online.json").read_text(encoding="utf-8"))
+    config = committed["config"]
+    recomputed = summarise_online(
+        read_rows(run_dir / "deviations_val.csv"),
+        read_rows(run_dir / "recordings_val.csv"),
+        config["delays"],
+        summary_grid(config),
+    )
+    mismatches: list[str] = []
+    if json.dumps(recomputed, sort_keys=True) != json.dumps(committed["summary"], sort_keys=True):
+        mismatches.append(f"{run_dir.name}: summary differs from online.json")
+    rendered = render_online_tables(committed)
+    tables_path = run_dir / "tables.md"
+    if write:
+        tables_path.write_text(rendered, encoding="utf-8", newline="\n")
+    elif not tables_path.is_file() or tables_path.read_text(encoding="utf-8") != rendered:
+        mismatches.append(f"{run_dir.name}: tables.md is stale (run with --write to regenerate)")
+    return mismatches
+
+
 def _check_run(run_dir: Path, write: bool) -> list[str]:
     """Recompute a run's metrics from its prediction table; return the list of mismatches."""
     from sop_monitor.baseline import (
@@ -839,6 +868,8 @@ def _check_run(run_dir: Path, write: bool) -> list[str]:
 
     if (run_dir / "steps_val.csv").is_file():
         return _check_havid_sop_run(run_dir, write)
+    if (run_dir / "online.json").is_file():
+        return _check_havid_online_run(run_dir, write)
     if (run_dir / "seed_summary.json").is_file():
         return _check_seed_summary(run_dir, write)
     if not (run_dir / "metrics.json").is_file():
@@ -1019,6 +1050,44 @@ def havid_sop_cmd(
     typer.echo(f"-> {out}")
 
 
+@app.command("havid-online")
+def havid_online_cmd(
+    out: Annotated[Path, typer.Option(help="Online replay run directory")],
+    source: Annotated[
+        list[str] | None,
+        typer.Option(
+            help="Prediction source NAME=LH_DIR,RH_DIR,RUN_NAME,DELAY_FRAMES (repeatable); "
+            "ground truth is always replayed as gt"
+        ),
+    ] = None,
+    min_frames: Annotated[
+        list[int] | None, typer.Option(help="Confirmation length in frames (repeatable)")
+    ] = None,
+    temporal: Annotated[Path, typer.Option(help="HAViD_temporalAnnotation.zip")] = Path(
+        "data/external/ha-vid/HAViD_temporalAnnotation.zip"
+    ),
+    split_dir: Annotated[Path, typer.Option()] = Path("splits/ha-vid"),
+    graphs: Annotated[Path, typer.Option(help="Learned JSON directory")] = Path("sop/ha-vid/sheet"),
+    granularity: Annotated[
+        str, typer.Option(help="pt (HR-SAT primitive task) | sheet (instruction-sheet step)")
+    ] = "sheet",
+) -> None:
+    """Replay the val recordings frame by frame through the online SOP monitor (val split only)."""
+    from sop_monitor.havid_online import PredictionSource, render_online_tables, run_havid_online
+
+    payload = run_havid_online(
+        temporal,
+        split_dir,
+        graphs,
+        [PredictionSource.parse(spec) for spec in source or []],
+        min_frames or [1],
+        out,
+        granularity,
+    )
+    typer.echo(render_online_tables(payload))
+    typer.echo(f"-> {out}")
+
+
 @app.command("learn-sop")
 def learn_sop_cmd(
     psr_dir: Annotated[Path, typer.Option()] = Path("data/external/industreal/psr"),
@@ -1108,6 +1177,7 @@ def reproduce_lite(
             (p / "metrics.json").is_file()
             or (p / "steps_val.csv").is_file()
             or (p / "seed_summary.json").is_file()
+            or (p / "online.json").is_file()
         )
     )
     if not runs:
