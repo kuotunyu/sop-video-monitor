@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary havid-online-v10 havid-step-recall-v9 havid-final-L0 havid-final-lstar review-queue review-ui stream-bench-decode stream-bench-dinov2
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary havid-online-v10 havid-step-recall-v9 havid-final-L0 havid-final-lstar havid-test review-queue review-ui stream-bench-decode stream-bench-dinov2
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -150,6 +150,16 @@ havid-final-L0:  ## Final causal L=0 networks with offline twins, both hands, se
 
 havid-final-lstar:  ## Final causal networks at the selected look-ahead LSTAR (frames), both hands, seeds 0-2 (dev twins: havid_dev_v9_tas_la$(LSTAR)_*).
 	test -n "$(LSTAR)" || { echo "set LSTAR"; exit 1; }; for seed in 0 1 2; do for hand in lh rh; do $(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand $$hand --selection-metric f1@10 --seed $$seed --lookahead-frames $(LSTAR) --no-offline --checkpoint-dir artifacts/checkpoints/havid_final_L$(LSTAR)_$${hand}_s$$seed --out artifacts/final_runs/havid_final_L$(LSTAR)_$${hand}_s$$seed || exit 1; done; done
+
+havid-test:  ## The one-time HA-ViD test run of docs/havid_test_protocol.md (set LSTAR and MSTAR from the logged val selection).
+	test -n "$(LSTAR)" && test -n "$(MSTAR)" || { echo "set LSTAR and MSTAR"; exit 1; }
+	if ls -d reports/havid_test_v1_* >/dev/null 2>&1; then echo "reports/havid_test_v1_* exists: the test split is evaluated once"; exit 1; fi
+	$(UV) run sop-monitor extract-features --dataset ha-vid --split test --split-dir splits/ha-vid --rgb-dir $(HAVID)/HAViD_rgb --out artifacts/features/ha-vid --model dinov2_vitb14 --stride 1 --batch-size 128
+	for L in 0 $(LSTAR); do for seed in 0 1 2; do for hand in lh rh; do $(UV) run sop-monitor predict-havid-tas --split test --confirm-test --checkpoint-dir artifacts/checkpoints/havid_final_L$${L}_$${hand}_s$$seed --out reports/havid_test_v1_tas_L$${L}_$${hand}_s$$seed || exit 1; done; done; done
+	for L in 0 $(LSTAR); do for hand in lh rh; do $(UV) run sop-monitor summarise-havid-seeds --run reports/havid_test_v1_tas_L$${L}_$${hand}_s0 --run reports/havid_test_v1_tas_L$${L}_$${hand}_s1 --run reports/havid_test_v1_tas_L$${L}_$${hand}_s2 --out reports/havid_test_v1_seeds_L$${L}_$${hand} || exit 1; done; done
+	for L in 0 $(LSTAR); do for seed in 0 1 2; do $(UV) run sop-monitor havid-sop --split test --confirm-test --pred-lh reports/havid_test_v1_tas_L$${L}_lh_s$$seed --pred-rh reports/havid_test_v1_tas_L$${L}_rh_s$$seed --run-name fusion_causal --graphs sop/ha-vid/sheet --granularity sheet --out reports/havid_test_v1_sop_L$${L}_s$$seed || exit 1; done; done
+	src=""; for L in 0 $(LSTAR); do for seed in 0 1 2; do src="$$src --source L$${L}_s$$seed=reports/havid_test_v1_tas_L$${L}_lh_s$$seed,reports/havid_test_v1_tas_L$${L}_rh_s$$seed,fusion_causal,$$L"; done; done; $(UV) run sop-monitor havid-online --split test --confirm-test --graphs sop/ha-vid/sheet --granularity sheet $$src --min-frames 1 $(if $(filter 1,$(MSTAR)),,--min-frames $(MSTAR)) --out reports/havid_test_v1_online
+	g0=""; gs=""; for seed in 0 1 2; do for hand in lh rh; do g0="$$g0,reports/havid_test_v1_tas_L0_$${hand}_s$$seed"; gs="$$gs,reports/havid_test_v1_tas_L$(LSTAR)_$${hand}_s$$seed"; done; done; $(UV) run sop-monitor havid-step-recall --split test --confirm-test --group L0=fusion_causal@$${g0#,} --group L$(LSTAR)=fusion_causal@$${gs#,} --group offline=fusion_offline@$${g0#,} --out reports/havid_test_v1_step_recall
 
 # ---- W5 review (docs/review.md) -------------------------------------------------------------
 
