@@ -2,8 +2,10 @@
 
 For every camera view an MS-TCN++ (causal and non-causal, :mod:`sop_monitor.mstcn`) is trained on
 that view's features of the ``train`` recordings with its epoch selected on ``val``; the views'
-posteriors are then averaged (late fusion). Prediction rows are keyed by *recording*, so the
-per-view and the fused runs share one table and one subject-wise bootstrap.
+posteriors are then fused three parameter-free ways (:func:`fuse_views`: mean, normalised
+geometric mean, confidence-weighted mean), so nothing about the fusion is tuned on val.
+Prediction rows are keyed by *recording*, so the per-view and the fused runs share one table and
+one subject-wise bootstrap.
 
 Ground truth is the untrimmed temporal file expanded to one label per frame; class ids are the
 indices of the official ``mapping.txt`` so that the numbers stay comparable with the paper's
@@ -151,6 +153,27 @@ def load_havid_videos(
     return sorted(videos, key=lambda v: v.video_id)
 
 
+FUSION_RULES = ("", "_geo", "_conf")
+"""Suffixes of the fused runs: ``fusion_*`` (mean), ``fusion_geo_*``, ``fusion_conf_*``."""
+
+
+def fuse_views(stack: np.ndarray, eps: float = 1e-8) -> dict[str, np.ndarray]:
+    """Three parameter-free late-fusion rules for per-view posteriors ``stack`` of shape (V, T, C).
+
+    ``""``: arithmetic mean. ``"_geo"``: normalised geometric mean (product of experts; a view that
+    assigns ~0 to a class vetoes it). ``"_conf"``: per-frame weighted mean with each view weighted
+    by its own maximum posterior, so a view that is unsure at frame *t* contributes less there.
+    """
+    if stack.ndim != 3:
+        raise ValueError(f"expected (views, frames, classes), got shape {stack.shape}")
+    mean = stack.mean(axis=0)
+    geo = np.exp(np.log(stack + eps).mean(axis=0))
+    geo /= geo.sum(axis=1, keepdims=True)
+    weights = stack.max(axis=2, keepdims=True)
+    conf = (weights * stack).sum(axis=0) / weights.sum(axis=0)
+    return {"": mean, "_geo": geo, "_conf": conf}
+
+
 def _check_aligned(
     reference: Sequence[VideoFeatures], videos: Sequence[VideoFeatures], view: int
 ) -> None:
@@ -210,10 +233,12 @@ def run_havid_tas(
             )
     assert reference is not None
     for name in ("causal", "offline"):
-        probs[f"fusion_{name}"] = [
-            np.mean([probs[f"view{view}_{name}"][i] for view in spec.views], axis=0)
-            for i in range(len(reference))
-        ]
+        for rule in FUSION_RULES:
+            probs[f"fusion{rule}_{name}"] = []
+        for i in range(len(reference)):
+            fused = fuse_views(np.stack([probs[f"view{view}_{name}"][i] for view in spec.views]))
+            for rule, fused_probs in fused.items():
+                probs[f"fusion{rule}_{name}"].append(fused_probs)
 
     rows: list[PredictionRow] = []
     for i, video in enumerate(reference):
@@ -246,12 +271,22 @@ def run_havid_tas(
             f"MS-TCN++ on the {VIEW_NAMES[view]} view (view {view}), symmetric padding: "
             "sees future frames (not an online result)"
         )
-    descriptions["fusion_causal"] = "mean of the per-view causal posteriors (late fusion, online)"
-    descriptions["fusion_offline"] = "mean of the per-view offline posteriors (late fusion)"
+    for name, tail in (("causal", ", online"), ("offline", "")):
+        descriptions[f"fusion_{name}"] = (
+            f"mean of the per-view {name} posteriors (late fusion{tail})"
+        )
+        descriptions[f"fusion_geo_{name}"] = (
+            f"normalised geometric mean of the per-view {name} posteriors (product of experts{tail})"
+        )
+        descriptions[f"fusion_conf_{name}"] = (
+            f"per-frame confidence-weighted mean of the per-view {name} posteriors, "
+            f"weight = each view's max posterior{tail}"
+        )
     config = {
         "model": (
             "MS-TCN++ (Li et al., TPAMI 2020) per camera view on frozen frame features, epoch "
-            "selected on val; late fusion = mean of the per-view posteriors"
+            f"selected on val {spec.mstcn.selection_metric}; late fusion = mean, normalised "
+            "geometric mean and confidence-weighted mean of the per-view posteriors (parameter-free)"
         ),
         "dataset": "HA-ViD",
         "spec": {

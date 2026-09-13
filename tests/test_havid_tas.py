@@ -23,6 +23,7 @@ from sop_monitor.havid import (  # noqa: E402
 from sop_monitor.havid_tas import (  # noqa: E402
     HavidTASSpec,
     export_official_features,
+    fuse_views,
     load_havid_videos,
     run_havid_tas,
 )
@@ -46,6 +47,7 @@ SMALL = MSTCNSpec(
     epochs=2,
     eval_every=1,
     n_boot=20,
+    selection_metric="f1@10",
 )
 
 
@@ -118,24 +120,43 @@ def test_run_writes_per_view_and_fused_runs(tmp_path: Path) -> None:
         HavidTASSpec(mstcn=SMALL),
         device="cpu",
     )
-    expected = {"majority", "fusion_causal", "fusion_offline"} | {
-        f"view{v}_{name}" for v in range(3) for name in ("causal", "offline")
+    fused = {
+        f"fusion{rule}_{name}" for rule in ("", "_geo", "_conf") for name in ("causal", "offline")
     }
+    trained = {f"view{v}_{name}" for v in range(3) for name in ("causal", "offline")}
+    expected = {"majority"} | fused | trained
     assert set(result["metrics"]["runs"]) == expected
     rows = read_predictions(out / "predictions_val.csv")
     assert len(rows) == N_FRAMES
     assert {r.video_id for r in rows} == {"S02A04I01"} and rows[0].participant == "S02"
     assert result["config"]["classes"]["n_classes"] == 4  # background + null, ipsft, w
     assert result["config"]["classes"]["class_id_to_label"] == {"0": "ipsft", "1": "null", "2": "w"}
-    assert set(result["config"]["training"]) == expected - {
-        "majority",
-        "fusion_causal",
-        "fusion_offline",
-    }
+    assert set(result["config"]["training"]) == trained
+    assert all("best_val_f1@10" in log for log in result["config"]["training"].values())
+    assert "f1@10" in result["config"]["model"]
+    assert set(result["config"]["runs"]) == expected
     recomputed = score_predictions(rows, n_boot=20, seed=0)
     assert recomputed["runs"] == result["metrics"]["runs"]
     tables = (out / "tables.md").read_text(encoding="utf-8")
     assert tables.startswith("Development result on `val`") and "| fusion_causal |" in tables
+
+
+def test_fusion_rules_are_parameter_free_and_differ_where_they_should() -> None:
+    # two views, three frames, three classes; view 1 is confident, view 0 is unsure at frame 0
+    view0 = np.array([[0.34, 0.33, 0.33], [0.6, 0.2, 0.2], [0.0, 0.5, 0.5]])
+    view1 = np.array([[0.05, 0.9, 0.05], [0.5, 0.25, 0.25], [0.8, 0.1, 0.1]])
+    fused = fuse_views(np.stack([view0, view1]))
+    assert set(fused) == {"", "_geo", "_conf"}
+    for rule, probs in fused.items():
+        assert probs.shape == (3, 3) and np.allclose(probs.sum(axis=1), 1.0), rule
+    # frame 0: the mean and the confidence-weighted mean both follow the confident view
+    assert fused[""][0].argmax() == 1 and fused["_conf"][0].argmax() == 1
+    # frame 0: confidence weighting moves further towards view 1 than the plain mean does
+    assert fused["_conf"][0, 1] > fused[""][0, 1]
+    # frame 2: view 0 assigns ~0 to class 0, which the geometric mean vetoes and the mean does not
+    assert fused[""][2].argmax() == 0 and fused["_geo"][2].argmax() != 0
+    with pytest.raises(ValueError):
+        fuse_views(view0)
 
 
 def test_official_features_export_and_loader(tmp_path: Path) -> None:

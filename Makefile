@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-i3d
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -69,6 +69,10 @@ i3d-havid:  ## Export the official I3D features of the train + val videos into t
 havid-tas:  ## havid_dev_v1: per-view MS-TCN++ (causal + offline) and late fusion on DINOv2 ViT-B/14, primitive tasks, both hands.
 	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand lh --out reports/havid_dev_v1_tas_lh
 	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand rh --out reports/havid_dev_v1_tas_rh
+
+havid-tas-v3:  ## havid_dev_v3: as v1 (DINOv2 ViT-B/14) but epochs selected by val F1@10 and three parameter-free fusion rules.
+	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand lh --selection-metric f1@10 --out reports/havid_dev_v3_tas_f1sel_lh
+	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand rh --selection-metric f1@10 --out reports/havid_dev_v3_tas_f1sel_rh
 
 havid-tas-i3d:  ## havid_dev_v2: the same protocol on the official I3D features (control).
 	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/i3d_official --hand lh --out reports/havid_dev_v2_i3d_lh

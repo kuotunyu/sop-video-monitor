@@ -368,6 +368,12 @@ def train_havid_tas_cmd(
     eval_every: Annotated[int, typer.Option()] = 5,
     n_boot: Annotated[int, typer.Option()] = 2000,
     seed: Annotated[int, typer.Option()] = 0,
+    selection_metric: Annotated[
+        str,
+        typer.Option(
+            help="Val metric that picks each network's epoch: mof | edit | f1@10 | f1@25 | f1@50"
+        ),
+    ] = "mof",
 ) -> None:
     """Per-view causal and offline MS-TCN++ plus late fusion on HA-ViD train -> val (spec W2)."""
     from sop_monitor.features import resolve_device
@@ -377,10 +383,19 @@ def train_havid_tas_cmd(
     if hand not in ("lh", "rh") or level not in ("pt", "aa"):
         typer.echo("--hand must be lh or rh and --level pt or aa")
         raise typer.Exit(code=1)
+    if selection_metric not in ("mof", "edit", "f1@10", "f1@25", "f1@50"):
+        typer.echo("--selection-metric must be one of mof, edit, f1@10, f1@25, f1@50")
+        raise typer.Exit(code=1)
     spec = HavidTASSpec(
         hand=hand,
         level=level,
-        mstcn=MSTCNSpec(epochs=epochs, eval_every=eval_every, seed=seed, n_boot=n_boot),
+        mstcn=MSTCNSpec(
+            epochs=epochs,
+            eval_every=eval_every,
+            seed=seed,
+            n_boot=n_boot,
+            selection_metric=selection_metric,
+        ),
     )
     result = run_havid_tas(
         features, split_dir, temporal, official, out, spec, device=resolve_device(device)
