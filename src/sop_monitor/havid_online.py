@@ -3,7 +3,7 @@
 Every recording's two per-hand label streams (ground truth, or the per-frame output of causal
 recogniser runs) are pushed frame by frame into a fresh monitor loaded with the plate's learned
 knowledge, once per confirmation length ``min_frames`` of a grid. Every deviation is written with
-the frame it was detected at (``deviations_val.csv``); ``recordings_val.csv`` holds each
+the frame it was detected at (``deviations_<split>.csv``); ``recordings_<split>.csv`` holds each
 recording's length, plate and whether its annotation contains ``w``. The summary
 (:func:`summarise_online`) is recomputable from these two files alone:
 
@@ -251,7 +251,7 @@ def render_online_tables(payload: Mapping[str, object]) -> str:
     config: Mapping[str, object] = payload["config"]  # type: ignore[assignment]
     summary: Mapping[str, Mapping[str, object]] = payload["summary"]  # type: ignore[assignment]
     lines = [
-        f"Online SOP replay of {config['val_recordings']} val recordings at granularity "
+        f"Online SOP replay of {config['recordings']} {config['split']} recordings at granularity "
         f"`{config['granularity']}` with the knowledge in `{config['graphs_dir']}`. Recording "
         "columns count flagged recordings as with `w` · without `w`; times include the source's "
         "output delay.",
@@ -318,6 +318,7 @@ def run_havid_online(
     min_frames_grid: Sequence[int],
     out_dir: Path,
     granularity: str = "sheet",
+    split: str = "val",
 ) -> dict[str, object]:
     """Replay the val recordings of every source through the online monitor; write the run directory."""
     knowledge_meta = json.loads((graphs_dir / "mandatory_steps.json").read_text(encoding="utf-8"))
@@ -333,14 +334,14 @@ def run_havid_online(
     if len(set(names)) != len(names):
         raise ValueError(f"source names must be unique: {names}")
     graphs, bounds, mandatory = load_knowledge(graphs_dir)
-    val = sorted({row["recording"] for row in read_split(split_dir / "val.csv")})
+    val = sorted({row["recording"] for row in read_split(split_dir / f"{split}.csv")})
     streams = {"gt": gt_segments(temporal_zip, val)}
     for source in sources:
         streams[source.name] = predicted_segments(
-            {"lh": source.lh, "rh": source.rh}, source.run_name
+            {"lh": source.lh, "rh": source.rh}, source.run_name, split=split
         )
         if set(streams[source.name]) != set(val):
-            raise ValueError(f"{source.name}: predicted recordings differ from the val split")
+            raise ValueError(f"{source.name}: predicted recordings differ from the {split} split")
     plates = {
         rec: plate_of(s.label for s in step_sequence(hands["lh"], hands["rh"]))
         for rec, hands in streams["gt"].items()
@@ -387,14 +388,15 @@ def run_havid_online(
     if grid[0] != 1:
         agreement = {}
     out_dir.mkdir(parents=True, exist_ok=True)
-    write_rows(out_dir / "recordings_val.csv", RECORDING_HEADER, recordings)
-    write_rows(out_dir / "deviations_val.csv", DEVIATION_HEADER, deviations)
+    write_rows(out_dir / f"recordings_{split}.csv", RECORDING_HEADER, recordings)
+    write_rows(out_dir / f"deviations_{split}.csv", DEVIATION_HEADER, deviations)
     config: dict[str, object] = {
         "graphs_dir": graphs_dir.as_posix(),
         "granularity": granularity,
         "min_frames_grid": grid,
         "fps": FPS,
-        "val_recordings": len(val),
+        "split": split,
+        "recordings": len(val),
         "sources": {
             s.name: {
                 "lh": s.lh.as_posix(),
@@ -410,8 +412,8 @@ def run_havid_online(
         "config": config,
         "offline_agreement": agreement,
         "summary": summarise_online(
-            read_rows(out_dir / "deviations_val.csv"),
-            read_rows(out_dir / "recordings_val.csv"),
+            read_rows(out_dir / f"deviations_{split}.csv"),
+            read_rows(out_dir / f"recordings_{split}.csv"),
             config["delays"],  # type: ignore[arg-type]
             summary_grid(config),
         ),

@@ -271,7 +271,7 @@ def gt_segments(
 
 
 def predicted_segments(
-    run_dirs: Mapping[str, Path], run_name: str, min_frames: int = 0
+    run_dirs: Mapping[str, Path], run_name: str, min_frames: int = 0, split: str = "val"
 ) -> dict[str, dict[str, list[TemporalSegment]]]:
     """Per-hand predicted segments of one run column from two per-hand run directories,
     optionally smoothed with :func:`smooth_segments`."""
@@ -280,7 +280,7 @@ def predicted_segments(
         config = json.loads((run_dir / "config.json").read_text(encoding="utf-8"))
         labels = config["classes"]["class_id_to_label"]
         frames: dict[str, list[tuple[int, str]]] = defaultdict(list)
-        for row in read_predictions(run_dir / "predictions_val.csv"):
+        for row in read_predictions(run_dir / f"predictions_{split}.csv"):
             frames[row.video_id].append((row.frame, labels[str(row.preds[run_name])]))
         per_hand[hand] = {
             rec: smooth_segments(segments_from_frames(pairs), min_frames)
@@ -745,11 +745,13 @@ def read_wrong(
     return out
 
 
-def evaluate_run(run_dir: Path, graphs_dir: Path, seed: int) -> dict[str, object]:
+def evaluate_run(
+    run_dir: Path, graphs_dir: Path, seed: int, split: str = "val"
+) -> dict[str, object]:
     """Recompute the recomputable part of ``sop_checks.json`` from the committed CSVs."""
     graphs, bounds, mandatory = load_knowledge(graphs_dir)
-    sequences, plates = read_steps(run_dir / "steps_val.csv")
-    wrong = read_wrong(run_dir / "wrong_val.csv", sequences["gt"])
+    sequences, plates = read_steps(run_dir / f"steps_{split}.csv")
+    wrong = read_wrong(run_dir / f"wrong_{split}.csv", sequences["gt"])
     sources = {
         source: synthetic_table(sequences[source], plates, graphs, bounds, mandatory, seed)
         for source in sorted(sequences)
@@ -813,6 +815,7 @@ def _ci(interval: Sequence[float]) -> str:
 
 
 def render_sop_tables(payload: Mapping[str, object]) -> str:
+    split = payload.get("config", {}).get("split", "val")  # type: ignore[union-attr]
     graphs: Mapping[str, Mapping[str, int]] = payload["graphs"]  # type: ignore[assignment]
     sources: Mapping[str, Mapping[str, object]] = payload["sources"]  # type: ignore[assignment]
     lines = [
@@ -832,7 +835,7 @@ def render_sop_tables(payload: Mapping[str, object]) -> str:
         n = table["recordings"]
         lines += [
             "",
-            f"Synthetic violations on `{source}` sequences ({n} val recordings, seed {table['seed']}); "
+            f"Synthetic violations on `{source}` sequences ({n} {split} recordings, seed {table['seed']}); "
             f"recall = perturbed step flagged by the matching check, false alarm = unperturbed "
             f"recording flagged by that check; Wilson 95 % intervals in percent:",
             "",
@@ -859,7 +862,7 @@ def render_sop_tables(payload: Mapping[str, object]) -> str:
     wrong: Mapping[str, object] = payload["wrong"]  # type: ignore[assignment]
     lines += [
         "",
-        "Native `w` (wrong) segments on val, both hands, predicted `w` overlapping a ground-truth `w`"
+        f"Native `w` (wrong) segments on {split}, both hands, predicted `w` overlapping a ground-truth `w`"
         f" counts as detected{' — underpowered (fewer than 20 segments)' if wrong['underpowered'] else ''}:",
         "",
         "| ground-truth `w` segments | detected | recall | predicted `w` segments | false predicted | precision |",
@@ -900,32 +903,33 @@ def run_havid_sop(
     seed: int = 0,
     min_segment_frames: int = 0,
     granularity: str = "pt",
+    split: str = "val",
 ) -> dict[str, object]:
-    """Build the val step sequences (ground truth and predicted), evaluate, write the run directory."""
+    """Build the step sequences of ``split`` (ground truth and predicted), evaluate, write the run."""
     knowledge_meta = json.loads((graphs_dir / "mandatory_steps.json").read_text(encoding="utf-8"))
     learned_at = knowledge_meta.get("meta", {}).get("granularity", "pt")
     if learned_at != granularity:
         raise ValueError(
             f"{graphs_dir} was learned at granularity {learned_at!r}, not {granularity!r}"
         )
-    val = sorted({row["recording"] for row in read_split(split_dir / "val.csv")})
+    val = sorted({row["recording"] for row in read_split(split_dir / f"{split}.csv")})
     gt = gt_segments(temporal_zip, val)
-    pred = predicted_segments(run_dirs, run_name, min_segment_frames)
+    pred = predicted_segments(run_dirs, run_name, min_segment_frames, split)
     if set(pred) != set(gt):
-        raise ValueError("predicted recordings differ from the val split")
+        raise ValueError(f"predicted recordings differ from the {split} split")
     gt_sequences = sequences_of(gt)
     plates = {rec: plate_of(s.label for s in steps) for rec, steps in gt_sequences.items()}
     out_dir.mkdir(parents=True, exist_ok=True)
     write_steps(
-        out_dir / "steps_val.csv",
+        out_dir / f"steps_{split}.csv",
         {
             "gt": {r: at_granularity(s, granularity) for r, s in gt_sequences.items()},
             "pred": {r: at_granularity(s, granularity) for r, s in sequences_of(pred).items()},
         },
         plates,
     )
-    write_wrong(out_dir / "wrong_val.csv", {"gt": gt, "pred": pred})
-    payload = evaluate_run(out_dir, graphs_dir, seed)
+    write_wrong(out_dir / f"wrong_{split}.csv", {"gt": gt, "pred": pred})
+    payload = evaluate_run(out_dir, graphs_dir, seed, split)
     payload["config"] = {
         "graphs_dir": graphs_dir.as_posix(),
         "prediction_runs": {hand: p.as_posix() for hand, p in run_dirs.items()},
@@ -935,6 +939,7 @@ def run_havid_sop(
         "granularity": granularity,
         "fps": FPS,
         "val_recordings": len(val),
+        **({} if split == "val" else {"split": split}),
     }
     (out_dir / "sop_checks.json").write_text(
         json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"

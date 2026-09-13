@@ -429,6 +429,18 @@ def train_havid_tas_cmd(
     typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
 
 
+def _guard_split(split: str, confirm_test: bool) -> None:
+    if split not in ("val", "test"):
+        typer.echo("--split must be val or test")
+        raise typer.Exit(code=1)
+    if split == "test" and not confirm_test:
+        typer.echo(
+            "the frozen test split is used once, under docs/havid_test_protocol.md; "
+            "pass --confirm-test"
+        )
+        raise typer.Exit(code=1)
+
+
 @app.command("predict-havid-tas")
 def predict_havid_tas_cmd(
     checkpoint_dir: Annotated[Path, typer.Option(help="train-havid-tas --checkpoint-dir")],
@@ -873,7 +885,9 @@ def _check_havid_sop_run(run_dir: Path, write: bool) -> list[str]:
 
     committed = json.loads((run_dir / "sop_checks.json").read_text(encoding="utf-8"))
     config = committed["config"]
-    recomputed = evaluate_run(run_dir, Path(config["graphs_dir"]), int(config["seed"]))
+    recomputed = evaluate_run(
+        run_dir, Path(config["graphs_dir"]), int(config["seed"]), config.get("split", "val")
+    )
     mismatches: list[str] = []
     for key in ("graphs", "sources", "wrong"):
         if json.dumps(recomputed[key], sort_keys=True) != json.dumps(
@@ -900,9 +914,10 @@ def _check_havid_online_run(run_dir: Path, write: bool) -> list[str]:
 
     committed = json.loads((run_dir / "online.json").read_text(encoding="utf-8"))
     config = committed["config"]
+    split = config["split"]
     recomputed = summarise_online(
-        read_rows(run_dir / "deviations_val.csv"),
-        read_rows(run_dir / "recordings_val.csv"),
+        read_rows(run_dir / f"deviations_{split}.csv"),
+        read_rows(run_dir / f"recordings_{split}.csv"),
         config["delays"],
         summary_grid(config),
     )
@@ -928,7 +943,7 @@ def _check_step_recall(run_dir: Path, write: bool) -> list[str]:
         RunGroup(g["name"], g["column"], tuple(Path(d) for d in g["run_dirs"]))
         for g in config["groups"]
     ]
-    recomputed = step_recall(groups, Path(config["graphs_dir"]))
+    recomputed = step_recall(groups, Path(config["graphs_dir"]), config["split"])
     mismatches: list[str] = []
     if json.dumps(recomputed, sort_keys=True) != json.dumps(committed, sort_keys=True):
         mismatches.append(f"{run_dir.name}: step_recall.json differs from the prediction tables")
@@ -950,7 +965,7 @@ def _check_run(run_dir: Path, write: bool) -> list[str]:
         score_predictions,
     )
 
-    if (run_dir / "steps_val.csv").is_file():
+    if sorted(run_dir.glob("steps_*.csv")):
         return _check_havid_sop_run(run_dir, write)
     if (run_dir / "online.json").is_file():
         return _check_havid_online_run(run_dir, write)
@@ -1117,9 +1132,15 @@ def havid_sop_cmd(
     granularity: Annotated[
         str, typer.Option(help="pt (HR-SAT primitive task) | sheet (instruction-sheet step)")
     ] = "pt",
+    split: Annotated[str, typer.Option(help="val | test")] = "val",
+    confirm_test: Annotated[
+        bool, typer.Option(help="Required for --split test (docs/havid_test_protocol.md)")
+    ] = False,
 ) -> None:
-    """Val step sequences (ground truth and predicted), SOP checks, synthetic violations, native w."""
+    """Step sequences (ground truth and predicted), SOP checks, synthetic violations, native w."""
     from sop_monitor.havid_sop import render_sop_tables, run_havid_sop
+
+    _guard_split(split, confirm_test)
 
     payload = run_havid_sop(
         temporal,
@@ -1131,6 +1152,7 @@ def havid_sop_cmd(
         seed,
         min_segment_frames,
         granularity,
+        split,
     )
     typer.echo(render_sop_tables(payload))
     typer.echo(f"-> {out}")
@@ -1157,9 +1179,15 @@ def havid_online_cmd(
     granularity: Annotated[
         str, typer.Option(help="pt (HR-SAT primitive task) | sheet (instruction-sheet step)")
     ] = "sheet",
+    split: Annotated[str, typer.Option(help="val | test")] = "val",
+    confirm_test: Annotated[
+        bool, typer.Option(help="Required for --split test (docs/havid_test_protocol.md)")
+    ] = False,
 ) -> None:
-    """Replay the val recordings frame by frame through the online SOP monitor (val split only)."""
+    """Replay a split's recordings frame by frame through the online SOP monitor."""
     from sop_monitor.havid_online import PredictionSource, render_online_tables, run_havid_online
+
+    _guard_split(split, confirm_test)
 
     payload = run_havid_online(
         temporal,
@@ -1169,6 +1197,7 @@ def havid_online_cmd(
         min_frames or [1],
         out,
         granularity,
+        split,
     )
     typer.echo(render_online_tables(payload))
     typer.echo(f"-> {out}")
@@ -1321,8 +1350,13 @@ def havid_step_recall_cmd(
     group: Annotated[list[str], typer.Option(help="NAME=COLUMN@RUN_DIR[,RUN_DIR...] (repeatable)")],
     out: Annotated[Path, typer.Option(help="Output directory (step_recall.json, tables.md)")],
     graphs: Annotated[Path, typer.Option(help="Learned JSON directory")] = Path("sop/ha-vid/sheet"),
+    split: Annotated[str, typer.Option(help="val | test")] = "val",
+    confirm_test: Annotated[
+        bool, typer.Option(help="Required for --split test (docs/havid_test_protocol.md)")
+    ] = False,
 ) -> None:
-    """Val frame recall per instruction-sheet step for groups of HA-ViD TAS runs."""
+    """Frame recall per instruction-sheet step for groups of HA-ViD TAS runs."""
+    _guard_split(split, confirm_test)
     from sop_monitor.havid_step_recall import (
         RunGroup,
         render_step_recall,
@@ -1330,7 +1364,7 @@ def havid_step_recall_cmd(
         write_step_recall,
     )
 
-    payload = step_recall([RunGroup.parse(spec) for spec in group], graphs)
+    payload = step_recall([RunGroup.parse(spec) for spec in group], graphs, split)
     write_step_recall(out, payload)
     typer.echo(render_step_recall(payload))
     typer.echo(f"-> {out}")
@@ -1423,7 +1457,7 @@ def reproduce_lite(
         if p.is_dir()
         and (
             (p / "metrics.json").is_file()
-            or (p / "steps_val.csv").is_file()
+            or bool(sorted(p.glob("steps_*.csv")))
             or (p / "seed_summary.json").is_file()
             or (p / "online.json").is_file()
             or (p / "step_recall.json").is_file()

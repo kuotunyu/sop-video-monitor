@@ -6,7 +6,7 @@ directories (for example both hands of three seeds at one look-ahead) and one pr
 this pools the val frames of each ground-truth sheet step and counts the frames whose predicted
 label maps to the same sheet step. Steps are annotated with the plates whose learned knowledge
 contains them and whether they are mandatory there. Everything is recomputed from the committed
-``predictions_val.csv`` and ``config.json`` files plus the knowledge directory.
+``predictions_<split>.csv`` and ``config.json`` files plus the knowledge directory.
 """
 
 from __future__ import annotations
@@ -39,14 +39,16 @@ class RunGroup:
         return cls(name, column, paths)
 
 
-def pooled_counts(run_dirs: Sequence[Path], column: str) -> tuple[Counter, Counter]:
+def pooled_counts(
+    run_dirs: Sequence[Path], column: str, split: str = "val"
+) -> tuple[Counter, Counter]:
     """``(gt frames, correct frames)`` per sheet step over every run directory."""
     total: Counter = Counter()
     correct: Counter = Counter()
     for run_dir in run_dirs:
         config = json.loads((run_dir / "config.json").read_text(encoding="utf-8"))
         labels = config["classes"]["class_id_to_label"]
-        for row in read_predictions(run_dir / "predictions_val.csv"):
+        for row in read_predictions(run_dir / f"predictions_{split}.csv"):
             if column not in row.preds:
                 raise ValueError(f"{run_dir}: no prediction column {column!r}")
             truth = labels.get(str(row.gt))
@@ -59,13 +61,15 @@ def pooled_counts(run_dirs: Sequence[Path], column: str) -> tuple[Counter, Count
     return total, correct
 
 
-def step_recall(groups: Sequence[RunGroup], graphs_dir: Path) -> dict[str, object]:
+def step_recall(
+    groups: Sequence[RunGroup], graphs_dir: Path, split: str = "val"
+) -> dict[str, object]:
     graphs, _bounds, mandatory = load_knowledge(graphs_dir)
     plates_of: dict[str, list[str]] = {}
     for plate in PLATES:
         for node in graphs[plate].nodes_of("PT"):
             plates_of.setdefault(node, []).append(plate)
-    counts = {group.name: pooled_counts(group.run_dirs, group.column) for group in groups}
+    counts = {g.name: pooled_counts(g.run_dirs, g.column, split) for g in groups}
     per_dir = {
         g.name: {step: n / len(g.run_dirs) for step, n in counts[g.name][0].items()} for g in groups
     }
@@ -95,6 +99,7 @@ def step_recall(groups: Sequence[RunGroup], graphs_dir: Path) -> dict[str, objec
     return {
         "config": {
             "graphs_dir": graphs_dir.as_posix(),
+            "split": split,
             "groups": [
                 {"name": g.name, "column": g.column, "run_dirs": [d.as_posix() for d in g.run_dirs]}
                 for g in groups
@@ -111,7 +116,7 @@ def render_step_recall(payload: Mapping[str, object]) -> str:
     names = [g["name"] for g in config["groups"]]  # type: ignore[index, union-attr]
     steps: Mapping[str, Mapping[str, object]] = payload["steps"]  # type: ignore[assignment]
     lines = [
-        "Val frame recall per instruction-sheet step (frames of the step whose predicted label maps "
+        f"Frame recall on `{config['split']}` per instruction-sheet step (frames of the step whose predicted label maps "
         "to the same step), pooled over each group's run directories; `null` and `w` frames "
         f"excluded. Knowledge: `{config['graphs_dir']}`.",
         "",
