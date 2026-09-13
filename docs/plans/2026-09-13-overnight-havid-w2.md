@@ -1,5 +1,8 @@
 # Overnight HA-ViD W2 run (features → per-view MS-TCN++ → fusion → reports) Implementation Plan
 
+> **Status: executed on 2026-09-13; kept as a record.** The results are in `reports/` and `docs/decisions.md`; the commands and counts below describe the repository as it was then.
+
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 > 給人看的一句話（zh-TW）：這份文件是今晚無人值守的執行手冊。所有程式都已寫好並測過（HEAD 是訊息以 `docs: overnight runbook` 開頭的那個 commit）；

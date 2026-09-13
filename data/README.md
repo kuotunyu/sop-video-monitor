@@ -31,6 +31,10 @@ data/external/industreal/
                                   extracted from val_p1..2.zip and train_p1..4.zip by extract-psr-labels
   *.zip                           the archives themselves (test_p1..3.zip were never downloaded)
 artifacts/features/industreal/    DINOv2 frame-feature caches (dinov2_vit{s,b,l}14_s1), fp16 npz per video
+artifacts/features/ha-vid/       dinov2_vitb14_s1/ (483 train+val videos, fp16) and i3d_official/ (exported
+                                  official I3D features); the 126 test videos are never embedded
+artifacts/review/                deviation queues and review decisions (docs/review.md); they name val
+                                  videos and carry reviewer names, so they stay local
 ```
 
 Not downloaded from the HA-ViD folder: `HAViD_depth.zip` (3.7 GB), `HAViD_skeleton.zip` (1.4 GB),

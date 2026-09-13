@@ -1,5 +1,8 @@
 # HA-ViD v3 (F1@10 epoch selection, fusion rules) and W3 SOP layer (havid_dev_v4) Implementation Plan
 
+> **Status: executed on 2026-09-13; kept as a record.** The results are in `reports/` and `docs/decisions.md`; the commands and counts below describe the repository as it was then.
+
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 > 給人看的一句話（zh-TW）：程式都已寫好、測過並 commit；這份文件只剩「等 v3 訓練結束 → 寫兩份 v3 報告 →

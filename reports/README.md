@@ -6,8 +6,11 @@ outputs, but val is also where the protocol was iterated. There is no formal (fr
 result. The HA-ViD delivery is audited in [`havid_audit.md`](havid_audit.md) (W1) and the first
 HA-ViD development runs are listed in their own table below.
 
-Start here: **`industreal_dev_v11_psr_epochsel_f1/`** is the current best configuration; every
-other directory is either a step on the way to it, a control, or a negative result kept as evidence.
+Start here: for HA-ViD (the main dataset) read **`havid_audit.md`**, then
+**`havid_dev_v7_tas_seeds_lh/`** (recogniser, three seeds) and **`havid_dev_v8_sop_sheet/`** (SOP
+checks); for IndustReal, **`industreal_dev_v11_psr_epochsel_f1/`** is the current best
+configuration. Every other directory is a step on the way, a control, or a negative result kept as
+evidence.
 
 ## IndustReal runs: which run answers which question
 

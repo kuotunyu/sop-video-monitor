@@ -35,4 +35,6 @@ jobs:
       # Recompute the frozen test-list hashes from the committed split CSVs (spec 4.1).
       - run: uv run sop-monitor verify-splits --directory splits/industreal
       - run: uv run sop-monitor verify-splits --directory splits/ha-vid
-      # TODO: add the ignored-directory scan (no source code under data/, artifacts/) per spec 3.3.
+      # The ignored-directory scan (spec 3.3) is tests/test_repository_hygiene.py, run by pytest above:
+      # nothing but data/README.md and data/manifest.json under data/, no artifacts, no binaries,
+      # no share links.

@@ -112,7 +112,9 @@ uv sync --all-extras --group baseline   # 加上 PyAV 與 torch 2.13 (cu130)：�
 export PYTHONUTF8=1                     # 路徑含非 ASCII 字元時需要
 make lint && make test
 make reproduce-lite   # 從已 commit 的預測表重算所有 run、檢查 tables 與 SOP 檢查、驗證 split hash、跑單元測試
-make psr              # 重跑目前最佳設定（需要本機 IndustReal、PSR 標註與 ViT-B/14 特徵）
+make psr              # 重跑 IndustReal 目前最佳設定（需要本機 IndustReal、PSR 標註與 ViT-B/14 特徵）
+make features-havid havid-tas-v3 havid-sop-v8   # HA-ViD：特徵 → 辨識器 → SOP 檢查（需要本機 HA-ViD）
+make review-queue review-ui REVIEWER=<name>      # 偏差佇列與本機複核介面（docs/review.md）
 make reproduce        # 完整路徑：audit → 特徵 → 離線 TAS → PSR 標註 → precedence graph → psr → reproduce-lite，約 1.5 h
 ```
 
