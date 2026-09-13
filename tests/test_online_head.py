@@ -21,7 +21,7 @@ from sop_monitor.online_head import (  # noqa: E402
     run_pipeline,
     video_feature_chunks,
 )
-from sop_monitor.sop_graph import TaskGraph  # noqa: E402
+from sop_monitor.sop_graph import NODE_TYPES, TaskGraph  # noqa: E402
 
 DIM, N_CLASSES = 6, 4
 TINY = MSTCNSpec(num_layers_pg=4, num_layers_r=3, num_refinement_stages=1, num_f_maps=8)
@@ -83,7 +83,7 @@ def test_hand_recogniser_matches_the_offline_fused_run(lookahead: int, chunk: in
 
 def test_pipeline_feeds_the_monitor_frame_by_frame(tmp_path: Path) -> None:
     graph = TaskGraph(
-        dict.fromkeys(("pckbx", "icbck", "ibscb"), "PT"),
+        dict.fromkeys(("pckbx", "icbck", "ibscb"), NODE_TYPES["PT"]),
         {"precedesPT": (("pckbx", "icbck"),)},
     )
     features = {view: _features(60, seed=10 + view) for view in range(3)}

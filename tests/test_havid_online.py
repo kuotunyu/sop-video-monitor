@@ -129,3 +129,51 @@ def test_seed_groups_strip_the_seed_suffix() -> None:
     assert groups[("gt", 1)] == ["gt@1"]
     assert groups[("la15", 8)] == ["la15_s0@8", "la15_s1@8", "la15_s10@8"]
     assert len(groups) == 4
+
+
+def test_step_recall_pools_frames_per_sheet_step(tmp_path: Path) -> None:
+    import json
+
+    from sop_monitor.havid_sop import write_knowledge
+    from sop_monitor.havid_step_recall import RunGroup, render_step_recall, step_recall
+    from sop_monitor.sop_graph import NODE_TYPES, TaskGraph
+
+    labels = {"0": "null", "1": "sshc1dh", "2": "sshc2dh", "3": "ibscb"}
+    for name, preds in (("a", [0, 2, 1, 3, 0]), ("b", [0, 1, 0, 0, 3])):
+        run = tmp_path / name
+        run.mkdir()
+        (run / "config.json").write_text(
+            json.dumps({"classes": {"class_id_to_label": labels}}), encoding="utf-8"
+        )
+        rows = ["video_id,participant,frame,gt,pred_x"]
+        rows += [
+            f"S01A04I01,S01,{f},{g},{p}"
+            for f, (g, p) in enumerate(zip([0, 1, 1, 3, 3], preds, strict=True))
+        ]
+        (run / "predictions_val.csv").write_text("\n".join(rows) + "\n", encoding="utf-8")
+    graphs = {
+        plate: TaskGraph(
+            dict.fromkeys(("sshc", "ibscb"), NODE_TYPES["PT"]) if plate == "cylinder" else {}, {}
+        )
+        for plate in ("cylinder", "gear", "general")
+    }
+    knowledge = tmp_path / "k"
+    write_knowledge(
+        knowledge,
+        graphs,
+        {p: {} for p in graphs},
+        {"cylinder": ["sshc"], "gear": [], "general": []},
+        {"granularity": "sheet"},
+    )
+    both = RunGroup.parse(f"both=x@{tmp_path / 'a'},{tmp_path / 'b'}")
+    only_a = RunGroup.parse(f"a=x@{tmp_path / 'a'}")
+    payload = step_recall([both, only_a], knowledge)
+    # sshc: gt frames 1, 2 in each run; a predicts sshc2dh, sshc1dh (both map to sshc), b sshc1dh, null
+    assert payload["steps"]["sshc"]["recall"] == {"both": 3 / 4, "a": 1.0}
+    assert payload["steps"]["ibscb"]["recall"] == {"both": 2 / 4, "a": 0.5}
+    assert payload["steps"]["sshc"]["mandatory_in"] == ["cylinder"]
+    assert payload["steps"]["sshc"]["gt_frames_per_run_dir"] == 2
+    assert payload["mandatory_step_frame_recall"] == {"both": 0.75, "a": 1.0}
+    assert "| sshc | cylinder | cylinder | 2 | 75 | 100 |" in render_step_recall(payload)
+    with pytest.raises(ValueError, match="NAME=COLUMN"):
+        RunGroup.parse("x@dir")

@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary havid-online-v10 review-queue review-ui stream-bench-decode stream-bench-dinov2
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary havid-online-v10 havid-step-recall-v9 review-queue review-ui stream-bench-decode stream-bench-dinov2
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -137,6 +137,9 @@ havid-lookahead-summary:  ## havid_dev_v9: mean +- std over seeds per look-ahead
 
 havid-online-v10:  ## havid_dev_v10: val replayed frame by frame through the online SOP monitor (sheet knowledge); ground truth, causal fusion at look-ahead 0 (v3 seeds) and 15 / 45 / 90 (v9 seeds), min_frames 1-30.
 	args=""; for s in 0 1 2; do if [ $$s = 0 ]; then suf=""; else suf="_s$$s"; fi; args="$$args --source la0_s$$s=reports/havid_dev_v3_tas_f1sel_lh$$suf,reports/havid_dev_v3_tas_f1sel_rh$$suf,fusion_causal,0"; for la in 15 45 90; do args="$$args --source la$${la}_s$$s=reports/havid_dev_v9_tas_la$${la}_lh_s$$s,reports/havid_dev_v9_tas_la$${la}_rh_s$$s,fusion_causal,$$la"; done; done; $(UV) run sop-monitor havid-online --graphs sop/ha-vid/sheet --granularity sheet $$args --min-frames 1 --min-frames 4 --min-frames 8 --min-frames 15 --min-frames 30 --out reports/havid_dev_v10_sop_online
+
+havid-step-recall-v9:  ## havid_dev_v9 step table: val frame recall per sheet step, causal fusion at look-ahead 0 / 15 / 45 / 90 and offline fusion, both hands x seeds 0-2.
+	v3=""; for s in "" _s1 _s2; do for h in lh rh; do v3="$$v3,reports/havid_dev_v3_tas_f1sel_$$h$$s"; done; done; groups="--group L0=fusion_causal@$${v3#,}"; for la in 15 45 90; do d=""; for s in 0 1 2; do for h in lh rh; do d="$$d,reports/havid_dev_v9_tas_la$${la}_$${h}_s$$s"; done; done; groups="$$groups --group L$$la=fusion_causal@$${d#,}"; done; $(UV) run sop-monitor havid-step-recall $$groups --group offline=fusion_offline@$${v3#,} --out reports/havid_dev_v9_step_recall
 
 # ---- W5 review (docs/review.md) -------------------------------------------------------------
 

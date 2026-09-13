@@ -871,6 +871,29 @@ def _check_havid_online_run(run_dir: Path, write: bool) -> list[str]:
     return mismatches
 
 
+def _check_step_recall(run_dir: Path, write: bool) -> list[str]:
+    """Recompute a per-step recall table from the committed prediction tables it lists."""
+    from sop_monitor.havid_step_recall import RunGroup, render_step_recall, step_recall
+
+    committed = json.loads((run_dir / "step_recall.json").read_text(encoding="utf-8"))
+    config = committed["config"]
+    groups = [
+        RunGroup(g["name"], g["column"], tuple(Path(d) for d in g["run_dirs"]))
+        for g in config["groups"]
+    ]
+    recomputed = step_recall(groups, Path(config["graphs_dir"]))
+    mismatches: list[str] = []
+    if json.dumps(recomputed, sort_keys=True) != json.dumps(committed, sort_keys=True):
+        mismatches.append(f"{run_dir.name}: step_recall.json differs from the prediction tables")
+    rendered = render_step_recall(committed)
+    tables_path = run_dir / "tables.md"
+    if write:
+        tables_path.write_text(rendered, encoding="utf-8", newline="\n")
+    elif not tables_path.is_file() or tables_path.read_text(encoding="utf-8") != rendered:
+        mismatches.append(f"{run_dir.name}: tables.md is stale (run with --write to regenerate)")
+    return mismatches
+
+
 def _check_run(run_dir: Path, write: bool) -> list[str]:
     """Recompute a run's metrics from its prediction table; return the list of mismatches."""
     from sop_monitor.baseline import (
@@ -884,6 +907,8 @@ def _check_run(run_dir: Path, write: bool) -> list[str]:
         return _check_havid_sop_run(run_dir, write)
     if (run_dir / "online.json").is_file():
         return _check_havid_online_run(run_dir, write)
+    if (run_dir / "step_recall.json").is_file():
+        return _check_step_recall(run_dir, write)
     if (run_dir / "seed_summary.json").is_file():
         return _check_seed_summary(run_dir, write)
     if not (run_dir / "metrics.json").is_file():
@@ -1244,6 +1269,26 @@ def havid_online_head_cmd(
     typer.echo(f"-> {out}")
 
 
+@app.command("havid-step-recall")
+def havid_step_recall_cmd(
+    group: Annotated[list[str], typer.Option(help="NAME=COLUMN@RUN_DIR[,RUN_DIR...] (repeatable)")],
+    out: Annotated[Path, typer.Option(help="Output directory (step_recall.json, tables.md)")],
+    graphs: Annotated[Path, typer.Option(help="Learned JSON directory")] = Path("sop/ha-vid/sheet"),
+) -> None:
+    """Val frame recall per instruction-sheet step for groups of HA-ViD TAS runs."""
+    from sop_monitor.havid_step_recall import (
+        RunGroup,
+        render_step_recall,
+        step_recall,
+        write_step_recall,
+    )
+
+    payload = step_recall([RunGroup.parse(spec) for spec in group], graphs)
+    write_step_recall(out, payload)
+    typer.echo(render_step_recall(payload))
+    typer.echo(f"-> {out}")
+
+
 @app.command("learn-sop")
 def learn_sop_cmd(
     psr_dir: Annotated[Path, typer.Option()] = Path("data/external/industreal/psr"),
@@ -1334,6 +1379,7 @@ def reproduce_lite(
             or (p / "steps_val.csv").is_file()
             or (p / "seed_summary.json").is_file()
             or (p / "online.json").is_file()
+            or (p / "step_recall.json").is_file()
         )
     )
     if not runs:
