@@ -44,12 +44,13 @@ Reading:
 
 - **24 cameras at 15 fps (360 frames per second) are decoded and embedded in real time** with a p95
   latency of 71 ms and the GPU consumer busy 46 % of the time.
-- **At 36 cameras the sources fall behind**: each decode thread produced 322 instead of about 375
-  frames in the 25 s (86 % of the schedule), so only 469 of 540 frames per second arrive. The ring
+- **At 36 cameras the sources fall behind**: the 36 decode threads produced 11,638 frames instead of
+  13,500 in the 25 s (86 % of the schedule), so only 469 of 540 frames per second arrive. The ring
   buffers never fill (mean occupancy 0.9 %) and the GPU consumer is busy only 53 % of the time, so
   the limit is on the producing side; the likely cause, not isolated here, is 36 decode threads
-  competing with the consumer's Python thread for the CPU and the interpreter lock. The latency column does not show
-  this lag, because latency is counted from decode; a frame that is decoded late looks fresh.
+  competing with the consumer's Python thread for the CPU and the interpreter lock. The latency
+  column does not show this lag, because latency is counted from decode; a frame that is decoded
+  late looks fresh.
 - **Decoding alone scales to 48 streams (720 fps)** without falling behind, so the saturation at 36
   comes from decoding and embedding together.
 - HA-ViD needs three cameras per station: by these numbers one RTX 4090 could embed about eight
