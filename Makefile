@@ -171,8 +171,8 @@ review-ui:  ## Local review page on http://127.0.0.1:8765/ for the v8 queue (set
 
 # ---- W4 streaming benchmark (needs an otherwise idle machine) ----------------------------------
 
-stream-bench-decode:  ## Decode + resize + buffering only: 1-24 streams of HA-ViD val video at 15 fps (reports/stream_bench_v1_decode).
-	$(UV) run sop-monitor stream-bench --consumer decode --stream 1 --stream 3 --stream 6 --stream 12 --stream 24 --out reports/stream_bench_v1_decode
+stream-bench-decode:  ## Decode + resize + buffering only: 1-48 streams of HA-ViD val video at 15 fps (reports/stream_bench_v1_decode).
+	$(UV) run sop-monitor stream-bench --consumer decode --stream 1 --stream 3 --stream 6 --stream 12 --stream 24 --stream 36 --stream 48 --out reports/stream_bench_v1_decode
 
-stream-bench-dinov2:  ## Decode + DINOv2 ViT-B/14 embedding on the GPU: 1-12 streams at 15 fps (reports/stream_bench_v1_dinov2).
-	$(UV) run sop-monitor stream-bench --consumer dinov2 --stream 1 --stream 3 --stream 6 --stream 9 --stream 12 --out reports/stream_bench_v1_dinov2
+stream-bench-dinov2:  ## Decode + DINOv2 ViT-B/14 embedding on the GPU: 1-36 streams at 15 fps (reports/stream_bench_v1_dinov2).
+	$(UV) run sop-monitor stream-bench --consumer dinov2 --stream 1 --stream 3 --stream 6 --stream 12 --stream 18 --stream 24 --stream 36 --out reports/stream_bench_v1_dinov2

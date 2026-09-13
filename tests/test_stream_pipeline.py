@@ -117,3 +117,19 @@ def test_pipeline_drop_oldest_sheds_load_and_wait_does_not() -> None:
     assert set(waiting.to_dict()) >= {"throughput_fps", "latency_ms", "per_camera", "stalls"}
     with pytest.raises(ValueError, match="unique"):
         run_pipeline([sources()[0], sources()[0]], slow, duration_s=0.1)
+
+
+def test_default_clocks_are_high_resolution() -> None:
+    """``time.monotonic`` ticks in 15.6 ms steps on Windows, which quantises every latency."""
+    import inspect
+    import time
+
+    from sop_monitor.stream import pipeline, ring_buffer
+
+    for cls in (
+        pipeline.ReplaySource,
+        pipeline.BatchCollector,
+        pipeline.Watchdog,
+        ring_buffer.RingBuffer,
+    ):
+        assert inspect.signature(cls).parameters["clock"].default is time.perf_counter, cls

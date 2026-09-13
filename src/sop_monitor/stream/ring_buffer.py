@@ -59,7 +59,7 @@ class RingBuffer[T]:
         capacity: int,
         policy: DropPolicy = DropPolicy.WAIT,
         adaptive: AdaptiveConfig | None = None,
-        clock: Callable[[], float] = time.monotonic,
+        clock: Callable[[], float] = time.perf_counter,
     ) -> None:
         if capacity < 1:
             raise ValueError("capacity must be >= 1")

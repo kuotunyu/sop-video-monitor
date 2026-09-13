@@ -12,7 +12,7 @@ so decode cost and pacing are those of a live camera without the network hop an 
 add; the frame iterator is injectable, so tests run without PyAV. The collector takes up to
 ``max_batch`` frames from all cameras, waiting at most ``max_wait_s`` for a batch to fill — the
 usual GPU micro-batching trade-off — and hands them to a consumer (decode-only, a frame embedder,
-later the online head). Every frame carries the monotonic time it was produced, so the report gives
+later the online head). Every frame carries the high-resolution monotonic time (`time.perf_counter`; `time.monotonic` ticks in 15.6 ms steps on Windows) it was produced, so the report gives
 end-to-end latency percentiles next to throughput, per-camera ``skipped_frames`` and a sampled
 buffer-occupancy series: the inputs of the backpressure curves.
 """
@@ -60,7 +60,7 @@ class ReplaySource:
         fps: float,
         speed: float = 1.0,
         loop: bool = True,
-        clock: Callable[[], float] = time.monotonic,
+        clock: Callable[[], float] = time.perf_counter,
     ) -> None:
         if fps <= 0 or speed <= 0:
             raise ValueError("fps and speed must be positive")
@@ -116,7 +116,7 @@ class BatchCollector:
         consumer: Callable[[Sequence[Frame]], None],
         max_batch: int = 8,
         max_wait_s: float = 0.02,
-        clock: Callable[[], float] = time.monotonic,
+        clock: Callable[[], float] = time.perf_counter,
     ) -> None:
         if max_batch < 1 or max_wait_s < 0:
             raise ValueError("max_batch must be >= 1 and max_wait_s >= 0")
@@ -181,7 +181,7 @@ class Watchdog:
         sources: Sequence[ReplaySource],
         stall_after_s: float = 1.0,
         interval_s: float = 0.1,
-        clock: Callable[[], float] = time.monotonic,
+        clock: Callable[[], float] = time.perf_counter,
     ) -> None:
         self.sources = list(sources)
         self.stall_after_s = stall_after_s
@@ -273,7 +273,7 @@ def run_pipeline(
     collector = BatchCollector(buffers, consumer, max_batch, max_wait_s)
     watchdog = Watchdog(sources, stall_after_s)
     stop = threading.Event()
-    started_at = time.monotonic()
+    started_at = time.perf_counter()
     threads = [
         threading.Thread(target=s.run, args=(buffers[s.camera], stop), daemon=True) for s in sources
     ]
@@ -285,7 +285,7 @@ def run_pipeline(
     frames_at_warmup = 0
     latency_start = 0
     warm = warmup_s <= 0
-    while (elapsed := time.monotonic() - started_at) < duration_s:
+    while (elapsed := time.perf_counter() - started_at) < duration_s:
         if not warm and elapsed >= warmup_s:
             warm = True
             frames_at_warmup = collector.stats.frames
@@ -306,7 +306,7 @@ def run_pipeline(
         }
         for s in sources
     }
-    total_duration = time.monotonic() - started_at
+    total_duration = time.perf_counter() - started_at
     return PipelineReport(
         duration_s=duration_s,
         cameras=len(sources),
