@@ -429,6 +429,53 @@ def train_havid_tas_cmd(
     typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
 
 
+@app.command("predict-havid-tas")
+def predict_havid_tas_cmd(
+    checkpoint_dir: Annotated[Path, typer.Option(help="train-havid-tas --checkpoint-dir")],
+    out: Annotated[Path, typer.Option(help="New run directory (must not exist)")],
+    split: Annotated[str, typer.Option(help="val | test")] = "val",
+    features: Annotated[Path, typer.Option()] = Path("artifacts/features/ha-vid/dinov2_vitb14_s1"),
+    split_dir: Annotated[Path, typer.Option()] = Path("splits/ha-vid"),
+    temporal: Annotated[Path, typer.Option(help="HAViD_temporalAnnotation.zip")] = Path(
+        "data/external/ha-vid/HAViD_temporalAnnotation.zip"
+    ),
+    official: Annotated[Path, typer.Option(help="ActionSegmentation/data zip (mapping)")] = Path(
+        "data/external/ha-vid/ActionSegmentation_data.zip"
+    ),
+    confirm_test: Annotated[
+        bool,
+        typer.Option(
+            help="Required for --split test: the one-time run of docs/havid_test_protocol.md"
+        ),
+    ] = False,
+    device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
+) -> None:
+    """Score a split with a checkpointed run's saved networks (no training, no selection)."""
+    from sop_monitor.features import resolve_device
+    from sop_monitor.havid_predict import predict_havid_tas
+
+    if split not in ("val", "test"):
+        typer.echo("--split must be val or test")
+        raise typer.Exit(code=1)
+    if split == "test" and not confirm_test:
+        typer.echo(
+            "the frozen test split is scored once, under docs/havid_test_protocol.md; "
+            "pass --confirm-test"
+        )
+        raise typer.Exit(code=1)
+    result = predict_havid_tas(
+        checkpoint_dir,
+        features,
+        split_dir / f"{split}.csv",
+        temporal,
+        official,
+        out,
+        device=resolve_device(device),
+    )
+    typer.echo(result["tables"])
+    typer.echo(f"-> {out}")
+
+
 @app.command("summarise-havid-seeds")
 def summarise_havid_seeds_cmd(
     run: Annotated[list[Path], typer.Option(help="train-havid-tas run directories, one per seed")],

@@ -546,8 +546,14 @@ def render_tables(metrics: Mapping[str, object], config: Mapping[str, object]) -
     descriptions: Mapping[str, str] = config.get("runs", {})  # type: ignore[assignment]
     features: Mapping[str, object] = config.get("features", {})  # type: ignore[assignment]
     boot: Mapping[str, object] = metrics.get("bootstrap", {})  # type: ignore[assignment]
+    split = metrics.get("eval_split", "val")
+    heading = (
+        "Held-out test result, evaluated once"
+        if split == "test"
+        else f"Development result on `{split}`"
+    )
     lines = [
-        f"Development result on `{metrics.get('eval_split', 'val')}` "
+        f"{heading} "
         f"({metrics['n_videos']} videos, {metrics['n_participants']} participants, "
         f"{metrics['n_frames']} sampled frames); features `{features.get('model', '?')}` "
         f"stride {features.get('stride', '?')}; 95% CI = participant bootstrap "

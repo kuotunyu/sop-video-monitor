@@ -303,3 +303,45 @@ def test_online_head_streams_a_checkpoint_run(tmp_path: Path) -> None:
     expected = [labels["class_id_to_label"][str(r.preds["fusion_causal"])] for r in rows]
     assert entry["labels"]["lh"] == expected
     assert entry["latency"]["frames"] == N_FRAMES and entry["latency"]["wall_real_time_factor"] > 0
+
+
+def test_predict_reproduces_the_training_run_from_its_checkpoints(tmp_path: Path) -> None:
+    from sop_monitor.havid_predict import predict_havid_tas
+
+    paths = build(tmp_path)
+    checkpoints = tmp_path / "ckpt"
+    trained = run_havid_tas(
+        paths["features"],
+        paths["splits"],
+        paths["temporal"],
+        paths["official"],
+        tmp_path / "run",
+        HavidTASSpec(mstcn=SMALL, lookahead=2),
+        device="cpu",
+        checkpoint_dir=checkpoints,
+    )
+    out = tmp_path / "predicted"
+    result = predict_havid_tas(
+        checkpoints,
+        paths["features"],
+        paths["splits"] / "val.csv",
+        paths["temporal"],
+        paths["official"],
+        out,
+        n_boot=20,
+    )
+    original = read_predictions(tmp_path / "run" / "predictions_val.csv")
+    again = read_predictions(out / "predictions_val.csv")
+    assert [r.preds for r in again] == [r.preds for r in original]
+    assert set(result["metrics"]["runs"]) == set(trained["metrics"]["runs"])
+    assert len(result["config"]["split_sha256"]) == 64
+    assert (out / "tables.md").read_text(encoding="utf-8").startswith("Development result on `val`")
+    with pytest.raises(FileExistsError):
+        predict_havid_tas(
+            checkpoints,
+            paths["features"],
+            paths["splits"] / "val.csv",
+            paths["temporal"],
+            paths["official"],
+            out,
+        )
