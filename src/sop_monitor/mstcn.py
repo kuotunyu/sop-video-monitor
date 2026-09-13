@@ -226,8 +226,13 @@ def train_mstcn(
     spec: MSTCNSpec,
     causal: bool,
     device: str,
+    checkpoint: Path | None = None,
 ) -> tuple[list[np.ndarray], dict[str, object]]:
-    """Train one MS-TCN++ variant; return the eval posteriors of the best val epoch and a log."""
+    """Train one MS-TCN++ variant; return the eval posteriors of the best val epoch and a log.
+
+    With ``checkpoint`` the weights of the selected epoch are saved there together with the
+    feature standardiser (:func:`load_checkpoint` restores both); training is unchanged.
+    """
     import torch
 
     torch.manual_seed(spec.seed)
@@ -251,6 +256,7 @@ def train_mstcn(
     order = np.random.default_rng(spec.seed)
     curve: list[dict[str, float]] = []
     best_score, best_probs, best_epoch = -1.0, None, 0
+    best_state: dict[str, object] | None = None
     started = time.perf_counter()
     for epoch in range(1, spec.epochs + 1):
         model.train()
@@ -274,7 +280,28 @@ def train_mstcn(
             )
             if score > best_score:
                 best_score, best_probs, best_epoch = score, probs, epoch
+                if checkpoint is not None:
+                    best_state = {
+                        key: value.detach().cpu().clone()
+                        for key, value in model.state_dict().items()
+                    }
     assert best_probs is not None
+    if checkpoint is not None:
+        checkpoint.parent.mkdir(parents=True, exist_ok=True)
+        torch.save(
+            {
+                "format": 1,
+                "state_dict": best_state,
+                "mean": torch.from_numpy(standardise.mean.astype(np.float32)),
+                "std": torch.from_numpy(standardise.std.astype(np.float32)),
+                "dim": int(x_train.shape[1]),
+                "n_classes": n_classes,
+                "causal": causal,
+                "spec": asdict(spec),
+                "best_epoch": best_epoch,
+            },
+            checkpoint,
+        )
     log = {
         "causal": causal,
         "best_epoch": best_epoch,
@@ -284,6 +311,36 @@ def train_mstcn(
         "train_seconds": time.perf_counter() - started,
     }
     return best_probs, log
+
+
+def load_checkpoint(path: Path, device: str = "cpu") -> tuple[object, Standardiser, dict]:
+    """Model (eval mode, on ``device``), standardiser and metadata saved by :func:`train_mstcn`."""
+    import torch
+
+    saved = torch.load(path, map_location="cpu", weights_only=True)
+    if saved.get("format") != 1:
+        raise ValueError(f"{path}: unknown checkpoint format {saved.get('format')!r}")
+    raw_spec = dict(saved["spec"])
+    spec_fields = {name for name in MSTCNSpec.__dataclass_fields__}
+    spec = MSTCNSpec(**{k: v for k, v in raw_spec.items() if k in spec_fields})
+    model = build_model(saved["dim"], saved["n_classes"], spec, saved["causal"])
+    model.load_state_dict(saved["state_dict"])
+    model.to(device).eval()
+    standardise = Standardiser(saved["mean"].numpy(), saved["std"].numpy())
+    meta = {k: saved[k] for k in ("dim", "n_classes", "causal", "best_epoch")} | {"spec": raw_spec}
+    return model, standardise, meta
+
+
+def predict_probs(
+    model, features: np.ndarray, standardise: Standardiser, device: str
+) -> np.ndarray:
+    """Last-stage posterior ``(T, n_classes)`` of one feature sequence ``(T, dim)``."""
+    return _predict(
+        model,
+        [VideoFeatures("", "", np.arange(len(features)), features, np.zeros(0))],
+        standardise,
+        device,
+    )[0]
 
 
 def run_mstcn_baseline(

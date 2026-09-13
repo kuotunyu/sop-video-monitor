@@ -40,7 +40,7 @@ backpressure 實測曲線。**以上是設計目標，不是現況。** 現況�
 | `industreal.py`、`splits.py` | IndustReal action 標註解析、participant-disjoint split 凍結與 test list SHA-256 契約（`splits/industreal/`）、標註 → 逐影格對齊 |
 | `industreal_psr.py` | PSR 標註解析與三個 CSV 的交叉核對、官方 state→step 規則轉錄、從 recording 壓縮檔只抽標註、JPEG 名稱位移偵測 |
 | `havid.py` | HA-ViD id 與 HR-SAT 標籤解析、temporal／collaboration 標註（inclusive、連續）、官方 split／mapping／groundTruth 交叉核對（頭尾各裁 5 frames）、`wrong` 統計、mp4 probe 與三視角配對、subject-wise split 凍結 |
-| `havid_tas.py` | HA-ViD 離線 TAS 線：每個視角各訓 causal／非 causal MS-TCN++、三種不需調參的 late fusion（mean／幾何平均／信心加權）、以 recording 為鍵的預測表；官方 I3D 特徵匯出成同一種 npz 快取 |
+| `havid_tas.py` | HA-ViD 離線 TAS 線：每個視角各訓 causal／非 causal MS-TCN++、三種不需調參的 late fusion（mean／幾何平均／信心加權）、以 recording 為鍵的預測表；官方 I3D 特徵匯出成同一種 npz 快取；可選 `--checkpoint-dir` 另存選定 epoch 的權重、標準化參數與 val posterior（`mstcn.load_checkpoint` 還原） |
 | `havid_seeds.py` | HA-ViD TAS 多 seed 彙總：每個 run 指標的 mean ± std 與範圍、各網路每個 seed 選到的 epoch；`reproduce-lite` 從各 run 的 `metrics.json` 重算 |
 | `havid_sop.py` | HA-ViD SOP 層：雙手 primitive-task 步驟序列、從標籤詞彙判斷 plate、從 train 學 precedence graph／必要步驟／時長界限、synthetic 順序／遺漏／時長違規表、原生 `w` 表；`reproduce-lite` 可從 CSV 重算 |
 | `online.py` | 線上 SOP 監控：逐影格輸入雙手標籤，run-length 最短時長確認、雙手步驟合併；順序／未知步驟在步驟確認時、過長在超過上界的當下、過短在步驟結束時、遺漏在錄影結束時送出，每筆偏差帶偵測影格與延遲；`min_frames=1` 時結果等於離線 `check_sequence`（同一影格開始的步驟視為同時） |

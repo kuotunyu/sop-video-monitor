@@ -378,6 +378,13 @@ def train_havid_tas_cmd(
             help="Val metric that picks each network's epoch: mof | edit | f1@10 | f1@25 | f1@50"
         ),
     ] = "mof",
+    checkpoint_dir: Annotated[
+        Path | None,
+        typer.Option(
+            help="Also save each network's weights, the val posteriors and metadata here "
+            "(e.g. artifacts/checkpoints/<run>; ignored by git)"
+        ),
+    ] = None,
 ) -> None:
     """Per-view causal and offline MS-TCN++ plus late fusion on HA-ViD train -> val (spec W2)."""
     from sop_monitor.features import resolve_device
@@ -404,7 +411,14 @@ def train_havid_tas_cmd(
         ),
     )
     result = run_havid_tas(
-        features, split_dir, temporal, official, out, spec, device=resolve_device(device)
+        features,
+        split_dir,
+        temporal,
+        official,
+        out,
+        spec,
+        device=resolve_device(device),
+        checkpoint_dir=checkpoint_dir,
     )
     typer.echo(result["tables"])
     for name, log in result["config"]["training"].items():  # type: ignore[index, union-attr]

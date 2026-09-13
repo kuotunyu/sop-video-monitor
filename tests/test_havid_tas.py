@@ -224,3 +224,40 @@ def test_lookahead_delays_targets_and_realigns_outputs(tmp_path: Path) -> None:
     )
     assert "t + 3" in result["config"]["runs"]["view0_causal"]
     assert len(read_predictions(tmp_path / "la" / "predictions_val.csv")) == N_FRAMES
+
+
+def test_checkpoints_restore_the_selected_networks(tmp_path: Path) -> None:
+    from sop_monitor.havid import CAMERA_OF_VIEW
+    from sop_monitor.mstcn import load_checkpoint, predict_probs
+
+    paths = build(tmp_path)
+    checkpoints = tmp_path / "ckpt"
+    result = run_havid_tas(
+        paths["features"],
+        paths["splits"],
+        paths["temporal"],
+        paths["official"],
+        tmp_path / "run",
+        HavidTASSpec(mstcn=SMALL, offline=False),
+        device="cpu",
+        checkpoint_dir=checkpoints,
+    )
+    meta = json.loads((checkpoints / "meta.json").read_text(encoding="utf-8"))
+    assert meta["networks"] == ["view0_causal", "view1_causal", "view2_causal"]
+    assert meta["classes"] == result["config"]["classes"]
+    saved = np.load(checkpoints / "probs_val.npz")
+    rows = read_predictions(tmp_path / "run" / "predictions_val.csv")
+    inverse = np.array(meta["classes"]["index_to_class_id"])
+    fused = saved["fusion_causal__S02A04I01"].astype(np.float32)
+    assert [r.preds["fusion_causal"] for r in rows] == inverse[fused.argmax(axis=1)].tolist()
+    for view in range(3):
+        model, standardise, info = load_checkpoint(checkpoints / f"view{view}_causal.pt")
+        assert info["causal"] is True
+        assert (
+            info["best_epoch"] == result["config"]["training"][f"view{view}_causal"]["best_epoch"]
+        )
+        cache = np.load(paths["features"] / f"S02A04I01{CAMERA_OF_VIEW[view]}.npz")
+        probs = predict_probs(model, cache["features"], standardise, "cpu")
+        np.testing.assert_allclose(
+            probs, saved[f"view{view}_causal__S02A04I01"].astype(np.float32), atol=2e-3
+        )

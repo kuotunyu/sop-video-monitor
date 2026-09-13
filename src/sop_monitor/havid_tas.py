@@ -233,8 +233,15 @@ def run_havid_tas(
     out_dir: Path,
     spec: HavidTASSpec | None = None,
     device: str = "cpu",
+    checkpoint_dir: Path | None = None,
 ) -> dict[str, object]:
-    """Train per-view MS-TCN++ heads, fuse them, score on val and write the run directory."""
+    """Train per-view MS-TCN++ heads, fuse them, score on val and write the run directory.
+
+    With ``checkpoint_dir`` every network's selected weights (``<run>.pt``), the val posteriors of
+    every run (``probs_val.npz``, float16, keys ``<run>__<video_id>``, aligned to the frames like the
+    prediction table) and the class and look-ahead metadata (``meta.json``) are written there; the
+    run directory and its numbers are unchanged.
+    """
     spec = spec or HavidTASSpec()
     started = time.perf_counter()
     temporal, _ = load_temporal_zip(temporal_zip)
@@ -279,6 +286,7 @@ def run_havid_tas(
                 spec.mstcn,
                 causal,
                 device,
+                None if checkpoint_dir is None else checkpoint_dir / f"{run}.pt",
             )
             probs[run] = [advance_outputs(p, shift) for p in view_probs]
     assert reference is not None
@@ -385,4 +393,30 @@ def run_havid_tas(
         load_metrics(out_dir), json.loads((out_dir / "config.json").read_text(encoding="utf-8"))
     )
     (out_dir / "tables.md").write_text(tables, encoding="utf-8", newline="\n")
+    if checkpoint_dir is not None:
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(
+            checkpoint_dir / "probs_val.npz",
+            **{
+                f"{run}__{video.video_id}": p[i].astype(np.float16)
+                for run, p in probs.items()
+                for i, video in enumerate(reference)
+            },
+        )
+        (checkpoint_dir / "meta.json").write_text(
+            json.dumps(
+                {
+                    "run_dir": out_dir.as_posix(),
+                    "features_dir": features_dir.as_posix(),
+                    "spec": config["spec"],
+                    "classes": config["classes"],
+                    "networks": sorted(logs),
+                    "frames": {video.video_id: video.frames.tolist() for video in reference},
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
     return {"config": config, "metrics": metrics, "tables": tables}
