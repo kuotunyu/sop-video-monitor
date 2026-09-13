@@ -145,7 +145,7 @@ is the bottleneck for the deployable numbers.
 [1, 99]} %, with a selection rule fixed before val is read (coverage minus recording-level false
 alarms; narrowest duration window with ≤ 5 % step false alarms, else the widest). Result
 (`reports/havid_dev_v5_sop_tuned/oof.json`): every agreement threshold below 1.0 raises the
-out-of-fold false alarms at every support (support 20: 32 % → 40–54 %), so edges must be
+out-of-fold false alarms at every support (support 20: 32 % → 40–55 %), so edges must be
 universal; support 20 with the strict rule keeps 26 of 78 edges and scores best (coverage 90 %,
 recording false alarms 32 %, step false alarms 5.6 %). No duration window reaches 5 % step false
 alarms ([1, 99] % gives 6.6 %); the widest is used. Decision: `sop/ha-vid/tuned/` (support 20,
@@ -196,3 +196,20 @@ video, so `sop_monitor/review.py` uses `http.server` and adds no dependency (the
 unchanged). The server binds to 127.0.0.1, serves only the video ids of the split it was started
 with and refuses a split file named `test`; decisions are an append-only JSONL. A framework can
 replace it if the UI ever needs authentication or more than one reviewer at a time.
+
+## 2026-09-14 — steps that start on the same frame do not precede each other; the online monitor matches the offline checks
+
+`sop_monitor/online.py` adds `OnlineSOPMonitor`, the frame-by-frame form of `check_sequence`: per
+hand a run-length segmenter with a minimum-duration confirmation, two-hand step joining, order and
+unknown findings when a step is confirmed, too_long as soon as a running step passes its upper
+bound, too_short when it ends, omissions when the recording finishes. Making its findings equal the
+offline checker's exposed a tie: `check_order` walks a label list, so of two steps that start on
+the same frame the one listed first counted as earlier, decided by the end frame, which an online
+monitor does not know yet. `havid_sop.check_step_order` now treats every run of equal start frames
+as simultaneous (each is checked against the steps before the run). The committed v4, v5, v6 and v8
+`sop_checks.json` are unchanged; the out-of-fold grids moved only in rows with agreement < 1 (at
+most 0.7 points, e.g. primitive-task support 20 / agreement 0.8: 54 % → 55 % recording false
+alarms) and both selections are unchanged. With `min_frames=1` online and offline findings are
+equal on 500 random two-hand sequences at both granularities; the one documented exception is two
+adjacent segments with the same label, which a frame stream cannot separate (149 of 5,871
+annotation boundaries).

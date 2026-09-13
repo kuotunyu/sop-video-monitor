@@ -27,8 +27,8 @@ step-level false-alarm rate ≤ 5 %, else the widest.
 | 10 | 1.0 | 38 | 92 % | 71 % | 12.9 % | 0.20 |
 | **20** | **1.0** | **26** | **90 %** | **32 %** | **5.6 %** | **0.58** |
 | 20 | 0.95 | 33 | 90 % | 40 % | 11.0 % | 0.50 |
-| 20 | 0.9 | 27 | 91 % | 43 % | 18.3 % | 0.48 |
-| 20 | 0.8 | 34 | 99 % | 54 % | 22.7 % | 0.45 |
+| 20 | 0.9 | 27 | 91 % | 43 % | 18.4 % | 0.48 |
+| 20 | 0.8 | 34 | 99 % | 55 % | 22.7 % | 0.44 |
 
 (Rows with agreement < 1 at supports 3–10 are in `oof.json`; every one of them has more false
 alarms than its strict counterpart.) Duration step false alarms out of fold: [5, 95] % 15.3 %,
@@ -83,7 +83,7 @@ v4 → v5 on ground truth (recording-level false alarms): order 16 / 18 → 8 / 
 Reading:
 
 - **The strict rule wins; the majority rule loses.** Out of fold, every agreement threshold
-  below 1.0 raises the false-alarm rate at every support (at support 20: 32 % → 40–54 %). Edges
+  below 1.0 raises the false-alarm rate at every support (at support 20: 32 % → 40–55 %). Edges
   that hold in "most" recordings encode common habits, not constraints; only universal edges with
   enough support survive as SOP knowledge. Support 20 keeps 26 edges (of 78) and halves the
   ground-truth false alarms on val (8 / 18), with 8.5 % of steps flagged.

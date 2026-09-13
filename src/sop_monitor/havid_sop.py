@@ -47,7 +47,6 @@ from sop_monitor.sop_graph import (
     DurationBounds,
     TaskGraph,
     check_durations,
-    check_order,
     export_json,
     load_graph,
 )
@@ -413,19 +412,64 @@ def load_knowledge(
 # ---- checks and synthetic violations ------------------------------------------------------------
 
 
+def check_step_order(graph: TaskGraph, steps: Sequence[Step]) -> dict[str, list]:
+    """Precedence check in which steps starting on the same frame are simultaneous.
+
+    :func:`sop_monitor.sop_graph.check_order` walks a label list, so of two steps that start on the
+    same frame the one listed first counts as earlier — a tie broken by information (the end frame)
+    an online monitor does not have yet. Here every maximal run of consecutive steps with equal
+    start frames is checked against the steps observed before the run, and only then added, so the
+    offline and the online checks agree. Returns ``violations`` (step, index, missing
+    predecessors), ``unknown``, ``repeated`` and ``omissions`` like :class:`OrderReport`.
+    """
+    ancestors = graph.ancestors("PT")
+    seen: set[str] = set()
+    violations: list[dict[str, object]] = []
+    unknown: list[str] = []
+    repeated: list[str] = []
+    index = 0
+    while index < len(steps):
+        group_end = index
+        while group_end + 1 < len(steps) and steps[group_end + 1].start == steps[index].start:
+            group_end += 1
+        added: list[str] = []
+        for position in range(index, group_end + 1):
+            label = steps[position].label
+            if label not in ancestors:
+                unknown.append(label)
+                continue
+            if label in seen:
+                repeated.append(label)
+            missing = sorted(ancestors[label] - seen)
+            if missing:
+                violations.append(
+                    {"step": label, "index": position, "missing_predecessors": missing}
+                )
+            added.append(label)
+        seen.update(added)
+        index = group_end + 1
+    omissions = sorted(node for node in ancestors if node not in seen)
+    return {
+        "violations": violations,
+        "unknown": unknown,
+        "repeated": repeated,
+        "omissions": omissions,
+    }
+
+
 def check_sequence(
     steps: Sequence[Step],
     graph: TaskGraph,
     bounds: Mapping[str, DurationBounds],
     mandatory: Iterable[str],
 ) -> dict[str, object]:
-    order = check_order(graph, [s.label for s in steps], level="PT")
+    order = check_step_order(graph, steps)
     wanted = set(mandatory)
     return {
-        "violations": order.violations,
-        "omissions": [label for label in order.omissions if label in wanted],
-        "unknown": order.unknown,
-        "repeated": order.repeated,
+        "violations": order["violations"],
+        "omissions": [label for label in order["omissions"] if label in wanted],
+        "unknown": order["unknown"],
+        "repeated": order["repeated"],
         "durations": check_durations([(s.label, s.n_frames / FPS) for s in steps], bounds),
     }
 
@@ -934,11 +978,11 @@ def tune_knowledge(
                 graphs = learn_plate_graphs(train, plates, min_support, min_agreement)
                 for rec, steps in test.items():
                     graph = graphs[plates[rec]]
-                    report = check_order(graph, [s.label for s in steps], level="PT")
+                    violations = check_step_order(graph, steps)["violations"]
                     n_rec += 1
-                    flagged_rec += int(bool(report.violations))
+                    flagged_rec += int(bool(violations))
                     n_steps += len(steps)
-                    flagged_steps += len(report.violations)
+                    flagged_steps += len(violations)
                     applicable += int(perturb_order(steps, graph, random.Random(0)) is not None)
             full = learn_plate_graphs(sequences, plates, min_support, min_agreement)
             order_grid.append(
