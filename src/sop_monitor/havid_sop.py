@@ -182,7 +182,10 @@ def sequences_of(
 
 
 def learn_plate_graphs(
-    sequences: Mapping[str, Sequence[Step]], plates: Mapping[str, str], min_support: int = 3
+    sequences: Mapping[str, Sequence[Step]],
+    plates: Mapping[str, str],
+    min_support: int = 3,
+    min_agreement: float = 1.0,
 ) -> dict[str, TaskGraph]:
     graphs: dict[str, TaskGraph] = {}
     for plate in PLATES:
@@ -191,8 +194,12 @@ def learn_plate_graphs(
         graphs[plate] = learn_precedence(
             completions,
             min_support,
-            source=f"learned from {len(recs)} HA-ViD train recordings of the {plate} plate",
+            source=(
+                f"learned from {len(recs)} HA-ViD train recordings of the {plate} plate "
+                f"(min support {min_support}, min agreement {min_agreement})"
+            ),
             node=str,
+            min_agreement=min_agreement,
         )
     return graphs
 
@@ -382,6 +389,8 @@ def synthetic_table(
     clean_rows: dict[str, dict[str, object]] = {}
     clean_flagged = {kind: 0 for kind in KINDS}
     clean_any = 0
+    clean_steps = 0
+    step_false_alarms = {"order": 0, "duration": 0}
     per_kind: dict[str, dict[str, object]] = {
         kind: {"applicable": 0, "detected": 0, "recordings": []} for kind in KINDS
     }
@@ -398,6 +407,9 @@ def synthetic_table(
             "unknown": sorted(set(findings["unknown"])),  # type: ignore[arg-type]
             "durations": len(findings["durations"]),  # type: ignore[arg-type]
         }
+        clean_steps += len(steps)
+        step_false_alarms["order"] += len(findings["violations"])  # type: ignore[arg-type]
+        step_false_alarms["duration"] += len(findings["durations"])  # type: ignore[arg-type]
         flagged_here = False
         for kind in KINDS:
             if _flagged(findings, kind):
@@ -441,10 +453,16 @@ def synthetic_table(
         entry["precision"] = (
             detected / (detected + false_alarms) if detected + false_alarms else None
         )
+        if kind in step_false_alarms:
+            flagged_steps = step_false_alarms[kind]
+            entry["clean_steps_flagged"] = flagged_steps
+            entry["step_false_alarm_rate"] = flagged_steps / clean_steps if clean_steps else None
+            entry["step_false_alarm_ci95"] = wilson(flagged_steps, clean_steps)
     return {
         "seed": seed,
         "recordings": n,
         "clean": {
+            "steps": clean_steps,
             "flagged_any": clean_any,
             "flagged_by_kind": clean_flagged,
             "per_recording": clean_rows,
@@ -617,15 +635,22 @@ def render_sop_tables(payload: Mapping[str, object]) -> str:
             f"recall = perturbed step flagged by the matching check, false alarm = unperturbed "
             f"recording flagged by that check; Wilson 95 % intervals in percent:",
             "",
-            "| violation | applicable | detected | recall | clean flagged | false-alarm rate | precision |",
-            "|---|---|---|---|---|---|---|",
+            "| violation | applicable | detected | recall | clean flagged | false-alarm rate | precision | per-step false alarms |",
+            "|---|---|---|---|---|---|---|---|",
         ]
         for kind in KINDS:
             e = synthetic[kind]
+            if "clean_steps_flagged" in e:
+                per_step = (
+                    f"{e['clean_steps_flagged']} / {clean.get('steps', '?')} = "
+                    f"{_pct(e['step_false_alarm_rate'])} {_ci(e['step_false_alarm_ci95'])}"  # type: ignore[arg-type]
+                )
+            else:
+                per_step = "—"
             lines.append(
                 f"| {kind} | {e['applicable']} | {e['detected']} | {_pct(e['recall'])} {_ci(e['recall_ci95'])} "  # type: ignore[arg-type]
                 f"| {e['clean_flagged']} / {n} | {_pct(e['false_alarm_rate'])} {_ci(e['false_alarm_ci95'])} "  # type: ignore[arg-type]
-                f"| {_pct(e['precision'])} |"  # type: ignore[arg-type]
+                f"| {_pct(e['precision'])} | {per_step} |"  # type: ignore[arg-type]
             )
         lines.append(
             f"\nUnperturbed `{source}` recordings with any finding: {clean['flagged_any']} / {n}."
@@ -681,6 +706,114 @@ def run_havid_sop(
     return payload
 
 
+def tune_knowledge(
+    sequences: Mapping[str, Sequence[Step]],
+    plates: Mapping[str, str],
+    subjects: Mapping[str, str],
+    supports: Sequence[int] = (3, 5, 10, 20),
+    agreements: Sequence[float] = (1.0, 0.95, 0.9, 0.8),
+    quantiles: Sequence[tuple[float, float]] = ((0.05, 0.95), (0.02, 0.98), (0.01, 0.99)),
+    min_count: int = 5,
+) -> dict[str, object]:
+    """Leave-one-subject-out over the train split to choose the graph rule and the duration window.
+
+    For every (min support, min agreement) the order check's recording-level and step-level
+    false-alarm rates on the held-out subject's *unperturbed* sequences and its coverage (fraction
+    of held-out recordings on which a synthetic swap is possible at all); for every quantile pair
+    the duration check's step-level false-alarm rate. Selection rule, fixed before val is looked
+    at: order = the setting maximising coverage minus recording false-alarm rate (ties: smaller
+    support); duration = the narrowest window whose step false-alarm rate is at most 5 %.
+    """
+    held = sorted(set(subjects.values()))
+
+    def split(subject: str) -> tuple[dict[str, Sequence[Step]], dict[str, Sequence[Step]]]:
+        train = {r: s for r, s in sequences.items() if subjects[r] != subject}
+        test = {r: s for r, s in sequences.items() if subjects[r] == subject}
+        return train, test
+
+    order_grid: list[dict[str, object]] = []
+    for min_support in supports:
+        for min_agreement in agreements:
+            n_rec = flagged_rec = n_steps = flagged_steps = applicable = 0
+            for subject in held:
+                train, test = split(subject)
+                graphs = learn_plate_graphs(train, plates, min_support, min_agreement)
+                for rec, steps in test.items():
+                    graph = graphs[plates[rec]]
+                    report = check_order(graph, [s.label for s in steps], level="PT")
+                    n_rec += 1
+                    flagged_rec += int(bool(report.violations))
+                    n_steps += len(steps)
+                    flagged_steps += len(report.violations)
+                    applicable += int(perturb_order(steps, graph, random.Random(0)) is not None)
+            full = learn_plate_graphs(sequences, plates, min_support, min_agreement)
+            order_grid.append(
+                {
+                    "min_support": min_support,
+                    "min_agreement": min_agreement,
+                    "edges_full_train": sum(len(g.relation("precedesPT")) for g in full.values()),
+                    "recordings": n_rec,
+                    "recording_false_alarm_rate": flagged_rec / n_rec,
+                    "step_false_alarm_rate": flagged_steps / n_steps,
+                    "coverage": applicable / n_rec,
+                    "score": applicable / n_rec - flagged_rec / n_rec,
+                }
+            )
+    duration_grid: list[dict[str, object]] = []
+    for low_q, high_q in quantiles:
+        n_steps = flagged = 0
+        for subject in held:
+            train, test = split(subject)
+            bounds = learn_duration_bounds(train, plates, low_q, high_q, min_count)
+            for rec, steps in test.items():
+                findings = check_durations(
+                    [(s.label, s.n_frames / FPS) for s in steps], bounds[plates[rec]]
+                )
+                n_steps += len(steps)
+                flagged += len(findings)
+        duration_grid.append(
+            {
+                "low_q": low_q,
+                "high_q": high_q,
+                "steps": n_steps,
+                "step_false_alarm_rate": flagged / n_steps,
+            }
+        )
+    best_order = max(order_grid, key=lambda e: (e["score"], -int(e["min_support"])))  # type: ignore[arg-type, operator]
+    acceptable = [e for e in duration_grid if e["step_false_alarm_rate"] <= 0.05]  # type: ignore[operator]
+    best_duration = (
+        min(acceptable, key=lambda e: float(e["high_q"]) - float(e["low_q"]))  # type: ignore[arg-type]
+        if acceptable
+        else duration_grid[-1]
+    )
+    return {
+        "protocol": "leave-one-subject-out on the train split; unperturbed held-out sequences",
+        "subjects": len(held),
+        "order": order_grid,
+        "duration": duration_grid,
+        "selected": {
+            "min_support": best_order["min_support"],
+            "min_agreement": best_order["min_agreement"],
+            "low_q": best_duration["low_q"],
+            "high_q": best_duration["high_q"],
+        },
+    }
+
+
+def tune_havid_sop(temporal_zip: Path, split_dir: Path, out_path: Path) -> dict[str, object]:
+    """Run :func:`tune_knowledge` on the train split and write ``out_path`` (JSON)."""
+    from sop_monitor.havid import parse_recording_id
+
+    train = sorted({row["recording"] for row in read_split(split_dir / "train.csv")})
+    sequences = sequences_of(gt_segments(temporal_zip, train))
+    plates = {rec: plate_of(s.label for s in steps) for rec, steps in sequences.items()}
+    subjects = {rec: parse_recording_id(rec).subject for rec in sequences}
+    payload = tune_knowledge(sequences, plates, subjects)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return payload
+
+
 def learn_havid_sop(
     temporal_zip: Path,
     split_dir: Path,
@@ -690,18 +823,20 @@ def learn_havid_sop(
     low_q: float = 0.05,
     high_q: float = 0.95,
     min_count: int = 5,
+    min_agreement: float = 1.0,
 ) -> dict[str, object]:
     """Learn graphs, mandatory steps and duration bounds from the train split; write them."""
     train = sorted({row["recording"] for row in read_split(split_dir / "train.csv")})
     sequences = sequences_of(gt_segments(temporal_zip, train))
     plates = {rec: plate_of(s.label for s in steps) for rec, steps in sequences.items()}
-    graphs = learn_plate_graphs(sequences, plates, min_support)
+    graphs = learn_plate_graphs(sequences, plates, min_support, min_agreement)
     mandatory = mandatory_steps(sequences, plates, mandatory_fraction)
     bounds = learn_duration_bounds(sequences, plates, low_q, high_q, min_count)
     meta = {
         "source": "HA-ViD train split (splits/ha-vid/train.csv), primitive tasks of both hands",
         "recordings": len(train),
         "min_support": min_support,
+        "min_agreement": min_agreement,
         "mandatory_fraction": mandatory_fraction,
         "duration_quantiles": [low_q, high_q],
         "duration_min_count": min_count,

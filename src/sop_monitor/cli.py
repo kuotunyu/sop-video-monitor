@@ -727,17 +727,60 @@ def learn_havid_sop_cmd(
             help="A step is mandatory when present in this fraction of a plate's recordings"
         ),
     ] = 0.9,
+    min_agreement: Annotated[
+        float,
+        typer.Option(help="Fraction of co-occurring recordings that must agree on the order"),
+    ] = 1.0,
+    low_q: Annotated[float, typer.Option(help="Lower duration quantile")] = 0.05,
+    high_q: Annotated[float, typer.Option(help="Upper duration quantile")] = 0.95,
 ) -> None:
     """Learn per-plate precedence graphs, mandatory steps and duration bounds from the train split."""
     from sop_monitor.havid_sop import learn_havid_sop
 
-    summary = learn_havid_sop(temporal, split_dir, out, min_support, mandatory_fraction)
+    summary = learn_havid_sop(
+        temporal,
+        split_dir,
+        out,
+        min_support,
+        mandatory_fraction,
+        low_q,
+        high_q,
+        min_agreement=min_agreement,
+    )
     typer.echo(f"{summary['recordings']} train recordings, plates {summary['plates']}")
     for plate, info in summary["graphs"].items():  # type: ignore[union-attr]
         typer.echo(
             f"{plate}: {info['nodes']} steps, {info['edges']} edges, "
             f"{info['mandatory']} mandatory, {info['bounded']} with duration bounds -> {out}"
         )
+
+
+@app.command("tune-havid-sop")
+def tune_havid_sop_cmd(
+    out: Annotated[Path, typer.Option(help="JSON with the leave-one-subject-out grids")],
+    temporal: Annotated[Path, typer.Option(help="HAViD_temporalAnnotation.zip")] = Path(
+        "data/external/ha-vid/HAViD_temporalAnnotation.zip"
+    ),
+    split_dir: Annotated[Path, typer.Option()] = Path("splits/ha-vid"),
+) -> None:
+    """Choose the graph rule and the duration window by leave-one-subject-out on the train split."""
+    from sop_monitor.havid_sop import tune_havid_sop
+
+    payload = tune_havid_sop(temporal, split_dir, out)
+    typer.echo(
+        "| min support | min agreement | edges | coverage | rec. false alarms | step false alarms | score |"
+    )
+    typer.echo("|---|---|---|---|---|---|---|")
+    for e in payload["order"]:  # type: ignore[union-attr]
+        typer.echo(
+            f"| {e['min_support']} | {e['min_agreement']} | {e['edges_full_train']} | {100 * e['coverage']:.0f} % "
+            f"| {100 * e['recording_false_alarm_rate']:.0f} % | {100 * e['step_false_alarm_rate']:.1f} % | {e['score']:.2f} |"
+        )
+    for e in payload["duration"]:  # type: ignore[union-attr]
+        typer.echo(
+            f"duration [{e['low_q']}, {e['high_q']}]: step false alarms {100 * e['step_false_alarm_rate']:.1f} %"
+        )
+    typer.echo(f"selected: {payload['selected']} -> {out}")
 
 
 @app.command("havid-sop")

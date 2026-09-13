@@ -247,3 +247,61 @@ def test_cli_learn_then_evaluate_and_reproduce(tmp_path: Path) -> None:
     result = runner.invoke(app, ["reproduce-lite", "--reports-dir", str(tmp_path)])
     assert result.exit_code == 0, result.output
     assert "sop_run: OK" in result.output
+
+
+def test_majority_rule_edges_and_cycle_safety() -> None:
+    from sop_monitor.industreal_sop import learn_precedence
+    from sop_monitor.metrics.online import Completion
+
+    def seq(labels: list[str]) -> list[Completion]:
+        return [Completion(i * 10, label) for i, label in enumerate(labels)]
+
+    # a before b in 9 of 10 recordings: no edge under the strict rule, an edge at 0.9
+    sequences = [seq(["a", "b", "c"])] * 9 + [seq(["b", "a", "c"])]
+    strict = learn_precedence(sequences, min_support=3, node=str)
+    assert ("a", "b") not in set(strict.relation("precedesPT"))
+    majority = learn_precedence(sequences, min_support=3, node=str, min_agreement=0.9)
+    assert ("a", "b") in set(majority.relation("precedesPT"))
+    # a 3-cycle of majority orderings is broken deterministically and stays a DAG
+    cyclic = [seq(["x", "y"])] * 3 + [seq(["y", "z"])] * 3 + [seq(["z", "x"])] * 3
+    graph = learn_precedence(cyclic, min_support=3, node=str, min_agreement=0.8)
+    assert len(graph.relation("precedesPT")) == 2 and graph.topological_order("PT")
+    with pytest.raises(ValueError):
+        learn_precedence(sequences, min_support=3, node=str, min_agreement=0.5)
+
+
+def test_tune_knowledge_reports_grids_and_selects_deterministically() -> None:
+    from sop_monitor.havid_sop import tune_knowledge
+
+    order = ["pckbx", "icbck", "ibscb", "sshc1"]
+    sequences = {f"S{n:02d}A04I01": _seq(order) for n in range(1, 7)}
+    sequences["S07A04I01"] = _seq(["icbck", "pckbx", "ibscb", "sshc1"])
+    plates = {rec: "cylinder" for rec in sequences}
+    subjects = {rec: rec[:3] for rec in sequences}
+    payload = tune_knowledge(
+        sequences, plates, subjects, supports=(3, 5), agreements=(1.0, 0.8), min_count=3
+    )
+    assert payload["subjects"] == 7 and len(payload["order"]) == 4 and len(payload["duration"]) == 3
+    for entry in payload["order"]:
+        assert entry["recordings"] == 7 and 0 <= entry["coverage"] <= 1
+    assert set(payload["selected"]) == {"min_support", "min_agreement", "low_q", "high_q"}
+    again = tune_knowledge(
+        sequences, plates, subjects, supports=(3, 5), agreements=(1.0, 0.8), min_count=3
+    )
+    assert json.dumps(again, sort_keys=True) == json.dumps(payload, sort_keys=True)
+
+
+def test_synthetic_table_reports_per_step_false_alarms() -> None:
+    order = ["pckbx", "icbck", "ibscb", "sshc1"]
+    train = {f"S{n:02d}A04I01": _seq(order) for n in range(1, 6)}
+    plates = {rec: "cylinder" for rec in train}
+    graphs = learn_plate_graphs(train, plates, min_support=3)
+    bounds = learn_duration_bounds(train, plates, min_count=5)
+    mandatory = mandatory_steps(train, plates)
+    val = {"S07A04I01": _seq(order), "S08A04I01": _seq(["icbck", "pckbx", "ibscb", "sshc1"])}
+    table = synthetic_table(val, {r: "cylinder" for r in val}, graphs, bounds, mandatory, seed=0)
+    assert table["clean"]["steps"] == 8
+    assert table["synthetic"]["order"]["clean_steps_flagged"] == 1
+    assert table["synthetic"]["order"]["step_false_alarm_rate"] == pytest.approx(1 / 8)
+    assert table["synthetic"]["duration"]["clean_steps_flagged"] == 0
+    assert "clean_steps_flagged" not in table["synthetic"]["omission"]

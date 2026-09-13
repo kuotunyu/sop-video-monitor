@@ -203,7 +203,8 @@
             "unknown": [],
             "violations": 0
           }
-        }
+        },
+        "steps": 234
       },
       "recordings": 18,
       "seed": 0,
@@ -211,6 +212,7 @@
         "duration": {
           "applicable": 18,
           "clean_flagged": 14,
+          "clean_steps_flagged": 27,
           "detected": 18,
           "false_alarm_ci95": [
             0.5478497354769452,
@@ -314,7 +316,12 @@
               "recording": "S30A06I01",
               "target": 9
             }
-          ]
+          ],
+          "step_false_alarm_ci95": [
+            0.08052091900983045,
+            0.16267287047022688
+          ],
+          "step_false_alarm_rate": 0.11538461538461539
         },
         "omission": {
           "applicable": 17,
@@ -422,6 +429,7 @@
         "order": {
           "applicable": 18,
           "clean_flagged": 16,
+          "clean_steps_flagged": 103,
           "detected": 18,
           "false_alarm_ci95": [
             0.6719975513339578,
@@ -525,7 +533,12 @@
               "recording": "S30A06I01",
               "target": 6
             }
-          ]
+          ],
+          "step_false_alarm_ci95": [
+            0.3780413413251138,
+            0.5042332481495617
+          ],
+          "step_false_alarm_rate": 0.44017094017094016
         }
       }
     },
@@ -759,7 +772,8 @@
             "unknown": [],
             "violations": 14
           }
-        }
+        },
+        "steps": 354
       },
       "recordings": 18,
       "seed": 0,
@@ -767,6 +781,7 @@
         "duration": {
           "applicable": 18,
           "clean_flagged": 18,
+          "clean_steps_flagged": 224,
           "detected": 18,
           "false_alarm_ci95": [
             0.8241154494176252,
@@ -870,7 +885,12 @@
               "recording": "S30A06I01",
               "target": 0
             }
-          ]
+          ],
+          "step_false_alarm_ci95": [
+            0.5813764242038227,
+            0.6813096357735527
+          ],
+          "step_false_alarm_rate": 0.632768361581921
         },
         "omission": {
           "applicable": 10,
@@ -943,6 +963,7 @@
         "order": {
           "applicable": 15,
           "clean_flagged": 17,
+          "clean_steps_flagged": 207,
           "detected": 15,
           "false_alarm_ci95": [
             0.7424220019799247,
@@ -1031,7 +1052,12 @@
               "recording": "S30A06I01",
               "target": 17
             }
-          ]
+          ],
+          "step_false_alarm_ci95": [
+            0.53277134836392,
+            0.634900604813128
+          ],
+          "step_false_alarm_rate": 0.5847457627118644
         }
       }
     }

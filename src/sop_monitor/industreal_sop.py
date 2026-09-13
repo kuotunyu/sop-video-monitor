@@ -66,12 +66,20 @@ def learn_precedence(
     min_support: int = 3,
     source: str = "",
     node: Callable[[Hashable], str] = step_node,
+    min_agreement: float = 1.0,
 ) -> TaskGraph:
     """Precedence graph over the steps of ``sequences`` (one completion list per recording).
 
-    ``node`` names the graph node of a step id (``S<k>`` for IndustReal's integer steps; HA-ViD
-    passes ``str`` so its HR-SAT label codes become the node names).
+    An edge ``a -> b`` needs at least ``min_support`` recordings in which both steps occur and
+    ``a`` first in at least the fraction ``min_agreement`` of them (1.0 = every one, the original
+    rule). With ``min_agreement < 1`` cycles become possible; edges are then admitted in decreasing
+    order of agreement (ties: support, then names) and an edge that would close a cycle is
+    dropped, so the result is always a DAG and deterministic. ``node`` names the graph node of a
+    step id (``S<k>`` for IndustReal's integer steps; HA-ViD passes ``str`` so its HR-SAT label
+    codes become the node names).
     """
+    if not 0.5 < min_agreement <= 1.0:
+        raise ValueError("min_agreement must be in (0.5, 1]")
     firsts: list[dict[Hashable, int]] = []
     for completions in sequences:
         first: dict[Hashable, int] = {}
@@ -86,11 +94,34 @@ def learn_precedence(
             support[a, b] += 1
             if first[a] < first[b]:
                 before[a, b] += 1
-    edges = {
-        (node(a), node(b))
-        for (a, b), n in support.items()
-        if n >= min_support and before[a, b] == n
-    }
+    candidates = sorted(
+        (
+            (before[a, b] / n, n, node(a), node(b))
+            for (a, b), n in support.items()
+            if n >= min_support and before[a, b] >= min_agreement * n and before[a, b] > 0
+        ),
+        key=lambda c: (-c[0], -c[1], c[2], c[3]),
+    )
+    successors: dict[str, set[str]] = defaultdict(set)
+
+    def reaches(start: str, goal: str) -> bool:
+        stack, seen = [start], {start}
+        while stack:
+            current = stack.pop()
+            if current == goal:
+                return True
+            for nxt in successors[current]:
+                if nxt not in seen:
+                    seen.add(nxt)
+                    stack.append(nxt)
+        return False
+
+    edges: set[tuple[str, str]] = set()
+    for _agreement, _n, a, b in candidates:
+        if reaches(b, a):
+            continue  # would close a cycle: a minority ordering loses to the stronger edges
+        edges.add((a, b))
+        successors[a].add(b)
     nodes = [node(s) for s in steps]
     reduced = _transitive_reduction(nodes, edges)
     graph = TaskGraph(
@@ -98,7 +129,7 @@ def learn_precedence(
         edges={"precedesPT": tuple(sorted(reduced))},
         source=source,
     )
-    graph.topological_order("PT")  # raises on a cycle; impossible for consistent orderings
+    graph.topological_order("PT")  # raises on a cycle; the construction above prevents one
     return graph
 
 
