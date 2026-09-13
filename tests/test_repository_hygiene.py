@@ -1,4 +1,5 @@
-"""Repository hygiene (spec 3.3, ADR 0001): no dataset files or secrets are tracked by git.
+"""Repository hygiene (spec 3.3, ADR 0001): no dataset files or secrets are tracked by git, and every
+commit has the single owner as its author with no co-author trailer.
 
 Runs only inside a git checkout (CI and local); it inspects ``git ls-files``, never the working
 tree, so the ignored local data never influences the result.
@@ -6,6 +7,7 @@ tree, so the ignored local data never influences the result.
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -13,6 +15,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+OWNER_EMAIL = "61350295+kuotunyu@users.noreply.github.com"
 ALLOWED_UNDER_DATA = {"data/README.md", "data/manifest.json"}
 SHARE_LINK_PATTERNS = ("dropbox" + ".com/scl/", "rl" + "key=")
 DATA_SUFFIXES = {
@@ -80,3 +83,23 @@ def test_no_access_links_or_env_files_are_tracked() -> None:
         if any(pattern in text for pattern in SHARE_LINK_PATTERNS):
             suspicious.append(path)
     assert suspicious == [], f"files containing a Dropbox share link: {suspicious}"
+
+
+def test_every_commit_is_authored_by_the_owner_alone() -> None:
+    """The repository is a single-author portfolio: GitHub must list one contributor."""
+    if shutil.which("git") is None or not (ROOT / ".git").exists():
+        pytest.skip("not a git checkout")
+    if os.environ.get("GITHUB_EVENT_NAME") == "pull_request":
+        pytest.skip("pull-request checkouts contain a merge commit synthesised by GitHub")
+    log = subprocess.run(
+        ["git", "log", "--format=%H%x1f%ae%x1f%B%x1e"], cwd=ROOT, capture_output=True, check=True
+    ).stdout.decode("utf-8")
+    foreign, trailers = [], []
+    for record in filter(str.strip, log.split("")):
+        sha, author, body = record.strip().split("", 2)
+        if author != OWNER_EMAIL:
+            foreign.append(f"{sha[:7]} {author}")
+        if "co-authored-by:" in body.lower():
+            trailers.append(sha[:7])
+    assert foreign == [], f"commits by another author: {foreign[:5]}"
+    assert trailers == [], f"commits with a co-author trailer: {trailers[:5]}"
