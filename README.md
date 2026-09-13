@@ -77,7 +77,7 @@ CLI `sop-monitor` 的命令依流程分組：
 - ASFormer、學習式 fusion、VideoMAE-V2 clip 特徵、任何圖（W2–W3）；三視角 late fusion 與單視角對照已在 `reports/havid_dev_v1`–`v7`。
 - W3 剩餘：更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟；`v8` 的說明書粒度把 ground truth 的順序誤報降到 4/18，但預測序列仍全數被標記）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
 - VLM verifier（W5 剩餘；需要下載模型權重）；偏差佇列與複核介面已完成（`docs/review.md`），尚無真人複核結果。
-- `MODEL_CARD.md`、`docs/claims_audit.md`、`docs/what_this_does_not_show.md`（W6）；GitHub／Hugging Face 上尚未發布。
+- GitHub／Hugging Face 上尚未發布（W6 文件已寫：[`MODEL_CARD.md`](MODEL_CARD.md)、[`docs/claims_audit.md`](docs/claims_audit.md)、[`docs/what_this_does_not_show.md`](docs/what_this_does_not_show.md)）。
 
 ## 非目標與 claim ceiling（設計規格 §2，逐字）
 
