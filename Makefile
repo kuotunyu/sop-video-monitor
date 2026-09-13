@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -114,3 +114,10 @@ psr-nested:  ## industreal_dev_v6: nested decoder selection, seeds 0-2, no laten
 
 havid-sop-v6:  ## havid_dev_v6: v5 knowledge with the predicted segments smoothed (blips shorter than the train 1st-percentile step length, 11 frames, absorbed).
 	$(UV) run sop-monitor havid-sop --pred-lh reports/havid_dev_v3_tas_f1sel_lh --pred-rh reports/havid_dev_v3_tas_f1sel_rh --run-name fusion_causal --graphs sop/ha-vid/tuned --min-segment-frames 11 --out reports/havid_dev_v6_sop_smoothed
+
+havid-tas-seeds:  ## Seeds 1 and 2 of the v3 protocol for both hands (havid_dev_v3_tas_f1sel_{lh,rh}_s{1,2}); seed 0 is havid_dev_v3_tas_f1sel_{lh,rh}.
+	for seed in 1 2; do for hand in lh rh; do $(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand $$hand --selection-metric f1@10 --seed $$seed --out reports/havid_dev_v3_tas_f1sel_$${hand}_s$$seed || exit 1; done; done
+
+havid-seeds-summary:  ## havid_dev_v7: mean +- std over seeds 0-2 of the v3 protocol, per hand (reports/havid_dev_v7_tas_seeds_{lh,rh}).
+	$(UV) run sop-monitor summarise-havid-seeds --run reports/havid_dev_v3_tas_f1sel_lh --run reports/havid_dev_v3_tas_f1sel_lh_s1 --run reports/havid_dev_v3_tas_f1sel_lh_s2 --out reports/havid_dev_v7_tas_seeds_lh
+	$(UV) run sop-monitor summarise-havid-seeds --run reports/havid_dev_v3_tas_f1sel_rh --run reports/havid_dev_v3_tas_f1sel_rh_s1 --run reports/havid_dev_v3_tas_f1sel_rh_s2 --out reports/havid_dev_v7_tas_seeds_rh

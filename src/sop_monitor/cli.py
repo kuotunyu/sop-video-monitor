@@ -409,6 +409,19 @@ def train_havid_tas_cmd(
     typer.echo(f"wall: {result['config']['wall_seconds']:.1f}s -> {out}")  # type: ignore[index]
 
 
+@app.command("summarise-havid-seeds")
+def summarise_havid_seeds_cmd(
+    run: Annotated[list[Path], typer.Option(help="train-havid-tas run directories, one per seed")],
+    out: Annotated[Path, typer.Option(help="Summary directory (seed_summary.json, tables.md)")],
+) -> None:
+    """Mean and std over seeds of every run's metrics; recomputable by reproduce-lite."""
+    from sop_monitor.havid_seeds import render_seed_tables, write_seed_summary
+
+    payload = write_seed_summary(run, out)
+    typer.echo(render_seed_tables(payload))
+    typer.echo(f"-> {out}")
+
+
 @app.command("train-baseline")
 def train_baseline_cmd(
     features: Annotated[
@@ -622,6 +635,27 @@ def _check_psr_run(run_dir: Path, write: bool) -> list[str]:
     return mismatches
 
 
+def _check_seed_summary(run_dir: Path, write: bool) -> list[str]:
+    """Recompute a multi-seed summary from the listed run directories' committed metrics."""
+    from sop_monitor.havid_seeds import render_seed_tables, summarise_seeds
+
+    committed = json.loads((run_dir / "seed_summary.json").read_text(encoding="utf-8"))
+    recomputed = summarise_seeds([Path(p) for p in committed["runs"]])
+    mismatches: list[str] = []
+    for key in ("summary", "best_epochs", "seeds"):
+        if json.dumps(recomputed[key], sort_keys=True) != json.dumps(
+            committed[key], sort_keys=True
+        ):
+            mismatches.append(f"{run_dir.name}: {key} differs from seed_summary.json")
+    rendered = render_seed_tables(committed)
+    tables_path = run_dir / "tables.md"
+    if write:
+        tables_path.write_text(rendered, encoding="utf-8", newline=chr(10))
+    elif not tables_path.is_file() or tables_path.read_text(encoding="utf-8") != rendered:
+        mismatches.append(f"{run_dir.name}: tables.md is stale (run with --write to regenerate)")
+    return mismatches
+
+
 def _check_havid_sop_run(run_dir: Path, write: bool) -> list[str]:
     """Recompute a HA-ViD SOP run's tables from its committed step CSVs and the learned JSON files."""
     from sop_monitor.havid_sop import evaluate_run, render_sop_tables
@@ -655,6 +689,8 @@ def _check_run(run_dir: Path, write: bool) -> list[str]:
 
     if (run_dir / "steps_val.csv").is_file():
         return _check_havid_sop_run(run_dir, write)
+    if (run_dir / "seed_summary.json").is_file():
+        return _check_seed_summary(run_dir, write)
     if not (run_dir / "metrics.json").is_file():
         return []
     if sorted(run_dir.glob("completions_*.csv")):
@@ -906,7 +942,12 @@ def reproduce_lite(
     runs = sorted(
         p
         for p in Path(reports_dir).glob("*")
-        if p.is_dir() and ((p / "metrics.json").is_file() or (p / "steps_val.csv").is_file())
+        if p.is_dir()
+        and (
+            (p / "metrics.json").is_file()
+            or (p / "steps_val.csv").is_file()
+            or (p / "seed_summary.json").is_file()
+        )
     )
     if not runs:
         typer.echo(f"nothing to rebuild: no run directory with metrics.json under {reports_dir}/")
