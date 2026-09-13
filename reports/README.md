@@ -33,10 +33,13 @@ paper's B3 reports POS 0.797 / F1 0.883 / delay 22.4 s on the test split.
 
 | run | question | verdict | status |
 |---|---|---|---|
-| `havid_dev_v1_tas_lh/` | First HA-ViD offline TAS: per-view causal/offline MS-TCN++ + late fusion on DINOv2 ViT-B/14, primitive tasks, left hand | fusion_causal F1@10 29.1 / Edit 28.3; marginal gain, inside CIs | first HA-ViD baseline |
-| `havid_dev_v1_tas_rh/` | Same, right hand | fusion_causal F1@10 30.3 / Edit 33.5; fusion best, CIs overlap | first HA-ViD baseline |
+| `havid_dev_v1_tas_lh/` | First HA-ViD offline TAS: per-view causal/offline MS-TCN++ + late fusion on DINOv2 ViT-B/14, primitive tasks, left hand | fusion_causal F1@10 29.1 / Edit 28.3; marginal gain, inside CIs | superseded by v3 (epoch selection) |
+| `havid_dev_v1_tas_rh/` | Same, right hand | fusion_causal F1@10 30.3 / Edit 33.5; fusion best, CIs overlap | superseded by v3 (epoch selection) |
 | `havid_dev_v2_i3d_lh/` | Control: same protocol on the authors' I3D features, left hand | fusion_causal F1@10 28.7 / Edit 28.0; tied with DINOv2 | control (feature choice) |
 | `havid_dev_v2_i3d_rh/` | Same, right hand | fusion_causal F1@10 23.0 / Edit 21.0; fusion below front view | control (feature choice) |
+| `havid_dev_v3_tas_f1sel_lh/` | v1 with the epoch chosen by val F1@10 and three parameter-free fusion rules (mean / geometric / confidence-weighted), left hand | fusion_causal F1@10 32.0 / Edit 35.4; rules tied (geometric 32.2) | current HA-ViD TAS protocol |
+| `havid_dev_v3_tas_f1sel_rh/` | Same, right hand | fusion_causal F1@10 30.2 / Edit 32.4; geometric best (33.3), inside CIs | current HA-ViD TAS protocol |
+| `havid_dev_v4_sop_synthetic/` | W3: learned per-plate precedence / mandatory steps / duration bounds applied to val; synthetic violations on ground-truth and on v3 `fusion_causal` sequences; native `w` | order recall gt 18/18 / pred 15/15, but 16 / 18 clean gt recordings flagged; omission 17/17 with 1 / 18 false alarms; `w` 0 of 12 (underpowered) | first SOP-layer result |
 
 For scale only (official test subjects, I3D, single view, no fusion; not our split): the HA-ViD
 paper's Table 3 reports MS-TCN primitive-task F1@10 36.6 (left hand) / 34.7 (right hand) averaged

@@ -108,3 +108,32 @@ it covers every annotated frame (the I3D features drop five at each end). Plain 
 averaging is kept as the fusion baseline but is not assumed safe: a weighted or learned fusion is
 the next fusion experiment. The causal-vs-offline gap for the DINOv2 fusion is 14.4 / 11.0 F1@10
 points. All of this is a development result on val; the frozen test subjects were not read.
+
+## 2026-09-13 — HA-ViD TAS epochs are chosen by val F1@10; fusion stays parameter-free
+
+v1 chose each network's epoch by val MoF, which favoured `null` and stopped two causal networks at
+epoch 5–10. v3 (`reports/havid_dev_v3_tas_f1sel_*`) chooses by val F1@10 and adds two
+parameter-free fusion rules next to the mean (normalised geometric mean, confidence-weighted
+mean), so nothing about the fusion is tuned on val. Result (fusion_causal F1@10, left / right):
+v1 29.1 / 30.3 → v3 32.0 / 30.2, with Edit 28.3 / 33.5 → 35.4 / 32.4; best fusion rule on F1@10:
+geometric on both hands (32.2 / 33.3), inside the intervals. Decision: the HA-ViD line selects
+epochs by val F1@10 from now on; mean fusion stays the default report row because the three
+rules are tied on six subjects, with the geometric mean reported next to it. Causal networks
+peak at epochs 10–25 and degrade by epoch 50, so 50 epochs is enough for them.
+
+## 2026-09-13 — the HA-ViD SOP layer learns its procedure knowledge from the train split
+
+The public OWL graphs name steps `PT1`… without HR-SAT codes, so `sop/ha-vid/learned_*.json`
+are learned from the 143 train recordings per plate (plate read off the label vocabulary):
+precedence edges that hold in every co-occurring recording (min support 3), mandatory steps
+(present in ≥ 90 % of a plate's recordings), duration bounds (5th–95th percentile). On val
+(`reports/havid_dev_v4_sop_synthetic`): order-violation recall on ground-truth sequences 18 / 18
+with 16 / 18 clean recordings flagged (the graph cannot represent the stage-2/3 instruction
+variants; support 20 still flags 8 / 18); on the v3 `fusion_causal` sequences 15 / 15 with 17 / 18
+flagged; omission is the one check that works on real sequences (17 / 17, 1 / 18 false alarms);
+duration flags 14 / 18 clean recordings because a per-step 5–95 % window is not a recording-level
+rule. Native `w`: 0 of 12 segments detected and none predicted — underpowered as ADR 0001
+trigger B foresaw. Consequence: the synthetic table is the headline violation table (marked
+synthetic); the native table stays a count with a Wilson interval; the next SOP work is
+per-variant or majority-rule graphs and a k-of-n duration rule, and the recogniser (F1@10 ≈ 30)
+is the bottleneck for the deployable numbers.
