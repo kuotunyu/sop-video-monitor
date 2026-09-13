@@ -1,0 +1,2306 @@
+{
+  "config": {
+    "delays": {
+      "gt": 0,
+      "la0_s0": 0,
+      "la0_s1": 0,
+      "la0_s2": 0,
+      "la15_s0": 15,
+      "la15_s1": 15,
+      "la15_s2": 15,
+      "la45_s0": 45,
+      "la45_s1": 45,
+      "la45_s2": 45,
+      "la90_s0": 90,
+      "la90_s1": 90,
+      "la90_s2": 90
+    },
+    "fps": 15.0,
+    "granularity": "sheet",
+    "graphs_dir": "sop/ha-vid/sheet",
+    "min_frames_grid": [
+      1,
+      4,
+      8,
+      15,
+      30
+    ],
+    "recordings": 18,
+    "sources": {
+      "la0_s0": {
+        "lh": "reports/havid_dev_v3_tas_f1sel_lh",
+        "output_delay_frames": 0,
+        "rh": "reports/havid_dev_v3_tas_f1sel_rh",
+        "run": "fusion_causal"
+      },
+      "la0_s1": {
+        "lh": "reports/havid_dev_v3_tas_f1sel_lh_s1",
+        "output_delay_frames": 0,
+        "rh": "reports/havid_dev_v3_tas_f1sel_rh_s1",
+        "run": "fusion_causal"
+      },
+      "la0_s2": {
+        "lh": "reports/havid_dev_v3_tas_f1sel_lh_s2",
+        "output_delay_frames": 0,
+        "rh": "reports/havid_dev_v3_tas_f1sel_rh_s2",
+        "run": "fusion_causal"
+      },
+      "la15_s0": {
+        "lh": "reports/havid_dev_v9_tas_la15_lh_s0",
+        "output_delay_frames": 15,
+        "rh": "reports/havid_dev_v9_tas_la15_rh_s0",
+        "run": "fusion_causal"
+      },
+      "la15_s1": {
+        "lh": "reports/havid_dev_v9_tas_la15_lh_s1",
+        "output_delay_frames": 15,
+        "rh": "reports/havid_dev_v9_tas_la15_rh_s1",
+        "run": "fusion_causal"
+      },
+      "la15_s2": {
+        "lh": "reports/havid_dev_v9_tas_la15_lh_s2",
+        "output_delay_frames": 15,
+        "rh": "reports/havid_dev_v9_tas_la15_rh_s2",
+        "run": "fusion_causal"
+      },
+      "la45_s0": {
+        "lh": "reports/havid_dev_v9_tas_la45_lh_s0",
+        "output_delay_frames": 45,
+        "rh": "reports/havid_dev_v9_tas_la45_rh_s0",
+        "run": "fusion_causal"
+      },
+      "la45_s1": {
+        "lh": "reports/havid_dev_v9_tas_la45_lh_s1",
+        "output_delay_frames": 45,
+        "rh": "reports/havid_dev_v9_tas_la45_rh_s1",
+        "run": "fusion_causal"
+      },
+      "la45_s2": {
+        "lh": "reports/havid_dev_v9_tas_la45_lh_s2",
+        "output_delay_frames": 45,
+        "rh": "reports/havid_dev_v9_tas_la45_rh_s2",
+        "run": "fusion_causal"
+      },
+      "la90_s0": {
+        "lh": "reports/havid_dev_v9_tas_la90_lh_s0",
+        "output_delay_frames": 90,
+        "rh": "reports/havid_dev_v9_tas_la90_rh_s0",
+        "run": "fusion_causal"
+      },
+      "la90_s1": {
+        "lh": "reports/havid_dev_v9_tas_la90_lh_s1",
+        "output_delay_frames": 90,
+        "rh": "reports/havid_dev_v9_tas_la90_rh_s1",
+        "run": "fusion_causal"
+      },
+      "la90_s2": {
+        "lh": "reports/havid_dev_v9_tas_la90_lh_s2",
+        "output_delay_frames": 90,
+        "rh": "reports/havid_dev_v9_tas_la90_rh_s2",
+        "run": "fusion_causal"
+      }
+    },
+    "split": "val"
+  },
+  "offline_agreement": {
+    "gt": {
+      "equal": 16,
+      "recordings": 18
+    },
+    "la0_s0": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la0_s1": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la0_s2": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la15_s0": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la15_s1": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la15_s2": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la45_s0": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la45_s1": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la45_s2": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la90_s0": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la90_s1": {
+      "equal": 18,
+      "recordings": 18
+    },
+    "la90_s2": {
+      "equal": 18,
+      "recordings": 18
+    }
+  },
+  "summary": {
+    "gt@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.1111111111111111,
+        "duration_too_short": 0.3888888888888889,
+        "omission": 0.2222222222222222,
+        "order": 0.7777777777777778,
+        "unknown": 0.4444444444444444
+      },
+      "first_alarm_s_median": 41.666666666666664,
+      "lead_before_end_s_median": 41.4,
+      "min_frames": 1,
+      "order_latency_s_median": 0.0,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 3,
+          "duration": 1,
+          "omission": 1,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 6,
+          "duration": 6,
+          "omission": 0,
+          "order": 2,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "gt"
+    },
+    "gt@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.5,
+        "duration_too_short": 0.1111111111111111,
+        "omission": 0.2777777777777778,
+        "order": 0.7777777777777778,
+        "unknown": 0.3888888888888889
+      },
+      "first_alarm_s_median": 28.333333333333332,
+      "lead_before_end_s_median": 39.66666666666667,
+      "min_frames": 15,
+      "order_latency_s_median": 0.9333333333333333,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 3,
+          "duration": 1,
+          "omission": 1,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 8,
+          "duration": 7,
+          "omission": 1,
+          "order": 3,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "gt"
+    },
+    "gt@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 1.1111111111111112,
+        "duration_too_short": 0.0,
+        "omission": 0.8333333333333334,
+        "order": 1.0555555555555556,
+        "unknown": 0.2777777777777778
+      },
+      "first_alarm_s_median": 25.066666666666666,
+      "lead_before_end_s_median": 38.93333333333334,
+      "min_frames": 30,
+      "order_latency_s_median": 1.9333333333333333,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 3,
+          "omission": 3,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 12,
+          "duration": 10,
+          "omission": 7,
+          "order": 6,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "gt"
+    },
+    "gt@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.1111111111111111,
+        "duration_too_short": 0.3888888888888889,
+        "omission": 0.2222222222222222,
+        "order": 0.7777777777777778,
+        "unknown": 0.4444444444444444
+      },
+      "first_alarm_s_median": 41.86666666666667,
+      "lead_before_end_s_median": 41.2,
+      "min_frames": 4,
+      "order_latency_s_median": 0.2,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 3,
+          "duration": 1,
+          "omission": 1,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 6,
+          "duration": 6,
+          "omission": 0,
+          "order": 2,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "gt"
+    },
+    "gt@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.2222222222222222,
+        "duration_too_short": 0.3333333333333333,
+        "omission": 0.2222222222222222,
+        "order": 0.7777777777777778,
+        "unknown": 0.3888888888888889
+      },
+      "first_alarm_s_median": 40.43333333333334,
+      "lead_before_end_s_median": 40.93333333333333,
+      "min_frames": 8,
+      "order_latency_s_median": 0.4666666666666667,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 3,
+          "duration": 1,
+          "omission": 1,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 7,
+          "duration": 7,
+          "omission": 0,
+          "order": 2,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "gt"
+    },
+    "la0_s0@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 10.722222222222221,
+        "omission": 2.3333333333333335,
+        "order": 3.111111111111111,
+        "unknown": 0.6111111111111112
+      },
+      "first_alarm_s_median": 12.5,
+      "lead_before_end_s_median": 23.4,
+      "min_frames": 1,
+      "order_latency_s_median": 0.0,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 13,
+          "order": 9,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la0_s0"
+    },
+    "la0_s0@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.3888888888888889,
+        "duration_too_short": 1.7777777777777777,
+        "omission": 2.9444444444444446,
+        "order": 2.7222222222222223,
+        "unknown": 0.5555555555555556
+      },
+      "first_alarm_s_median": 21.9,
+      "lead_before_end_s_median": 22.7,
+      "min_frames": 15,
+      "order_latency_s_median": 0.9333333333333333,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 12,
+          "omission": 14,
+          "order": 12,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la0_s0"
+    },
+    "la0_s0@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.4444444444444444,
+        "duration_too_short": 0.16666666666666666,
+        "omission": 3.5,
+        "order": 2.388888888888889,
+        "unknown": 0.2222222222222222
+      },
+      "first_alarm_s_median": 27.766666666666666,
+      "lead_before_end_s_median": 22.8,
+      "min_frames": 30,
+      "order_latency_s_median": 1.9333333333333333,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 3,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 5,
+          "omission": 14,
+          "order": 13,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la0_s0"
+    },
+    "la0_s0@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 6.444444444444445,
+        "omission": 2.5555555555555554,
+        "order": 4.444444444444445,
+        "unknown": 0.6111111111111112
+      },
+      "first_alarm_s_median": 14.366666666666667,
+      "lead_before_end_s_median": 22.6,
+      "min_frames": 4,
+      "order_latency_s_median": 0.2,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 13,
+          "order": 11,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la0_s0"
+    },
+    "la0_s0@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.2222222222222222,
+        "duration_too_short": 4.388888888888889,
+        "omission": 2.6666666666666665,
+        "order": 3.6666666666666665,
+        "unknown": 0.6111111111111112
+      },
+      "first_alarm_s_median": 14.5,
+      "lead_before_end_s_median": 21.266666666666666,
+      "min_frames": 8,
+      "order_latency_s_median": 0.4666666666666667,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 14,
+          "order": 12,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la0_s0"
+    },
+    "la0_s1@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.0,
+        "duration_too_short": 9.277777777777779,
+        "omission": 2.9444444444444446,
+        "order": 5.777777777777778,
+        "unknown": 0.6111111111111112
+      },
+      "first_alarm_s_median": 18.46666666666667,
+      "lead_before_end_s_median": 21.066666666666666,
+      "min_frames": 1,
+      "order_latency_s_median": 0.0,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 14,
+          "order": 14,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la0_s1"
+    },
+    "la0_s1@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.0,
+        "duration_too_short": 1.3888888888888888,
+        "omission": 3.7777777777777777,
+        "order": 2.7777777777777777,
+        "unknown": 0.5
+      },
+      "first_alarm_s_median": 27.53333333333333,
+      "lead_before_end_s_median": 20.666666666666664,
+      "min_frames": 15,
+      "order_latency_s_median": 0.9333333333333333,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 3,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 10,
+          "omission": 14,
+          "order": 14,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la0_s1"
+    },
+    "la0_s1@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.1111111111111111,
+        "duration_too_short": 0.1111111111111111,
+        "omission": 4.166666666666667,
+        "order": 1.8888888888888888,
+        "unknown": 0.3888888888888889
+      },
+      "first_alarm_s_median": 36.333333333333336,
+      "lead_before_end_s_median": 18.866666666666667,
+      "min_frames": 30,
+      "order_latency_s_median": 1.9333333333333333,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 0,
+          "omission": 4,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 3,
+          "omission": 14,
+          "order": 13,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la0_s1"
+    },
+    "la0_s1@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.0,
+        "duration_too_short": 6.277777777777778,
+        "omission": 3.1666666666666665,
+        "order": 4.666666666666667,
+        "unknown": 0.5555555555555556
+      },
+      "first_alarm_s_median": 19.266666666666666,
+      "lead_before_end_s_median": 20.066666666666666,
+      "min_frames": 4,
+      "order_latency_s_median": 0.2,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 14,
+          "order": 14,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la0_s1"
+    },
+    "la0_s1@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.0,
+        "duration_too_short": 4.277777777777778,
+        "omission": 3.2777777777777777,
+        "order": 3.8333333333333335,
+        "unknown": 0.5
+      },
+      "first_alarm_s_median": 20.233333333333334,
+      "lead_before_end_s_median": 22.066666666666666,
+      "min_frames": 8,
+      "order_latency_s_median": 0.4666666666666667,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 12,
+          "omission": 14,
+          "order": 14,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la0_s1"
+    },
+    "la0_s2@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 11.666666666666666,
+        "omission": 2.611111111111111,
+        "order": 5.611111111111111,
+        "unknown": 1.0555555555555556
+      },
+      "first_alarm_s_median": 17.333333333333336,
+      "lead_before_end_s_median": 23.933333333333334,
+      "min_frames": 1,
+      "order_latency_s_median": 0.0,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 14,
+          "order": 10,
+          "recordings": 14,
+          "unknown": 6
+        }
+      },
+      "source": "la0_s2"
+    },
+    "la0_s2@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 1.4444444444444444,
+        "omission": 3.5555555555555554,
+        "order": 3.7222222222222223,
+        "unknown": 0.6666666666666666
+      },
+      "first_alarm_s_median": 21.200000000000003,
+      "lead_before_end_s_median": 26.1,
+      "min_frames": 15,
+      "order_latency_s_median": 0.9333333333333333,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 11,
+          "omission": 14,
+          "order": 10,
+          "recordings": 14,
+          "unknown": 5
+        }
+      },
+      "source": "la0_s2"
+    },
+    "la0_s2@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.3333333333333333,
+        "duration_too_short": 0.1111111111111111,
+        "omission": 4.111111111111111,
+        "order": 2.2777777777777777,
+        "unknown": 0.5
+      },
+      "first_alarm_s_median": 26.133333333333333,
+      "lead_before_end_s_median": 28.200000000000003,
+      "min_frames": 30,
+      "order_latency_s_median": 1.9333333333333333,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 3,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 5,
+          "omission": 14,
+          "order": 13,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la0_s2"
+    },
+    "la0_s2@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 7.222222222222222,
+        "omission": 2.7222222222222223,
+        "order": 4.0,
+        "unknown": 1.0
+      },
+      "first_alarm_s_median": 18.3,
+      "lead_before_end_s_median": 26.333333333333332,
+      "min_frames": 4,
+      "order_latency_s_median": 0.2,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 14,
+          "order": 10,
+          "recordings": 14,
+          "unknown": 6
+        }
+      },
+      "source": "la0_s2"
+    },
+    "la0_s2@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 4.166666666666667,
+        "omission": 2.9444444444444446,
+        "order": 3.888888888888889,
+        "unknown": 0.8888888888888888
+      },
+      "first_alarm_s_median": 19.233333333333334,
+      "lead_before_end_s_median": 28.066666666666666,
+      "min_frames": 8,
+      "order_latency_s_median": 0.4666666666666667,
+      "output_delay_frames": 0,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 14,
+          "order": 10,
+          "recordings": 14,
+          "unknown": 6
+        }
+      },
+      "source": "la0_s2"
+    },
+    "la15_s0@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 15.944444444444445,
+        "omission": 1.3333333333333333,
+        "order": 1.1111111111111112,
+        "unknown": 0.8888888888888888
+      },
+      "first_alarm_s_median": 10.566666666666666,
+      "lead_before_end_s_median": 28.700000000000003,
+      "min_frames": 1,
+      "order_latency_s_median": 1.0,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 10,
+          "order": 6,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la15_s0"
+    },
+    "la15_s0@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.3333333333333333,
+        "duration_too_short": 2.5,
+        "omission": 2.0,
+        "order": 2.388888888888889,
+        "unknown": 0.6666666666666666
+      },
+      "first_alarm_s_median": 19.1,
+      "lead_before_end_s_median": 27.233333333333334,
+      "min_frames": 15,
+      "order_latency_s_median": 1.9333333333333333,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 12,
+          "omission": 13,
+          "order": 8,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la15_s0"
+    },
+    "la15_s0@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.5555555555555556,
+        "duration_too_short": 0.1111111111111111,
+        "omission": 3.0555555555555554,
+        "order": 2.1666666666666665,
+        "unknown": 0.3888888888888889
+      },
+      "first_alarm_s_median": 26.366666666666667,
+      "lead_before_end_s_median": 24.133333333333333,
+      "min_frames": 30,
+      "order_latency_s_median": 2.933333333333333,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 3,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 8,
+          "omission": 13,
+          "order": 10,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la15_s0"
+    },
+    "la15_s0@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 11.38888888888889,
+        "omission": 1.4444444444444444,
+        "order": 1.0555555555555556,
+        "unknown": 0.7777777777777778
+      },
+      "first_alarm_s_median": 12.366666666666667,
+      "lead_before_end_s_median": 26.866666666666667,
+      "min_frames": 4,
+      "order_latency_s_median": 1.2,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 11,
+          "order": 6,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la15_s0"
+    },
+    "la15_s0@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.2222222222222222,
+        "duration_too_short": 6.5,
+        "omission": 1.7222222222222223,
+        "order": 3.2222222222222223,
+        "unknown": 0.7777777777777778
+      },
+      "first_alarm_s_median": 16.166666666666668,
+      "lead_before_end_s_median": 27.133333333333333,
+      "min_frames": 8,
+      "order_latency_s_median": 1.4666666666666666,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 11,
+          "order": 8,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la15_s0"
+    },
+    "la15_s1@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.0,
+        "duration_too_short": 15.5,
+        "omission": 1.3333333333333333,
+        "order": 3.8333333333333335,
+        "unknown": 1.1111111111111112
+      },
+      "first_alarm_s_median": 10.033333333333333,
+      "lead_before_end_s_median": 26.56666666666667,
+      "min_frames": 1,
+      "order_latency_s_median": 1.0,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 8,
+          "order": 6,
+          "recordings": 14,
+          "unknown": 5
+        }
+      },
+      "source": "la15_s1"
+    },
+    "la15_s1@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.1111111111111111,
+        "duration_too_short": 2.111111111111111,
+        "omission": 2.3333333333333335,
+        "order": 2.3333333333333335,
+        "unknown": 0.7222222222222222
+      },
+      "first_alarm_s_median": 26.133333333333333,
+      "lead_before_end_s_median": 19.066666666666666,
+      "min_frames": 15,
+      "order_latency_s_median": 1.9333333333333333,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 3,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 12,
+          "omission": 13,
+          "order": 9,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la15_s1"
+    },
+    "la15_s1@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.3888888888888889,
+        "duration_too_short": 0.1111111111111111,
+        "omission": 3.2222222222222223,
+        "order": 2.2777777777777777,
+        "unknown": 0.5
+      },
+      "first_alarm_s_median": 32.86666666666667,
+      "lead_before_end_s_median": 24.266666666666666,
+      "min_frames": 30,
+      "order_latency_s_median": 2.933333333333333,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 2,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 5,
+          "omission": 14,
+          "order": 11,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la15_s1"
+    },
+    "la15_s1@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.0,
+        "duration_too_short": 10.0,
+        "omission": 1.5,
+        "order": 3.388888888888889,
+        "unknown": 1.0
+      },
+      "first_alarm_s_median": 10.366666666666667,
+      "lead_before_end_s_median": 27.066666666666666,
+      "min_frames": 4,
+      "order_latency_s_median": 1.2,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 9,
+          "order": 6,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la15_s1"
+    },
+    "la15_s1@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 5.888888888888889,
+        "omission": 1.8333333333333333,
+        "order": 2.9444444444444446,
+        "unknown": 0.9444444444444444
+      },
+      "first_alarm_s_median": 13.5,
+      "lead_before_end_s_median": 25.2,
+      "min_frames": 8,
+      "order_latency_s_median": 1.4666666666666666,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 11,
+          "order": 7,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la15_s1"
+    },
+    "la15_s2@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 17.77777777777778,
+        "omission": 1.0555555555555556,
+        "order": 3.3333333333333335,
+        "unknown": 0.9444444444444444
+      },
+      "first_alarm_s_median": 10.2,
+      "lead_before_end_s_median": 24.299999999999997,
+      "min_frames": 1,
+      "order_latency_s_median": 1.0,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 8,
+          "order": 5,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la15_s2"
+    },
+    "la15_s2@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.3333333333333333,
+        "duration_too_short": 2.6666666666666665,
+        "omission": 1.8888888888888888,
+        "order": 2.0,
+        "unknown": 0.3888888888888889
+      },
+      "first_alarm_s_median": 18.266666666666666,
+      "lead_before_end_s_median": 25.8,
+      "min_frames": 15,
+      "order_latency_s_median": 1.9333333333333333,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 13,
+          "order": 8,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la15_s2"
+    },
+    "la15_s2@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.9444444444444444,
+        "duration_too_short": 0.2222222222222222,
+        "omission": 2.4444444444444446,
+        "order": 2.0,
+        "unknown": 0.2777777777777778
+      },
+      "first_alarm_s_median": 25.933333333333334,
+      "lead_before_end_s_median": 27.53333333333333,
+      "min_frames": 30,
+      "order_latency_s_median": 2.933333333333333,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 2,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 13,
+          "duration": 10,
+          "omission": 13,
+          "order": 10,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la15_s2"
+    },
+    "la15_s2@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 10.944444444444445,
+        "omission": 1.3333333333333333,
+        "order": 3.0,
+        "unknown": 0.8333333333333334
+      },
+      "first_alarm_s_median": 14.6,
+      "lead_before_end_s_median": 25.4,
+      "min_frames": 4,
+      "order_latency_s_median": 1.2,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 10,
+          "order": 5,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la15_s2"
+    },
+    "la15_s2@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.2222222222222222,
+        "duration_too_short": 6.0,
+        "omission": 1.5555555555555556,
+        "order": 2.388888888888889,
+        "unknown": 0.6111111111111112
+      },
+      "first_alarm_s_median": 15.666666666666666,
+      "lead_before_end_s_median": 26.133333333333333,
+      "min_frames": 8,
+      "order_latency_s_median": 1.4666666666666666,
+      "output_delay_frames": 15,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 11,
+          "order": 6,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la15_s2"
+    },
+    "la45_s0@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.0,
+        "duration_too_short": 8.666666666666666,
+        "omission": 1.2777777777777777,
+        "order": 2.0555555555555554,
+        "unknown": 0.5555555555555556
+      },
+      "first_alarm_s_median": 15.833333333333332,
+      "lead_before_end_s_median": 31.133333333333333,
+      "min_frames": 1,
+      "order_latency_s_median": 3.0,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 10,
+          "order": 5,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la45_s0"
+    },
+    "la45_s0@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 2.0,
+        "omission": 1.8333333333333333,
+        "order": 3.5,
+        "unknown": 0.3888888888888889
+      },
+      "first_alarm_s_median": 19.633333333333333,
+      "lead_before_end_s_median": 29.0,
+      "min_frames": 15,
+      "order_latency_s_median": 3.933333333333333,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 12,
+          "omission": 12,
+          "order": 6,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la45_s0"
+    },
+    "la45_s0@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.6111111111111112,
+        "duration_too_short": 0.16666666666666666,
+        "omission": 2.5,
+        "order": 3.4444444444444446,
+        "unknown": 0.2222222222222222
+      },
+      "first_alarm_s_median": 21.066666666666666,
+      "lead_before_end_s_median": 21.96666666666667,
+      "min_frames": 30,
+      "order_latency_s_median": 4.933333333333334,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 13,
+          "duration": 6,
+          "omission": 13,
+          "order": 10,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la45_s0"
+    },
+    "la45_s0@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.0,
+        "duration_too_short": 6.444444444444445,
+        "omission": 1.3333333333333333,
+        "order": 1.9444444444444444,
+        "unknown": 0.4444444444444444
+      },
+      "first_alarm_s_median": 16.9,
+      "lead_before_end_s_median": 34.8,
+      "min_frames": 4,
+      "order_latency_s_median": 3.2,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 10,
+          "order": 5,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la45_s0"
+    },
+    "la45_s0@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 4.611111111111111,
+        "omission": 1.4444444444444444,
+        "order": 2.0555555555555554,
+        "unknown": 0.4444444444444444
+      },
+      "first_alarm_s_median": 18.46666666666667,
+      "lead_before_end_s_median": 33.46666666666667,
+      "min_frames": 8,
+      "order_latency_s_median": 3.466666666666667,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 12,
+          "omission": 10,
+          "order": 5,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la45_s0"
+    },
+    "la45_s1@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 7.388888888888889,
+        "omission": 1.8333333333333333,
+        "order": 1.7777777777777777,
+        "unknown": 0.7222222222222222
+      },
+      "first_alarm_s_median": 19.333333333333332,
+      "lead_before_end_s_median": 21.533333333333335,
+      "min_frames": 1,
+      "order_latency_s_median": 3.0,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 10,
+          "order": 6,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la45_s1"
+    },
+    "la45_s1@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.1111111111111111,
+        "duration_too_short": 1.4444444444444444,
+        "omission": 2.2777777777777777,
+        "order": 1.5555555555555556,
+        "unknown": 0.5
+      },
+      "first_alarm_s_median": 26.433333333333334,
+      "lead_before_end_s_median": 23.333333333333332,
+      "min_frames": 15,
+      "order_latency_s_median": 3.933333333333333,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 2,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 10,
+          "omission": 13,
+          "order": 9,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la45_s1"
+    },
+    "la45_s1@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.6111111111111112,
+        "duration_too_short": 0.16666666666666666,
+        "omission": 2.9444444444444446,
+        "order": 2.3333333333333335,
+        "unknown": 0.4444444444444444
+      },
+      "first_alarm_s_median": 27.433333333333334,
+      "lead_before_end_s_median": 19.06666666666667,
+      "min_frames": 30,
+      "order_latency_s_median": 4.933333333333334,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 2,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 2
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 7,
+          "omission": 13,
+          "order": 12,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la45_s1"
+    },
+    "la45_s1@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 5.055555555555555,
+        "omission": 1.8888888888888888,
+        "order": 1.9444444444444444,
+        "unknown": 0.6666666666666666
+      },
+      "first_alarm_s_median": 20.6,
+      "lead_before_end_s_median": 21.333333333333332,
+      "min_frames": 4,
+      "order_latency_s_median": 3.2,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 11,
+          "order": 7,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la45_s1"
+    },
+    "la45_s1@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 3.8333333333333335,
+        "omission": 2.0,
+        "order": 1.7777777777777777,
+        "unknown": 0.6666666666666666
+      },
+      "first_alarm_s_median": 20.866666666666667,
+      "lead_before_end_s_median": 21.133333333333333,
+      "min_frames": 8,
+      "order_latency_s_median": 3.466666666666667,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 3
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 12,
+          "omission": 12,
+          "order": 7,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la45_s1"
+    },
+    "la45_s2@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 12.444444444444445,
+        "omission": 0.9444444444444444,
+        "order": 0.7777777777777778,
+        "unknown": 0.7222222222222222
+      },
+      "first_alarm_s_median": 14.266666666666667,
+      "lead_before_end_s_median": 25.700000000000003,
+      "min_frames": 1,
+      "order_latency_s_median": 3.0,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 2,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 13,
+          "duration": 13,
+          "omission": 8,
+          "order": 4,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la45_s2"
+    },
+    "la45_s2@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 2.3333333333333335,
+        "omission": 1.6111111111111112,
+        "order": 1.4444444444444444,
+        "unknown": 0.4444444444444444
+      },
+      "first_alarm_s_median": 29.866666666666667,
+      "lead_before_end_s_median": 26.066666666666666,
+      "min_frames": 15,
+      "order_latency_s_median": 3.933333333333333,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 13,
+          "duration": 10,
+          "omission": 13,
+          "order": 8,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la45_s2"
+    },
+    "la45_s2@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.5555555555555556,
+        "duration_too_short": 0.05555555555555555,
+        "omission": 2.5,
+        "order": 2.1666666666666665,
+        "unknown": 0.2777777777777778
+      },
+      "first_alarm_s_median": 29.733333333333334,
+      "lead_before_end_s_median": 24.6,
+      "min_frames": 30,
+      "order_latency_s_median": 4.933333333333334,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 2,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 7,
+          "omission": 14,
+          "order": 9,
+          "recordings": 14,
+          "unknown": 1
+        }
+      },
+      "source": "la45_s2"
+    },
+    "la45_s2@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 8.666666666666666,
+        "omission": 1.1111111111111112,
+        "order": 1.0555555555555556,
+        "unknown": 0.6666666666666666
+      },
+      "first_alarm_s_median": 18.0,
+      "lead_before_end_s_median": 25.299999999999997,
+      "min_frames": 4,
+      "order_latency_s_median": 3.2,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 2,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 13,
+          "duration": 13,
+          "omission": 11,
+          "order": 6,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la45_s2"
+    },
+    "la45_s2@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.05555555555555555,
+        "duration_too_short": 5.777777777777778,
+        "omission": 1.2777777777777777,
+        "order": 1.1111111111111112,
+        "unknown": 0.5
+      },
+      "first_alarm_s_median": 18.6,
+      "lead_before_end_s_median": 25.266666666666666,
+      "min_frames": 8,
+      "order_latency_s_median": 3.466666666666667,
+      "output_delay_frames": 45,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 2,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 13,
+          "duration": 13,
+          "omission": 11,
+          "order": 7,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la45_s2"
+    },
+    "la90_s0@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 5.444444444444445,
+        "omission": 1.8888888888888888,
+        "order": 3.0,
+        "unknown": 0.5
+      },
+      "first_alarm_s_median": 21.866666666666667,
+      "lead_before_end_s_median": 27.03333333333333,
+      "min_frames": 1,
+      "order_latency_s_median": 6.0,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 12,
+          "order": 8,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la90_s0"
+    },
+    "la90_s0@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.3333333333333333,
+        "duration_too_short": 1.6111111111111112,
+        "omission": 2.5,
+        "order": 2.3333333333333335,
+        "unknown": 0.3888888888888889
+      },
+      "first_alarm_s_median": 30.233333333333334,
+      "lead_before_end_s_median": 25.833333333333336,
+      "min_frames": 15,
+      "order_latency_s_median": 6.933333333333334,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 10,
+          "omission": 14,
+          "order": 9,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la90_s0"
+    },
+    "la90_s0@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.7222222222222222,
+        "duration_too_short": 0.05555555555555555,
+        "omission": 3.1666666666666665,
+        "order": 2.388888888888889,
+        "unknown": 0.3333333333333333
+      },
+      "first_alarm_s_median": 35.1,
+      "lead_before_end_s_median": 21.733333333333334,
+      "min_frames": 30,
+      "order_latency_s_median": 7.933333333333334,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 7,
+          "omission": 14,
+          "order": 10,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la90_s0"
+    },
+    "la90_s0@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 4.0,
+        "omission": 2.111111111111111,
+        "order": 2.7222222222222223,
+        "unknown": 0.5
+      },
+      "first_alarm_s_median": 22.766666666666666,
+      "lead_before_end_s_median": 26.866666666666667,
+      "min_frames": 4,
+      "order_latency_s_median": 6.2,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 12,
+          "omission": 14,
+          "order": 9,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la90_s0"
+    },
+    "la90_s0@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.2222222222222222,
+        "duration_too_short": 2.888888888888889,
+        "omission": 2.2777777777777777,
+        "order": 2.6666666666666665,
+        "unknown": 0.4444444444444444
+      },
+      "first_alarm_s_median": 24.133333333333333,
+      "lead_before_end_s_median": 26.56666666666667,
+      "min_frames": 8,
+      "order_latency_s_median": 6.466666666666667,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 3,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 14,
+          "order": 9,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la90_s0"
+    },
+    "la90_s1@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 5.722222222222222,
+        "omission": 2.7222222222222223,
+        "order": 4.777777777777778,
+        "unknown": 0.6111111111111112
+      },
+      "first_alarm_s_median": 25.7,
+      "lead_before_end_s_median": 32.266666666666666,
+      "min_frames": 1,
+      "order_latency_s_median": 6.0,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 10,
+          "omission": 14,
+          "order": 9,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la90_s1"
+    },
+    "la90_s1@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.2777777777777778,
+        "duration_too_short": 1.0,
+        "omission": 3.1666666666666665,
+        "order": 3.3333333333333335,
+        "unknown": 0.4444444444444444
+      },
+      "first_alarm_s_median": 30.266666666666666,
+      "lead_before_end_s_median": 26.8,
+      "min_frames": 15,
+      "order_latency_s_median": 6.933333333333334,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 7,
+          "omission": 14,
+          "order": 13,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la90_s1"
+    },
+    "la90_s1@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.7222222222222222,
+        "duration_too_short": 0.05555555555555555,
+        "omission": 3.7222222222222223,
+        "order": 2.611111111111111,
+        "unknown": 0.2777777777777778
+      },
+      "first_alarm_s_median": 32.3,
+      "lead_before_end_s_median": 25.7,
+      "min_frames": 30,
+      "order_latency_s_median": 7.933333333333334,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 2,
+          "omission": 4,
+          "order": 3,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 7,
+          "omission": 14,
+          "order": 13,
+          "recordings": 14,
+          "unknown": 1
+        }
+      },
+      "source": "la90_s1"
+    },
+    "la90_s1@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 3.611111111111111,
+        "omission": 2.7777777777777777,
+        "order": 4.166666666666667,
+        "unknown": 0.6111111111111112
+      },
+      "first_alarm_s_median": 25.9,
+      "lead_before_end_s_median": 27.5,
+      "min_frames": 4,
+      "order_latency_s_median": 6.2,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 10,
+          "omission": 14,
+          "order": 9,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la90_s1"
+    },
+    "la90_s1@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.16666666666666666,
+        "duration_too_short": 2.3333333333333335,
+        "omission": 2.8333333333333335,
+        "order": 3.6666666666666665,
+        "unknown": 0.5555555555555556
+      },
+      "first_alarm_s_median": 26.166666666666664,
+      "lead_before_end_s_median": 26.466666666666665,
+      "min_frames": 8,
+      "order_latency_s_median": 6.466666666666667,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 10,
+          "omission": 14,
+          "order": 10,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la90_s1"
+    },
+    "la90_s2@1": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.2777777777777778,
+        "duration_too_short": 7.166666666666667,
+        "omission": 1.7777777777777777,
+        "order": 3.3333333333333335,
+        "unknown": 0.7777777777777778
+      },
+      "first_alarm_s_median": 21.166666666666664,
+      "lead_before_end_s_median": 22.9,
+      "min_frames": 1,
+      "order_latency_s_median": 6.0,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 12,
+          "order": 7,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la90_s2"
+    },
+    "la90_s2@15": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.3888888888888889,
+        "duration_too_short": 1.3333333333333333,
+        "omission": 2.4444444444444446,
+        "order": 3.0555555555555554,
+        "unknown": 0.3888888888888889
+      },
+      "first_alarm_s_median": 23.8,
+      "lead_before_end_s_median": 26.333333333333332,
+      "min_frames": 15,
+      "order_latency_s_median": 6.933333333333334,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 10,
+          "omission": 13,
+          "order": 11,
+          "recordings": 14,
+          "unknown": 2
+        }
+      },
+      "source": "la90_s2"
+    },
+    "la90_s2@30": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.8333333333333334,
+        "duration_too_short": 0.05555555555555555,
+        "omission": 3.0,
+        "order": 2.2222222222222223,
+        "unknown": 0.16666666666666666
+      },
+      "first_alarm_s_median": 26.666666666666668,
+      "lead_before_end_s_median": 22.666666666666668,
+      "min_frames": 30,
+      "order_latency_s_median": 7.933333333333334,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 2,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 6,
+          "omission": 14,
+          "order": 13,
+          "recordings": 14,
+          "unknown": 0
+        }
+      },
+      "source": "la90_s2"
+    },
+    "la90_s2@4": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.3333333333333333,
+        "duration_too_short": 4.888888888888889,
+        "omission": 1.8888888888888888,
+        "order": 2.7777777777777777,
+        "unknown": 0.7222222222222222
+      },
+      "first_alarm_s_median": 22.5,
+      "lead_before_end_s_median": 23.8,
+      "min_frames": 4,
+      "order_latency_s_median": 6.2,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 14,
+          "omission": 13,
+          "order": 7,
+          "recordings": 14,
+          "unknown": 4
+        }
+      },
+      "source": "la90_s2"
+    },
+    "la90_s2@8": {
+      "alarms_per_recording": {
+        "duration_too_long": 0.3333333333333333,
+        "duration_too_short": 2.888888888888889,
+        "omission": 2.1666666666666665,
+        "order": 3.111111111111111,
+        "unknown": 0.6111111111111112
+      },
+      "first_alarm_s_median": 23.566666666666666,
+      "lead_before_end_s_median": 24.133333333333333,
+      "min_frames": 8,
+      "order_latency_s_median": 6.466666666666667,
+      "output_delay_frames": 90,
+      "recording_level": {
+        "with_wrong": {
+          "any": 4,
+          "duration": 4,
+          "omission": 4,
+          "order": 4,
+          "recordings": 4,
+          "unknown": 1
+        },
+        "without_wrong": {
+          "any": 14,
+          "duration": 13,
+          "omission": 13,
+          "order": 8,
+          "recordings": 14,
+          "unknown": 3
+        }
+      },
+      "source": "la90_s2"
+    }
+  }
+}

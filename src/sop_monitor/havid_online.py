@@ -222,7 +222,16 @@ def read_rows(path: Path) -> list[dict[str, str]]:
 
 def summary_grid(config: Mapping[str, object]) -> list[tuple[str, int]]:
     delays: Mapping[str, int] = config["delays"]  # type: ignore[assignment]
-    return [(source, m) for source in delays for m in config["min_frames_grid"]]  # type: ignore[union-attr]
+    return [
+        (source, m)
+        for source in sorted(delays, key=natural_key)
+        for m in config["min_frames_grid"]  # type: ignore[union-attr]
+    ]
+
+
+def natural_key(name: str) -> list[object]:
+    """Sort key that orders embedded numbers numerically (``la15_s2`` before ``la45_s0``)."""
+    return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", name)]
 
 
 def _fmt(value: object, digits: int = 1) -> str:
@@ -232,7 +241,19 @@ def _fmt(value: object, digits: int = 1) -> str:
 def seed_groups(summary: Mapping[str, Mapping[str, object]]) -> dict[tuple[str, int], list[str]]:
     """Summary keys grouped by source name without its ``_s<seed>`` suffix and ``min_frames``."""
     groups: dict[tuple[str, int], list[str]] = {}
-    for key, entry in summary.items():
+    ordered = sorted(
+        summary.items(),
+        key=lambda item: (natural_key(str(item[1]["source"])), int(item[1]["min_frames"])),  # type: ignore[call-overload]
+    )
+    groups_order = sorted(
+        {
+            (re.sub(r"_s\d+$", "", str(e["source"])), int(e["min_frames"]))  # type: ignore[call-overload]
+            for e in summary.values()
+        },
+        key=lambda g: (natural_key(g[0]), g[1]),
+    )
+    groups = {g: [] for g in groups_order}
+    for key, entry in ordered:
         group = re.sub(r"_s\d+$", "", str(entry["source"]))
         groups.setdefault((group, int(entry["min_frames"])), []).append(key)  # type: ignore[call-overload]
     return groups
@@ -261,7 +282,8 @@ def render_online_tables(payload: Mapping[str, object]) -> str:
         "| order latency s (median) |",
         "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
-    for entry in summary.values():
+    for source, min_frames in summary_grid(config):
+        entry = summary[f"{source}@{min_frames}"]
         level: Mapping[str, Mapping[str, int]] = entry["recording_level"]  # type: ignore[assignment]
         w, c = level["with_wrong"], level["without_wrong"]
         cells = " | ".join(
@@ -306,7 +328,10 @@ def render_online_tables(payload: Mapping[str, object]) -> str:
         "| source | equal | recordings |",
         "|---|---|---|",
     ]
-    lines += [f"| {s} | {e['equal']} | {e['recordings']} |" for s, e in agreement.items()]
+    lines += [
+        f"| {s} | {agreement[s]['equal']} | {agreement[s]['recordings']} |"
+        for s in sorted(agreement, key=natural_key)
+    ]
     return "\n".join(lines) + "\n"
 
 
