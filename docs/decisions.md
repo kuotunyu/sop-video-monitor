@@ -188,3 +188,11 @@ order check's recording-level false alarms fall from 32 % to 8 % (step level 5.6
 the four order-flagged recordings contain native `w` annotations. Decision: `sop/ha-vid/sheet/`
 (sheet granularity, support 10, agreement 1.0, [1, 99] %) is the HA-ViD SOP knowledge; the
 primitive-task level remains the recogniser's output and is mapped before the checks.
+
+## 2026-09-14 — the review UI is a local standard-library server, not a web framework
+
+The W5 plan listed FastAPI and uvicorn. The first slice needs three endpoints and range-served
+video, so `sop_monitor/review.py` uses `http.server` and adds no dependency (the CI install stays
+unchanged). The server binds to 127.0.0.1, serves only the video ids of the split it was started
+with and refuses a split file named `test`; decisions are an append-only JSONL. A framework can
+replace it if the UI ever needs authentication or more than one reviewer at a time.

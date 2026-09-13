@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary review-queue review-ui
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -134,3 +134,11 @@ havid-tas-lookahead:  ## havid_dev_v9 inputs: causal networks with 15 / 45 / 90 
 
 havid-lookahead-summary:  ## havid_dev_v9: mean +- std over seeds per look-ahead and hand.
 	for la in 15 45 90; do for hand in lh rh; do $(UV) run sop-monitor summarise-havid-seeds --run reports/havid_dev_v9_tas_la$${la}_$${hand}_s0 --run reports/havid_dev_v9_tas_la$${la}_$${hand}_s1 --run reports/havid_dev_v9_tas_la$${la}_$${hand}_s2 --out reports/havid_dev_v9_tas_lookahead_la$${la}_$${hand} || exit 1; done; done
+
+# ---- W5 review (docs/review.md) -------------------------------------------------------------
+
+review-queue:  ## Deviation queue of the v8 SOP run's recogniser output (artifacts/review/, ignored by git).
+	$(UV) run sop-monitor build-review-queue --run reports/havid_dev_v8_sop_sheet --source pred --out artifacts/review/v8_pred_queue.jsonl
+
+review-ui:  ## Local review page on http://127.0.0.1:8765/ for the v8 queue (set REVIEWER).
+	$(UV) run sop-monitor review-ui --queue artifacts/review/v8_pred_queue.jsonl --decisions artifacts/review/v8_pred_decisions.jsonl --reviewer "$(REVIEWER)"

@@ -428,6 +428,67 @@ def summarise_havid_seeds_cmd(
     typer.echo(f"-> {out}")
 
 
+@app.command("build-review-queue")
+def build_review_queue_cmd(
+    run: Annotated[
+        Path, typer.Option(help="havid-sop run directory (steps_val.csv, sop_checks.json)")
+    ],
+    out: Annotated[
+        Path, typer.Option(help="Queue JSONL (keep it under artifacts/, it names val videos)")
+    ],
+    source: Annotated[
+        str, typer.Option(help="pred (recogniser output) | gt (annotations)")
+    ] = "pred",
+) -> None:
+    """Turn a SOP run's findings into a deviation queue for human review (spec W5)."""
+    from collections import Counter
+
+    from sop_monitor.review import build_queue, write_queue
+
+    items = build_queue(run, source)
+    write_queue(out, items)
+    typer.echo(f"{len(items)} items {dict(Counter(i.kind for i in items))} -> {out}")
+
+
+@app.command("review-ui")
+def review_ui_cmd(
+    queue: Annotated[Path, typer.Option(help="Queue JSONL from build-review-queue")],
+    decisions: Annotated[Path, typer.Option(help="Append-only decisions JSONL")],
+    split_csv: Annotated[Path, typer.Option(help="Split whose videos may be served")] = Path(
+        "splits/ha-vid/val.csv"
+    ),
+    rgb_dir: Annotated[Path, typer.Option(help="Directory holding the HA-ViD mp4s")] = Path(
+        "data/external/ha-vid/HAViD_rgb"
+    ),
+    port: Annotated[int, typer.Option()] = 8765,
+    reviewer: Annotated[str, typer.Option(help="Name stored with each decision")] = "",
+) -> None:
+    """Serve the review page on http://127.0.0.1:<port> until interrupted."""
+    from sop_monitor.review import make_server
+
+    server = make_server(queue, decisions, split_csv, rgb_dir, port, reviewer)
+    typer.echo(f"review UI on http://127.0.0.1:{server.server_address[1]}/ (Ctrl+C to stop)")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+
+
+@app.command("review-summary")
+def review_summary_cmd(
+    queue: Annotated[Path, typer.Option(help="Queue JSONL")],
+    decisions: Annotated[Path, typer.Option(help="Decisions JSONL")],
+) -> None:
+    """Accepted / rejected counts and reviewed precision per deviation kind."""
+    from sop_monitor.review import DecisionStore, read_jsonl, review_summary
+
+    items = read_jsonl(queue)
+    store = DecisionStore(decisions, (str(i["id"]) for i in items))
+    typer.echo(json.dumps(review_summary(items, store.latest()), indent=2))
+
+
 @app.command("train-baseline")
 def train_baseline_cmd(
     features: Annotated[

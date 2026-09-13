@@ -43,6 +43,7 @@ backpressure 實測曲線。**以上是設計目標，不是現況。** 現況�
 | `havid_tas.py` | HA-ViD 離線 TAS 線：每個視角各訓 causal／非 causal MS-TCN++、三種不需調參的 late fusion（mean／幾何平均／信心加權）、以 recording 為鍵的預測表；官方 I3D 特徵匯出成同一種 npz 快取 |
 | `havid_seeds.py` | HA-ViD TAS 多 seed 彙總：每個 run 指標的 mean ± std 與範圍、各網路每個 seed 選到的 epoch；`reproduce-lite` 從各 run 的 `metrics.json` 重算 |
 | `havid_sop.py` | HA-ViD SOP 層：雙手 primitive-task 步驟序列、從標籤詞彙判斷 plate、從 train 學 precedence graph／必要步驟／時長界限、synthetic 順序／遺漏／時長違規表、原生 `w` 表；`reproduce-lite` 可從 CSV 重算 |
+| `review.py`、`review_page.py` | 偏差佇列與本機複核介面（W5）：SOP 檢查結果轉成佇列項目、三視角同步播放、接受／退回寫入 append-only JSONL、人工判定的 precision；只綁 127.0.0.1、只供應 val 影片（見 `docs/review.md`） |
 | `baseline.py`、`mstcn.py` | 離線 TAS 線：linear head、causal／非 causal MS-TCN++、預測表與從預測表重算指標 |
 | `psr_baseline.py` | 線上 PSR 線：linear 與 causal MS-TCN++ state head、EMA／hysteresis／dwell／procedure-prior decoder、out-of-fold 的 decoder／延遲預算／epoch 選擇、多 seed、completion 表與計分 |
 | `metrics/offline.py`、`metrics/reference_mstcn.py` | MoF、Edit、F1@k（MS-TCN 定義）與獨立參考轉錄的交叉核對；participant bootstrap |
@@ -60,6 +61,7 @@ CLI `sop-monitor` 的命令依流程分組：
 | 離線 TAS | `train-baseline`、`train-mstcn`（IndustReal）、`train-havid-tas`（HA-ViD，每視角 + fusion） |
 | 線上 PSR | `train-psr`、`learn-sop`、`check-psr-run`（IndustReal）、`learn-havid-sop`、`havid-sop`（HA-ViD SOP 層） |
 | SOP graph | `export-sop`、`check-sop` |
+| 複核 | `build-review-queue`、`review-ui`、`review-summary` |
 | 重算 | `score-predictions`、`summarise-havid-seeds`、`reproduce-lite` |
 
 ### 結果
@@ -73,8 +75,8 @@ CLI `sop-monitor` 的命令依流程分組：
 - Frozen test split 上的任何數字（IndustReal 與 HA-ViD 皆需要明確決定後一次性執行）。
 - RTSP 重播（mediamtx）、decode thread、batch collector、watchdog、shared-memory ring buffer、backpressure 曲線（W4）。
 - ASFormer、學習式 fusion、VideoMAE-V2 clip 特徵、任何圖（W2–W3）；三視角 late fusion 與單視角對照已在 `reports/havid_dev_v1`–`v7`。
-- W3 剩餘：偏差佇列、更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟；`v8` 的說明書粒度把 ground truth 的順序誤報降到 4/18，但預測序列仍全數被標記）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
-- 複核 UI、deviation queue、VLM verifier（W5）。
+- W3 剩餘：更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟；`v8` 的說明書粒度把 ground truth 的順序誤報降到 4/18，但預測序列仍全數被標記）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
+- VLM verifier（W5 剩餘；需要下載模型權重）；偏差佇列與複核介面已完成（`docs/review.md`），尚無真人複核結果。
 - `MODEL_CARD.md`、`docs/claims_audit.md`、`docs/what_this_does_not_show.md`（W6）；GitHub／Hugging Face 上尚未發布。
 
 ## 非目標與 claim ceiling（設計規格 §2，逐字）
