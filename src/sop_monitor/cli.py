@@ -622,6 +622,28 @@ def _check_psr_run(run_dir: Path, write: bool) -> list[str]:
     return mismatches
 
 
+def _check_havid_sop_run(run_dir: Path, write: bool) -> list[str]:
+    """Recompute a HA-ViD SOP run's tables from its committed step CSVs and the learned JSON files."""
+    from sop_monitor.havid_sop import evaluate_run, render_sop_tables
+
+    committed = json.loads((run_dir / "sop_checks.json").read_text(encoding="utf-8"))
+    config = committed["config"]
+    recomputed = evaluate_run(run_dir, Path(config["graphs_dir"]), int(config["seed"]))
+    mismatches: list[str] = []
+    for key in ("graphs", "sources", "wrong"):
+        if json.dumps(recomputed[key], sort_keys=True) != json.dumps(
+            committed[key], sort_keys=True
+        ):
+            mismatches.append(f"{run_dir.name}: {key} differs from sop_checks.json")
+    rendered = render_sop_tables(committed)
+    tables_path = run_dir / "tables.md"
+    if write:
+        tables_path.write_text(rendered, encoding="utf-8", newline="\n")
+    elif not tables_path.is_file() or tables_path.read_text(encoding="utf-8") != rendered:
+        mismatches.append(f"{run_dir.name}: tables.md is stale (run with --write to regenerate)")
+    return mismatches
+
+
 def _check_run(run_dir: Path, write: bool) -> list[str]:
     """Recompute a run's metrics from its prediction table; return the list of mismatches."""
     from sop_monitor.baseline import (
@@ -631,6 +653,8 @@ def _check_run(run_dir: Path, write: bool) -> list[str]:
         score_predictions,
     )
 
+    if (run_dir / "steps_val.csv").is_file():
+        return _check_havid_sop_run(run_dir, write)
     if not (run_dir / "metrics.json").is_file():
         return []
     if sorted(run_dir.glob("completions_*.csv")):
@@ -683,6 +707,60 @@ def score_predictions_cmd(
         typer.echo(line)
     typer.echo(f"{run.name}: {'OK, metrics reproduce' if not mismatches else 'MISMATCH'}")
     raise typer.Exit(code=1 if mismatches else 0)
+
+
+@app.command("learn-havid-sop")
+def learn_havid_sop_cmd(
+    temporal: Annotated[Path, typer.Option(help="HAViD_temporalAnnotation.zip")] = Path(
+        "data/external/ha-vid/HAViD_temporalAnnotation.zip"
+    ),
+    split_dir: Annotated[Path, typer.Option()] = Path("splits/ha-vid"),
+    out: Annotated[Path, typer.Option(help="Where the learned JSON files land")] = Path(
+        "sop/ha-vid"
+    ),
+    min_support: Annotated[
+        int, typer.Option(help="Recordings two steps must share for an edge")
+    ] = 3,
+    mandatory_fraction: Annotated[
+        float,
+        typer.Option(
+            help="A step is mandatory when present in this fraction of a plate's recordings"
+        ),
+    ] = 0.9,
+) -> None:
+    """Learn per-plate precedence graphs, mandatory steps and duration bounds from the train split."""
+    from sop_monitor.havid_sop import learn_havid_sop
+
+    summary = learn_havid_sop(temporal, split_dir, out, min_support, mandatory_fraction)
+    typer.echo(f"{summary['recordings']} train recordings, plates {summary['plates']}")
+    for plate, info in summary["graphs"].items():  # type: ignore[union-attr]
+        typer.echo(
+            f"{plate}: {info['nodes']} steps, {info['edges']} edges, "
+            f"{info['mandatory']} mandatory, {info['bounded']} with duration bounds -> {out}"
+        )
+
+
+@app.command("havid-sop")
+def havid_sop_cmd(
+    pred_lh: Annotated[Path, typer.Option(help="Left-hand HA-ViD TAS run directory")],
+    pred_rh: Annotated[Path, typer.Option(help="Right-hand HA-ViD TAS run directory")],
+    out: Annotated[Path, typer.Option(help="SOP run directory")],
+    run_name: Annotated[str, typer.Option(help="Prediction column to use")] = "fusion_causal",
+    temporal: Annotated[Path, typer.Option(help="HAViD_temporalAnnotation.zip")] = Path(
+        "data/external/ha-vid/HAViD_temporalAnnotation.zip"
+    ),
+    split_dir: Annotated[Path, typer.Option()] = Path("splits/ha-vid"),
+    graphs: Annotated[Path, typer.Option(help="Learned JSON directory")] = Path("sop/ha-vid"),
+    seed: Annotated[int, typer.Option()] = 0,
+) -> None:
+    """Val step sequences (ground truth and predicted), SOP checks, synthetic violations, native w."""
+    from sop_monitor.havid_sop import render_sop_tables, run_havid_sop
+
+    payload = run_havid_sop(
+        temporal, split_dir, graphs, {"lh": pred_lh, "rh": pred_rh}, run_name, out, seed
+    )
+    typer.echo(render_sop_tables(payload))
+    typer.echo(f"-> {out}")
 
 
 @app.command("learn-sop")
@@ -767,7 +845,9 @@ def reproduce_lite(
 ) -> None:
     """Recompute every committed run's metrics from its prediction table (spec 8.3; CI path)."""
     runs = sorted(
-        p for p in Path(reports_dir).glob("*") if p.is_dir() and (p / "metrics.json").is_file()
+        p
+        for p in Path(reports_dir).glob("*")
+        if p.is_dir() and ((p / "metrics.json").is_file() or (p / "steps_val.csv").is_file())
     )
     if not runs:
         typer.echo(f"nothing to rebuild: no run directory with metrics.json under {reports_dir}/")

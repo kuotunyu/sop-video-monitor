@@ -13,7 +13,7 @@ unchanged. Step ``k`` becomes node ``S<k>`` of type ``PrimitiveTask``.
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Hashable, Mapping, Sequence
 from itertools import permutations
 from pathlib import Path
 
@@ -62,29 +62,36 @@ def _transitive_reduction(
 
 
 def learn_precedence(
-    sequences: Sequence[Sequence[Completion]], min_support: int = 3, source: str = ""
+    sequences: Sequence[Sequence[Completion]],
+    min_support: int = 3,
+    source: str = "",
+    node: Callable[[Hashable], str] = step_node,
 ) -> TaskGraph:
-    """Precedence graph over the steps of ``sequences`` (one completion list per recording)."""
-    firsts: list[dict[int, int]] = []
+    """Precedence graph over the steps of ``sequences`` (one completion list per recording).
+
+    ``node`` names the graph node of a step id (``S<k>`` for IndustReal's integer steps; HA-ViD
+    passes ``str`` so its HR-SAT label codes become the node names).
+    """
+    firsts: list[dict[Hashable, int]] = []
     for completions in sequences:
-        first: dict[int, int] = {}
+        first: dict[Hashable, int] = {}
         for c in sorted(completions, key=lambda c: c.frame):
             first.setdefault(c.step, c.frame)
         firsts.append(first)
-    steps = sorted({s for first in firsts for s in first})
-    support: Counter[tuple[int, int]] = Counter()
-    before: Counter[tuple[int, int]] = Counter()
+    steps = sorted({s for first in firsts for s in first}, key=node)
+    support: Counter[tuple[Hashable, Hashable]] = Counter()
+    before: Counter[tuple[Hashable, Hashable]] = Counter()
     for first in firsts:
         for a, b in permutations(first, 2):
             support[a, b] += 1
             if first[a] < first[b]:
                 before[a, b] += 1
     edges = {
-        (step_node(a), step_node(b))
+        (node(a), node(b))
         for (a, b), n in support.items()
         if n >= min_support and before[a, b] == n
     }
-    nodes = [step_node(s) for s in steps]
+    nodes = [node(s) for s in steps]
     reduced = _transitive_reduction(nodes, edges)
     graph = TaskGraph(
         nodes={node: "PrimitiveTask" for node in nodes},

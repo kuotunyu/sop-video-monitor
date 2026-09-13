@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -73,6 +73,12 @@ havid-tas:  ## havid_dev_v1: per-view MS-TCN++ (causal + offline) and late fusio
 havid-tas-v3:  ## havid_dev_v3: as v1 (DINOv2 ViT-B/14) but epochs selected by val F1@10 and three parameter-free fusion rules.
 	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand lh --selection-metric f1@10 --out reports/havid_dev_v3_tas_f1sel_lh
 	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/dinov2_vitb14_s1 --hand rh --selection-metric f1@10 --out reports/havid_dev_v3_tas_f1sel_rh
+
+learn-havid-sop:  ## Learn the per-plate precedence graphs, mandatory steps and duration bounds from splits/ha-vid/train.csv (sop/ha-vid/*.json).
+	$(UV) run sop-monitor learn-havid-sop --temporal $(HAVID)/HAViD_temporalAnnotation.zip --split-dir splits/ha-vid --out sop/ha-vid
+
+havid-sop:  ## havid_dev_v4: SOP checks, synthetic violations and native w on val, from the v3 fusion_causal predictions of both hands.
+	$(UV) run sop-monitor havid-sop --pred-lh reports/havid_dev_v3_tas_f1sel_lh --pred-rh reports/havid_dev_v3_tas_f1sel_rh --run-name fusion_causal --out reports/havid_dev_v4_sop_synthetic
 
 havid-tas-i3d:  ## havid_dev_v2: the same protocol on the official I3D features (control).
 	$(UV) run sop-monitor train-havid-tas --features artifacts/features/ha-vid/i3d_official --hand lh --out reports/havid_dev_v2_i3d_lh
