@@ -1,0 +1,396 @@
+{
+  "all_identical": true,
+  "pairs": [
+    {
+      "committed": "reports/havid_dev_v9_tas_la45_lh_s0",
+      "frame_agreement": {
+        "fusion_causal": 1.0,
+        "fusion_conf_causal": 1.0,
+        "fusion_geo_causal": 1.0,
+        "majority": 1.0,
+        "view0_causal": 1.0,
+        "view1_causal": 1.0,
+        "view2_causal": 1.0
+      },
+      "identical": true,
+      "metric_deltas": {
+        "fusion_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_conf_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_geo_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "majority": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view0_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view1_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view2_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        }
+      },
+      "retrained": "artifacts/final_runs/havid_final_L45_lh_s0"
+    },
+    {
+      "committed": "reports/havid_dev_v9_tas_la45_rh_s0",
+      "frame_agreement": {
+        "fusion_causal": 1.0,
+        "fusion_conf_causal": 1.0,
+        "fusion_geo_causal": 1.0,
+        "majority": 1.0,
+        "view0_causal": 1.0,
+        "view1_causal": 1.0,
+        "view2_causal": 1.0
+      },
+      "identical": true,
+      "metric_deltas": {
+        "fusion_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_conf_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_geo_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "majority": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view0_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view1_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view2_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        }
+      },
+      "retrained": "artifacts/final_runs/havid_final_L45_rh_s0"
+    },
+    {
+      "committed": "reports/havid_dev_v9_tas_la45_lh_s1",
+      "frame_agreement": {
+        "fusion_causal": 1.0,
+        "fusion_conf_causal": 1.0,
+        "fusion_geo_causal": 1.0,
+        "majority": 1.0,
+        "view0_causal": 1.0,
+        "view1_causal": 1.0,
+        "view2_causal": 1.0
+      },
+      "identical": true,
+      "metric_deltas": {
+        "fusion_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_conf_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_geo_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "majority": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view0_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view1_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view2_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        }
+      },
+      "retrained": "artifacts/final_runs/havid_final_L45_lh_s1"
+    },
+    {
+      "committed": "reports/havid_dev_v9_tas_la45_rh_s1",
+      "frame_agreement": {
+        "fusion_causal": 1.0,
+        "fusion_conf_causal": 1.0,
+        "fusion_geo_causal": 1.0,
+        "majority": 1.0,
+        "view0_causal": 1.0,
+        "view1_causal": 1.0,
+        "view2_causal": 1.0
+      },
+      "identical": true,
+      "metric_deltas": {
+        "fusion_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_conf_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_geo_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "majority": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view0_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view1_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view2_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        }
+      },
+      "retrained": "artifacts/final_runs/havid_final_L45_rh_s1"
+    },
+    {
+      "committed": "reports/havid_dev_v9_tas_la45_lh_s2",
+      "frame_agreement": {
+        "fusion_causal": 1.0,
+        "fusion_conf_causal": 1.0,
+        "fusion_geo_causal": 1.0,
+        "majority": 1.0,
+        "view0_causal": 1.0,
+        "view1_causal": 1.0,
+        "view2_causal": 1.0
+      },
+      "identical": true,
+      "metric_deltas": {
+        "fusion_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_conf_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_geo_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "majority": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view0_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view1_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view2_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        }
+      },
+      "retrained": "artifacts/final_runs/havid_final_L45_lh_s2"
+    },
+    {
+      "committed": "reports/havid_dev_v9_tas_la45_rh_s2",
+      "frame_agreement": {
+        "fusion_causal": 1.0,
+        "fusion_conf_causal": 1.0,
+        "fusion_geo_causal": 1.0,
+        "majority": 1.0,
+        "view0_causal": 1.0,
+        "view1_causal": 1.0,
+        "view2_causal": 1.0
+      },
+      "identical": true,
+      "metric_deltas": {
+        "fusion_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_conf_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "fusion_geo_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "majority": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view0_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view1_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        },
+        "view2_causal": {
+          "edit": 0.0,
+          "f1@10": 0.0,
+          "f1@25": 0.0,
+          "f1@50": 0.0,
+          "mof": 0.0
+        }
+      },
+      "retrained": "artifacts/final_runs/havid_final_L45_rh_s2"
+    }
+  ],
+  "split": "val"
+}

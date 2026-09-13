@@ -12,6 +12,8 @@ same setting, hand and seed, column by column (`gate_*.json`: frame agreement an
 | file | pairs | result |
 |---|---|---|
 | `gate_L0.json` | causal L = 0 with offline twins vs `havid_dev_v3_tas_f1sel_{lh,rh}[_s1,_s2]` | 6 / 6 identical on all 13 prediction columns; same selected epoch for every network |
+| `gate_L90.json` | causal L = 90 (L*, pre-registered) vs `havid_dev_v9_tas_la90_{lh,rh}_s{0,1,2}` | 6 / 6 identical on all 7 prediction columns |
+| `gate_L45.json` | causal L = 45 (declared amendment, not pre-registered) vs `havid_dev_v9_tas_la45_{lh,rh}_s{0,1,2}` | 6 / 6 identical on all 7 prediction columns |
 
 Identical predictions mean the test networks are the dev networks: `cudnn.deterministic` is set and
 parallel training on the same GPU did not change a single frame.
