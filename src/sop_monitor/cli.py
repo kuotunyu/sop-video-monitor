@@ -1102,6 +1102,148 @@ def havid_online_cmd(
     typer.echo(f"-> {out}")
 
 
+@app.command("havid-online-head")
+def havid_online_head_cmd(
+    checkpoints_lh: Annotated[Path, typer.Option(help="train-havid-tas --checkpoint-dir, lh")],
+    checkpoints_rh: Annotated[Path, typer.Option(help="train-havid-tas --checkpoint-dir, rh")],
+    out: Annotated[
+        Path, typer.Option(help="Output directory (online_head.json, labels, deviations)")
+    ],
+    mode: Annotated[
+        str, typer.Option(help="features (cached DINOv2) | video (decode + DINOv2)")
+    ] = "features",
+    recording: Annotated[
+        list[str] | None, typer.Option(help="Val recordings to stream (repeatable; default all)")
+    ] = None,
+    chunk: Annotated[int, typer.Option(help="Frames per view per push (15 = one second)")] = 15,
+    min_frames: Annotated[int, typer.Option(help="Monitor confirmation length in frames")] = 1,
+    rule: Annotated[str, typer.Option(help="Fusion rule suffix: '' | _geo | _conf")] = "",
+    features: Annotated[Path, typer.Option()] = Path("artifacts/features/ha-vid/dinov2_vitb14_s1"),
+    rgb_dir: Annotated[Path, typer.Option()] = Path("data/external/ha-vid/HAViD_rgb"),
+    temporal: Annotated[Path, typer.Option(help="HAViD_temporalAnnotation.zip")] = Path(
+        "data/external/ha-vid/HAViD_temporalAnnotation.zip"
+    ),
+    split_dir: Annotated[Path, typer.Option()] = Path("splits/ha-vid"),
+    graphs: Annotated[Path, typer.Option(help="Learned JSON directory")] = Path("sop/ha-vid/sheet"),
+    granularity: Annotated[str, typer.Option()] = "sheet",
+    model: Annotated[str, typer.Option(help="DINOv2 variant for --mode video")] = "dinov2_vitb14",
+    device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
+) -> None:
+    """Frames (or cached features) -> causal heads -> fusion -> online SOP monitor, val only."""
+    from functools import partial
+
+    from sop_monitor.features import FRAME_SIZE, embed_batch, load_dinov2, resolve_device
+    from sop_monitor.havid_sop import gt_segments, load_knowledge, plate_of, step_sequence
+    from sop_monitor.havid_tas import read_split
+    from sop_monitor.online_head import (
+        cached_feature_chunks,
+        run_online_head,
+        video_feature_chunks,
+    )
+    from sop_monitor.review import allowed_videos
+    from sop_monitor.stream.bench import machine
+
+    if mode not in ("features", "video"):
+        typer.echo("--mode must be features or video")
+        raise typer.Exit(code=1)
+    device = resolve_device(device)
+    rows = read_split(split_dir / "val.csv")
+    views_of: dict[str, dict[int, str]] = {}
+    for row in rows:
+        views_of.setdefault(row["recording"], {})[int(row["view"])] = row["video_id"]
+    recordings = sorted(recording or views_of)
+    unknown = sorted(set(recordings) - set(views_of))
+    if unknown:
+        typer.echo(f"not in the val split: {unknown}")
+        raise typer.Exit(code=1)
+    segments = gt_segments(temporal, recordings)
+    plates = {
+        rec: plate_of(s.label for s in step_sequence(hands["lh"], hands["rh"]))
+        for rec, hands in segments.items()
+    }
+    decode_timings: dict[str, list[float]] = {}
+    if mode == "features":
+
+        def chunks_of(rec: str):
+            return cached_feature_chunks(
+                {view: features / f"{vid}.npz" for view, vid in views_of[rec].items()}, chunk
+            )
+    else:
+        videos = allowed_videos(split_dir / "val.csv", rgb_dir)
+        backbone = load_dinov2(model, device)
+        embed = partial(embed_batch, backbone, device=device)
+
+        def chunks_of(rec: str):
+            decode_timings[rec] = []
+            return video_feature_chunks(
+                {view: videos[vid] for view, vid in views_of[rec].items()},
+                chunk,
+                lambda frames: embed(frames),
+                FRAME_SIZE,
+                decode_timings[rec],
+            )
+
+    result = run_online_head(
+        {"lh": checkpoints_lh, "rh": checkpoints_rh},
+        chunks_of,
+        recordings,
+        plates,
+        load_knowledge(graphs),
+        device,
+        granularity,
+        min_frames,
+        rule,
+    )
+    out.mkdir(parents=True, exist_ok=True)
+    per_rec = result["recordings"]  # type: ignore[index]
+    with (out / "stream_labels_val.csv").open("w", encoding="utf-8", newline="") as handle:
+        handle.write("recording,frame,lh,rh\n")
+        for rec, entry in per_rec.items():  # type: ignore[union-attr]
+            for frame, (lh, rh) in enumerate(
+                zip(entry["labels"]["lh"], entry["labels"]["rh"], strict=True)
+            ):
+                handle.write(f"{rec},{frame},{lh},{rh}\n")
+    summary = {
+        "config": {
+            "mode": mode,
+            "checkpoints": {"lh": checkpoints_lh.as_posix(), "rh": checkpoints_rh.as_posix()},
+            "lookahead": result["lookahead"],
+            "chunk": chunk,
+            "min_frames": min_frames,
+            "rule": rule,
+            "graphs_dir": graphs.as_posix(),
+            "granularity": granularity,
+            "device": device,
+            "model": model if mode == "video" else None,
+            "features_dir": features.as_posix() if mode == "features" else None,
+        },
+        "machine": machine(),
+        "recordings": {
+            rec: {
+                "plate": entry["plate"],
+                "frames": len(entry["labels"]["lh"]),
+                "deviations": entry["deviations"],
+                "latency": entry["latency"]
+                | ({"decode_s_total": sum(decode_timings[rec])} if rec in decode_timings else {}),
+                "agreement_with_checkpoint_run": entry["agreement_with_checkpoint_run"],
+            }
+            for rec, entry in per_rec.items()  # type: ignore[union-attr]
+        },
+    }
+    (out / "online_head.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    for rec, entry in summary["recordings"].items():  # type: ignore[union-attr]
+        lat = entry["latency"]
+        typer.echo(
+            f"{rec}: {entry['frames']} frames, {len(entry['deviations'])} deviations, "
+            f"agreement lh {entry['agreement_with_checkpoint_run']['lh']:.4f} "
+            f"rh {entry['agreement_with_checkpoint_run']['rh']:.4f}, "
+            f"real-time factor {lat['real_time_factor']:.3f}, chunk p95 {1000 * lat['compute_s_p95']:.0f} ms"
+        )
+    typer.echo(f"-> {out}")
+
+
 @app.command("learn-sop")
 def learn_sop_cmd(
     psr_dir: Annotated[Path, typer.Option()] = Path("data/external/industreal/psr"),

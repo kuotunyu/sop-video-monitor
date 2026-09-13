@@ -261,3 +261,45 @@ def test_checkpoints_restore_the_selected_networks(tmp_path: Path) -> None:
         np.testing.assert_allclose(
             probs, saved[f"view{view}_causal__S02A04I01"].astype(np.float32), atol=2e-3
         )
+
+
+def test_online_head_streams_a_checkpoint_run(tmp_path: Path) -> None:
+    from sop_monitor.havid import CAMERA_OF_VIEW
+    from sop_monitor.online_head import cached_feature_chunks, run_online_head
+    from sop_monitor.sop_graph import TaskGraph
+
+    paths = build(tmp_path)
+    checkpoints = {}
+    for hand in ("lh", "rh"):
+        checkpoints[hand] = tmp_path / f"ckpt_{hand}"
+        run_havid_tas(
+            paths["features"],
+            paths["splits"],
+            paths["temporal"],
+            paths["official"],
+            tmp_path / f"run_{hand}",
+            HavidTASSpec(hand=hand, mstcn=SMALL, lookahead=2, offline=False),
+            device="cpu",
+            checkpoint_dir=checkpoints[hand],
+        )
+    rec = "S02A04I01"
+    result = run_online_head(
+        checkpoints,
+        lambda r: cached_feature_chunks(
+            {v: paths["features"] / f"{r}{CAMERA_OF_VIEW[v]}.npz" for v in range(3)}, 7
+        ),
+        [rec],
+        {rec: "p"},
+        ({"p": TaskGraph({}, {})}, {"p": {}}, {"p": []}),
+        "cpu",
+        granularity="pt",
+    )
+    entry = result["recordings"][rec]
+    assert result["lookahead"] == {"lh": 2, "rh": 2}
+    assert entry["agreement_with_checkpoint_run"] == {"lh": 1.0, "rh": 1.0}
+    assert len(entry["labels"]["lh"]) == N_FRAMES
+    rows = read_predictions(tmp_path / "run_lh" / "predictions_val.csv")
+    labels = json.loads((checkpoints["lh"] / "meta.json").read_text(encoding="utf-8"))["classes"]
+    expected = [labels["class_id_to_label"][str(r.preds["fusion_causal"])] for r in rows]
+    assert entry["labels"]["lh"] == expected
+    assert entry["latency"]["frames"] == N_FRAMES and entry["latency"]["wall_real_time_factor"] > 0
