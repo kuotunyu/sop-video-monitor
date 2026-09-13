@@ -1,0 +1,596 @@
+{
+  "config": {
+    "graphs_dir": "sop/ha-vid/sheet",
+    "groups": [
+      {
+        "column": "fusion_causal",
+        "name": "L0",
+        "run_dirs": [
+          "reports/havid_test_v1_tas_L0_lh_s0",
+          "reports/havid_test_v1_tas_L0_rh_s0",
+          "reports/havid_test_v1_tas_L0_lh_s1",
+          "reports/havid_test_v1_tas_L0_rh_s1",
+          "reports/havid_test_v1_tas_L0_lh_s2",
+          "reports/havid_test_v1_tas_L0_rh_s2"
+        ]
+      },
+      {
+        "column": "fusion_causal",
+        "name": "L90",
+        "run_dirs": [
+          "reports/havid_test_v1_tas_L90_lh_s0",
+          "reports/havid_test_v1_tas_L90_rh_s0",
+          "reports/havid_test_v1_tas_L90_lh_s1",
+          "reports/havid_test_v1_tas_L90_rh_s1",
+          "reports/havid_test_v1_tas_L90_lh_s2",
+          "reports/havid_test_v1_tas_L90_rh_s2"
+        ]
+      },
+      {
+        "column": "fusion_causal",
+        "name": "L45_amendment",
+        "run_dirs": [
+          "reports/havid_test_v1_tas_L45_lh_s0",
+          "reports/havid_test_v1_tas_L45_rh_s0",
+          "reports/havid_test_v1_tas_L45_lh_s1",
+          "reports/havid_test_v1_tas_L45_rh_s1",
+          "reports/havid_test_v1_tas_L45_lh_s2",
+          "reports/havid_test_v1_tas_L45_rh_s2"
+        ]
+      },
+      {
+        "column": "fusion_offline",
+        "name": "offline",
+        "run_dirs": [
+          "reports/havid_test_v1_tas_L0_lh_s0",
+          "reports/havid_test_v1_tas_L0_rh_s0",
+          "reports/havid_test_v1_tas_L0_lh_s1",
+          "reports/havid_test_v1_tas_L0_rh_s1",
+          "reports/havid_test_v1_tas_L0_lh_s2",
+          "reports/havid_test_v1_tas_L0_rh_s2"
+        ]
+      }
+    ],
+    "split": "test"
+  },
+  "mandatory_step_frame_recall": {
+    "L0": 0.2845220248249559,
+    "L45_amendment": 0.4030522863428279,
+    "L90": 0.3550278864324321,
+    "offline": 0.4636729676793089
+  },
+  "overall_step_frame_recall": {
+    "L0": 0.26504022512508296,
+    "L45_amendment": 0.37542319931416285,
+    "L90": 0.3396637654204385,
+    "offline": 0.42860464102526846
+  },
+  "steps": {
+    "ibacb": {
+      "gt_frames_per_run_dir": 185.0,
+      "mandatory_in": [
+        "cylinder"
+      ],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.05045045045045045,
+        "L90": 0.011711711711711712,
+        "offline": 0.2045045045045045
+      }
+    },
+    "ibscb": {
+      "gt_frames_per_run_dir": 773.0,
+      "mandatory_in": [
+        "cylinder"
+      ],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.14790858128503664,
+        "L45_amendment": 0.24601121172919363,
+        "L90": 0.30940060370849504,
+        "offline": 0.47132384648555414
+      }
+    },
+    "icbck": {
+      "gt_frames_per_run_dir": 73.0,
+      "mandatory_in": [],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "iccck": {
+      "gt_frames_per_run_dir": 24.0,
+      "mandatory_in": [],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "ickcb": {
+      "gt_frames_per_run_dir": 329.0,
+      "mandatory_in": [
+        "cylinder"
+      ],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.013171225937183385,
+        "L45_amendment": 0.3900709219858156,
+        "L90": 0.17983789260385005,
+        "offline": 0.5729483282674772
+      }
+    },
+    "ickcc": {
+      "gt_frames_per_run_dir": 30.0,
+      "mandatory_in": [],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "iftgl": {
+      "gt_frames_per_run_dir": 24.0,
+      "mandatory_in": [],
+      "plates": [],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "iglft": {
+      "gt_frames_per_run_dir": 679.0,
+      "mandatory_in": [
+        "gear"
+      ],
+      "plates": [
+        "gear"
+      ],
+      "recall": {
+        "L0": 0.052037309769268535,
+        "L45_amendment": 0.24128620520373098,
+        "L90": 0.05743740795287187,
+        "offline": 0.35198821796759944
+      }
+    },
+    "igsft": {
+      "gt_frames_per_run_dir": 580.5,
+      "mandatory_in": [
+        "gear"
+      ],
+      "plates": [
+        "gear"
+      ],
+      "recall": {
+        "L0": 0.05483778351995406,
+        "L45_amendment": 0.08498420901521676,
+        "L90": 0.082687338501292,
+        "offline": 0.07895492391616422
+      }
+    },
+    "iibn": {
+      "gt_frames_per_run_dir": 452.0,
+      "mandatory_in": [
+        "general"
+      ],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.031342182890855455,
+        "L45_amendment": 0.0471976401179941,
+        "L90": 0.0014749262536873156,
+        "offline": 0.06563421828908554
+      }
+    },
+    "iirn": {
+      "gt_frames_per_run_dir": 350.0,
+      "mandatory_in": [
+        "general"
+      ],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.007619047619047619,
+        "L45_amendment": 0.02142857142857143,
+        "L90": 0.010952380952380953,
+        "offline": 0.07714285714285714
+      }
+    },
+    "iplft": {
+      "gt_frames_per_run_dir": 866.5,
+      "mandatory_in": [
+        "gear"
+      ],
+      "plates": [
+        "gear"
+      ],
+      "recall": {
+        "L0": 0.010194268128486247,
+        "L45_amendment": 0.058280438545874204,
+        "L90": 0.027120600115406807,
+        "offline": 0.12848624735526062
+      }
+    },
+    "ipsft": {
+      "gt_frames_per_run_dir": 770.5,
+      "mandatory_in": [
+        "gear"
+      ],
+      "plates": [
+        "gear"
+      ],
+      "recall": {
+        "L0": 0.05126541207008436,
+        "L45_amendment": 0.1581224313216526,
+        "L90": 0.09669046073977937,
+        "offline": 0.25849015790612156
+      }
+    },
+    "isbn": {
+      "gt_frames_per_run_dir": 652.0,
+      "mandatory_in": [
+        "general"
+      ],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.019427402862985686,
+        "L45_amendment": 0.03399795501022495,
+        "L90": 0.006390593047034765,
+        "offline": 0.09841513292433537
+      }
+    },
+    "ishc": {
+      "gt_frames_per_run_dir": 340.5,
+      "mandatory_in": [],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "iusn": {
+      "gt_frames_per_run_dir": 661.0,
+      "mandatory_in": [
+        "general"
+      ],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.005799293998991427,
+        "L45_amendment": 0.1059001512859304,
+        "L90": 0.002017145738779627,
+        "offline": 0.17397881996974282
+      }
+    },
+    "lck": {
+      "gt_frames_per_run_dir": 36.0,
+      "mandatory_in": [],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "llb": {
+      "gt_frames_per_run_dir": 163.0,
+      "mandatory_in": [],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.007157464212678937
+      }
+    },
+    "pbabs": {
+      "gt_frames_per_run_dir": 31.0,
+      "mandatory_in": [],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "pbsba": {
+      "gt_frames_per_run_dir": 37.0,
+      "mandatory_in": [],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "pbx": {
+      "gt_frames_per_run_dir": 48.5,
+      "mandatory_in": [],
+      "plates": [],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "pckbx": {
+      "gt_frames_per_run_dir": 303.5,
+      "mandatory_in": [],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.010982976386600769,
+        "L45_amendment": 0.11367380560131796,
+        "L90": 0.0642504118616145,
+        "offline": 0.3552992861065349
+      }
+    },
+    "pgwbx": {
+      "gt_frames_per_run_dir": 535.0,
+      "mandatory_in": [
+        "gear"
+      ],
+      "plates": [
+        "gear"
+      ],
+      "recall": {
+        "L0": 0.05327102803738318,
+        "L45_amendment": 0.21838006230529594,
+        "L90": 0.18691588785046728,
+        "offline": 0.32461059190031155
+      }
+    },
+    "pplgl": {
+      "gt_frames_per_run_dir": 22.0,
+      "mandatory_in": [],
+      "plates": [],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "rgw": {
+      "gt_frames_per_run_dir": 205.0,
+      "mandatory_in": [],
+      "plates": [
+        "gear"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.2813008130081301
+      }
+    },
+    "rhd": {
+      "gt_frames_per_run_dir": 236.5,
+      "mandatory_in": [],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.011980267794221282,
+        "L90": 0.0,
+        "offline": 0.05637773079633545
+      }
+    },
+    "rhq": {
+      "gt_frames_per_run_dir": 197.0,
+      "mandatory_in": [],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "rhw": {
+      "gt_frames_per_run_dir": 526.0,
+      "mandatory_in": [],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.18124207858048164,
+        "L45_amendment": 0.1108998732572877,
+        "L90": 0.15430925221799746,
+        "offline": 0.20532319391634982
+      }
+    },
+    "scbcc": {
+      "gt_frames_per_run_dir": 147.5,
+      "mandatory_in": [],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.0,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "scccb": {
+      "gt_frames_per_run_dir": 590.5,
+      "mandatory_in": [
+        "cylinder"
+      ],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.4518769404459498,
+        "L45_amendment": 0.794806661021733,
+        "L90": 0.6999717753316399,
+        "offline": 0.860005644933672
+      }
+    },
+    "sftg": {
+      "gt_frames_per_run_dir": 6299.5,
+      "mandatory_in": [
+        "gear"
+      ],
+      "plates": [
+        "gear"
+      ],
+      "recall": {
+        "L0": 0.28359393602666877,
+        "L45_amendment": 0.4260391036325634,
+        "L90": 0.3368785882477445,
+        "offline": 0.5016800275154113
+      }
+    },
+    "sntft": {
+      "gt_frames_per_run_dir": 4043.5,
+      "mandatory_in": [
+        "gear"
+      ],
+      "plates": [
+        "gear"
+      ],
+      "recall": {
+        "L0": 0.4048885041836693,
+        "L45_amendment": 0.5458142698157536,
+        "L90": 0.5010098512015169,
+        "offline": 0.5052965665059148
+      }
+    },
+    "sntn": {
+      "gt_frames_per_run_dir": 1746.0,
+      "mandatory_in": [
+        "general"
+      ],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.0660557464681176,
+        "L45_amendment": 0.2707140129820542,
+        "L90": 0.1595074455899198,
+        "offline": 0.36044291714394805
+      }
+    },
+    "sntsb": {
+      "gt_frames_per_run_dir": 2419.0,
+      "mandatory_in": [],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.31486840292131735,
+        "L45_amendment": 0.4661705939093289,
+        "L90": 0.5314868402921318,
+        "offline": 0.41601212622295713
+      }
+    },
+    "ssbnt": {
+      "gt_frames_per_run_dir": 530.5,
+      "mandatory_in": [],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.007540056550424128,
+        "L45_amendment": 0.0,
+        "L90": 0.0,
+        "offline": 0.0
+      }
+    },
+    "sshc": {
+      "gt_frames_per_run_dir": 3324.0,
+      "mandatory_in": [
+        "cylinder"
+      ],
+      "plates": [
+        "cylinder"
+      ],
+      "recall": {
+        "L0": 0.516245487364621,
+        "L45_amendment": 0.6980545527476936,
+        "L90": 0.7077316486161251,
+        "offline": 0.7255314881668672
+      }
+    },
+    "sspg": {
+      "gt_frames_per_run_dir": 3481.0,
+      "mandatory_in": [
+        "gear"
+      ],
+      "plates": [
+        "gear"
+      ],
+      "recall": {
+        "L0": 0.3955281049506847,
+        "L45_amendment": 0.4073542085607584,
+        "L90": 0.4131954419228191,
+        "offline": 0.4233936608254333
+      }
+    },
+    "sspn": {
+      "gt_frames_per_run_dir": 2698.5,
+      "mandatory_in": [
+        "general"
+      ],
+      "plates": [
+        "general"
+      ],
+      "recall": {
+        "L0": 0.39324315978012475,
+        "L45_amendment": 0.43462417392378483,
+        "L90": 0.3985547526403558,
+        "offline": 0.6049657216972392
+      }
+    }
+  }
+}

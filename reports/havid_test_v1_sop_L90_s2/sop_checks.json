@@ -1,0 +1,2277 @@
+{
+  "config": {
+    "fps": 15.0,
+    "granularity": "sheet",
+    "graphs_dir": "sop/ha-vid/sheet",
+    "min_segment_frames": 0,
+    "prediction_runs": {
+      "lh": "reports/havid_test_v1_tas_L90_lh_s2",
+      "rh": "reports/havid_test_v1_tas_L90_rh_s2"
+    },
+    "run": "fusion_causal",
+    "seed": 0,
+    "split": "test",
+    "val_recordings": 41
+  },
+  "graphs": {
+    "cylinder": {
+      "bounded": 10,
+      "edges": 5,
+      "mandatory": 5,
+      "nodes": 17
+    },
+    "gear": {
+      "bounded": 10,
+      "edges": 8,
+      "mandatory": 8,
+      "nodes": 11
+    },
+    "general": {
+      "bounded": 12,
+      "edges": 1,
+      "mandatory": 6,
+      "nodes": 13
+    }
+  },
+  "sources": {
+    "gt": {
+      "clean": {
+        "flagged_any": 26,
+        "flagged_by_kind": {
+          "duration": 23,
+          "omission": 4,
+          "order": 7
+        },
+        "per_recording": {
+          "S02A04I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "cylinder",
+            "steps": 18,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A05I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 13,
+            "unknown": [],
+            "violations": 1
+          },
+          "S02A06I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "general",
+            "steps": 9,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A10I21": {
+            "durations": 2,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 13,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A12I21": {
+            "durations": 3,
+            "omissions": [],
+            "plate": "general",
+            "steps": 11,
+            "unknown": [],
+            "violations": 1
+          },
+          "S02A16I22": {
+            "durations": 1,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 13,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A18I22": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "general",
+            "steps": 11,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A22I23": {
+            "durations": 3,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 13,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A24I23": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "general",
+            "steps": 11,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A28I31": {
+            "durations": 2,
+            "omissions": [],
+            "plate": "general",
+            "steps": 13,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A30I31": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 13,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A34I32": {
+            "durations": 4,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 13,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A35I32": {
+            "durations": 2,
+            "omissions": [],
+            "plate": "general",
+            "steps": 11,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A04I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "cylinder",
+            "steps": 16,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A05I01": {
+            "durations": 1,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 14,
+            "unknown": [],
+            "violations": 1
+          },
+          "S04A06I01": {
+            "durations": 1,
+            "omissions": [],
+            "plate": "general",
+            "steps": 10,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A10I24": {
+            "durations": 2,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 14,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A12I24": {
+            "durations": 3,
+            "omissions": [],
+            "plate": "general",
+            "steps": 11,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A16I25": {
+            "durations": 3,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 14,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A18I25": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "general",
+            "steps": 11,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A22I26": {
+            "durations": 2,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 16,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A24I26": {
+            "durations": 2,
+            "omissions": [],
+            "plate": "general",
+            "steps": 12,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A28I31": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 13,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A30I31": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "general",
+            "steps": 12,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A34I32": {
+            "durations": 1,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 14,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A36I32": {
+            "durations": 2,
+            "omissions": [],
+            "plate": "general",
+            "steps": 13,
+            "unknown": [],
+            "violations": 0
+          },
+          "S05A04I01": {
+            "durations": 1,
+            "omissions": [
+              "ickcb",
+              "scccb"
+            ],
+            "plate": "cylinder",
+            "steps": 22,
+            "unknown": [
+              "pbx"
+            ],
+            "violations": 12
+          },
+          "S05A05I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 17,
+            "unknown": [],
+            "violations": 0
+          },
+          "S05A06I01": {
+            "durations": 1,
+            "omissions": [],
+            "plate": "general",
+            "steps": 7,
+            "unknown": [],
+            "violations": 0
+          },
+          "S19A04I01": {
+            "durations": 2,
+            "omissions": [],
+            "plate": "general",
+            "steps": 11,
+            "unknown": [],
+            "violations": 0
+          },
+          "S19A05I01": {
+            "durations": 1,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 11,
+            "unknown": [],
+            "violations": 0
+          },
+          "S19A06I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "cylinder",
+            "steps": 16,
+            "unknown": [],
+            "violations": 0
+          },
+          "S22A04I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 11,
+            "unknown": [],
+            "violations": 0
+          },
+          "S22A05I01": {
+            "durations": 1,
+            "omissions": [
+              "ickcb"
+            ],
+            "plate": "cylinder",
+            "steps": 11,
+            "unknown": [],
+            "violations": 5
+          },
+          "S22A06I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "general",
+            "steps": 11,
+            "unknown": [],
+            "violations": 0
+          },
+          "S24A04I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 13,
+            "unknown": [],
+            "violations": 0
+          },
+          "S24A05I01": {
+            "durations": 0,
+            "omissions": [
+              "ickcb"
+            ],
+            "plate": "cylinder",
+            "steps": 15,
+            "unknown": [],
+            "violations": 8
+          },
+          "S24A06I01": {
+            "durations": 0,
+            "omissions": [],
+            "plate": "general",
+            "steps": 10,
+            "unknown": [],
+            "violations": 0
+          },
+          "S26A04I01": {
+            "durations": 0,
+            "omissions": [
+              "iglft"
+            ],
+            "plate": "gear",
+            "steps": 12,
+            "unknown": [
+              "iftgl",
+              "pplgl"
+            ],
+            "violations": 3
+          },
+          "S26A05I01": {
+            "durations": 1,
+            "omissions": [],
+            "plate": "cylinder",
+            "steps": 22,
+            "unknown": [],
+            "violations": 0
+          },
+          "S26A06I01": {
+            "durations": 5,
+            "omissions": [],
+            "plate": "general",
+            "steps": 10,
+            "unknown": [],
+            "violations": 0
+          }
+        },
+        "steps": 531
+      },
+      "recordings": 41,
+      "seed": 0,
+      "synthetic": {
+        "duration": {
+          "applicable": 41,
+          "clean_flagged": 23,
+          "clean_steps_flagged": 46,
+          "detected": 41,
+          "false_alarm_ci95": [
+            0.41040265151757305,
+            0.7011009522789017
+          ],
+          "false_alarm_rate": 0.5609756097560976,
+          "precision": 0.640625,
+          "recall": 1.0,
+          "recall_ci95": [
+            0.9143295511310926,
+            1.0
+          ],
+          "recordings": [
+            {
+              "detected": true,
+              "recording": "S02A04I01",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S02A05I01",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S02A06I01",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S02A10I21",
+              "target": 8
+            },
+            {
+              "detected": true,
+              "recording": "S02A12I21",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S02A16I22",
+              "target": 9
+            },
+            {
+              "detected": true,
+              "recording": "S02A18I22",
+              "target": 9
+            },
+            {
+              "detected": true,
+              "recording": "S02A22I23",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S02A24I23",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S02A28I31",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S02A30I31",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S02A34I32",
+              "target": 8
+            },
+            {
+              "detected": true,
+              "recording": "S02A35I32",
+              "target": 8
+            },
+            {
+              "detected": true,
+              "recording": "S04A04I01",
+              "target": 0
+            },
+            {
+              "detected": true,
+              "recording": "S04A05I01",
+              "target": 11
+            },
+            {
+              "detected": true,
+              "recording": "S04A06I01",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S04A10I24",
+              "target": 11
+            },
+            {
+              "detected": true,
+              "recording": "S04A12I24",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S04A16I25",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S04A18I25",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S04A22I26",
+              "target": 10
+            },
+            {
+              "detected": true,
+              "recording": "S04A24I26",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S04A28I31",
+              "target": 11
+            },
+            {
+              "detected": true,
+              "recording": "S04A30I31",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S04A34I32",
+              "target": 12
+            },
+            {
+              "detected": true,
+              "recording": "S04A36I32",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S05A04I01",
+              "target": 16
+            },
+            {
+              "detected": true,
+              "recording": "S05A05I01",
+              "target": 9
+            },
+            {
+              "detected": true,
+              "recording": "S05A06I01",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S19A04I01",
+              "target": 0
+            },
+            {
+              "detected": true,
+              "recording": "S19A05I01",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S19A06I01",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S22A04I01",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S22A05I01",
+              "target": 8
+            },
+            {
+              "detected": true,
+              "recording": "S22A06I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S24A04I01",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S24A05I01",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S24A06I01",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S26A04I01",
+              "target": 11
+            },
+            {
+              "detected": true,
+              "recording": "S26A05I01",
+              "target": 18
+            },
+            {
+              "detected": true,
+              "recording": "S26A06I01",
+              "target": 5
+            }
+          ],
+          "step_false_alarm_ci95": [
+            0.0655743450030659,
+            0.11362188804986041
+          ],
+          "step_false_alarm_rate": 0.08662900188323917
+        },
+        "omission": {
+          "applicable": 41,
+          "clean_flagged": 4,
+          "detected": 41,
+          "false_alarm_ci95": [
+            0.0385964597529614,
+            0.22547975519030555
+          ],
+          "false_alarm_rate": 0.0975609756097561,
+          "precision": 0.9111111111111111,
+          "recall": 1.0,
+          "recall_ci95": [
+            0.9143295511310926,
+            1.0
+          ],
+          "recordings": [
+            {
+              "detected": true,
+              "recording": "S02A04I01",
+              "target": "scccb"
+            },
+            {
+              "detected": true,
+              "recording": "S02A05I01",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S02A06I01",
+              "target": "isbn"
+            },
+            {
+              "detected": true,
+              "recording": "S02A10I21",
+              "target": "iglft"
+            },
+            {
+              "detected": true,
+              "recording": "S02A12I21",
+              "target": "sntn"
+            },
+            {
+              "detected": true,
+              "recording": "S02A16I22",
+              "target": "pgwbx"
+            },
+            {
+              "detected": true,
+              "recording": "S02A18I22",
+              "target": "iirn"
+            },
+            {
+              "detected": true,
+              "recording": "S02A22I23",
+              "target": "pgwbx"
+            },
+            {
+              "detected": true,
+              "recording": "S02A24I23",
+              "target": "sntn"
+            },
+            {
+              "detected": true,
+              "recording": "S02A28I31",
+              "target": "iusn"
+            },
+            {
+              "detected": true,
+              "recording": "S02A30I31",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S02A34I32",
+              "target": "sspg"
+            },
+            {
+              "detected": true,
+              "recording": "S02A35I32",
+              "target": "iusn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A04I01",
+              "target": "ibacb"
+            },
+            {
+              "detected": true,
+              "recording": "S04A05I01",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S04A06I01",
+              "target": "sspn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A10I24",
+              "target": "iglft"
+            },
+            {
+              "detected": true,
+              "recording": "S04A12I24",
+              "target": "iusn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A16I25",
+              "target": "sspg"
+            },
+            {
+              "detected": true,
+              "recording": "S04A18I25",
+              "target": "isbn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A22I26",
+              "target": "pgwbx"
+            },
+            {
+              "detected": true,
+              "recording": "S04A24I26",
+              "target": "iusn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A28I31",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S04A30I31",
+              "target": "sntn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A34I32",
+              "target": "sspg"
+            },
+            {
+              "detected": true,
+              "recording": "S04A36I32",
+              "target": "sntn"
+            },
+            {
+              "detected": true,
+              "recording": "S05A04I01",
+              "target": "ibacb"
+            },
+            {
+              "detected": true,
+              "recording": "S05A05I01",
+              "target": "iglft"
+            },
+            {
+              "detected": true,
+              "recording": "S05A06I01",
+              "target": "iirn"
+            },
+            {
+              "detected": true,
+              "recording": "S19A04I01",
+              "target": "sspn"
+            },
+            {
+              "detected": true,
+              "recording": "S19A05I01",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S19A06I01",
+              "target": "ibacb"
+            },
+            {
+              "detected": true,
+              "recording": "S22A04I01",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S22A05I01",
+              "target": "scccb"
+            },
+            {
+              "detected": true,
+              "recording": "S22A06I01",
+              "target": "sntn"
+            },
+            {
+              "detected": true,
+              "recording": "S24A04I01",
+              "target": "ipsft"
+            },
+            {
+              "detected": true,
+              "recording": "S24A05I01",
+              "target": "scccb"
+            },
+            {
+              "detected": true,
+              "recording": "S24A06I01",
+              "target": "iibn"
+            },
+            {
+              "detected": true,
+              "recording": "S26A04I01",
+              "target": "pgwbx"
+            },
+            {
+              "detected": true,
+              "recording": "S26A05I01",
+              "target": "scccb"
+            },
+            {
+              "detected": true,
+              "recording": "S26A06I01",
+              "target": "iusn"
+            }
+          ]
+        },
+        "order": {
+          "applicable": 37,
+          "clean_flagged": 7,
+          "clean_steps_flagged": 31,
+          "detected": 37,
+          "false_alarm_ci95": [
+            0.08525143995273898,
+            0.31262909954629764
+          ],
+          "false_alarm_rate": 0.17073170731707318,
+          "precision": 0.8409090909090909,
+          "recall": 1.0,
+          "recall_ci95": [
+            0.9059390425448564,
+            1.0
+          ],
+          "recordings": [
+            {
+              "detected": true,
+              "recording": "S02A04I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S02A05I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S02A10I21",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S02A16I22",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S02A18I22",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S02A22I23",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S02A24I23",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S02A28I31",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S02A30I31",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S02A34I32",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S02A35I32",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S04A04I01",
+              "target": 0
+            },
+            {
+              "detected": true,
+              "recording": "S04A05I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S04A06I01",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S04A10I24",
+              "target": 0
+            },
+            {
+              "detected": true,
+              "recording": "S04A12I24",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S04A16I25",
+              "target": 9
+            },
+            {
+              "detected": true,
+              "recording": "S04A18I25",
+              "target": 8
+            },
+            {
+              "detected": true,
+              "recording": "S04A22I26",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S04A24I26",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S04A28I31",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S04A30I31",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S04A34I32",
+              "target": 8
+            },
+            {
+              "detected": true,
+              "recording": "S04A36I32",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S05A04I01",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S05A05I01",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S05A06I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S19A05I01",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S19A06I01",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S22A04I01",
+              "target": 0
+            },
+            {
+              "detected": true,
+              "recording": "S22A05I01",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S22A06I01",
+              "target": 9
+            },
+            {
+              "detected": true,
+              "recording": "S24A04I01",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S24A05I01",
+              "target": 10
+            },
+            {
+              "detected": true,
+              "recording": "S24A06I01",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S26A04I01",
+              "target": 0
+            },
+            {
+              "detected": true,
+              "recording": "S26A05I01",
+              "target": 3
+            }
+          ],
+          "step_false_alarm_ci95": [
+            0.041430069330896956,
+            0.08167479012655735
+          ],
+          "step_false_alarm_rate": 0.0583804143126177
+        }
+      }
+    },
+    "pred": {
+      "clean": {
+        "flagged_any": 41,
+        "flagged_by_kind": {
+          "duration": 41,
+          "omission": 37,
+          "order": 30
+        },
+        "per_recording": {
+          "S02A04I01": {
+            "durations": 17,
+            "omissions": [
+              "ibacb"
+            ],
+            "plate": "cylinder",
+            "steps": 32,
+            "unknown": [],
+            "violations": 4
+          },
+          "S02A05I01": {
+            "durations": 7,
+            "omissions": [
+              "iglft",
+              "igsft",
+              "sntft"
+            ],
+            "plate": "gear",
+            "steps": 15,
+            "unknown": [
+              "sntsb",
+              "sspn"
+            ],
+            "violations": 0
+          },
+          "S02A06I01": {
+            "durations": 6,
+            "omissions": [
+              "isbn"
+            ],
+            "plate": "general",
+            "steps": 11,
+            "unknown": [],
+            "violations": 2
+          },
+          "S02A10I21": {
+            "durations": 19,
+            "omissions": [
+              "ipsft"
+            ],
+            "plate": "gear",
+            "steps": 37,
+            "unknown": [],
+            "violations": 9
+          },
+          "S02A12I21": {
+            "durations": 10,
+            "omissions": [
+              "iirn",
+              "isbn"
+            ],
+            "plate": "general",
+            "steps": 24,
+            "unknown": [],
+            "violations": 8
+          },
+          "S02A16I22": {
+            "durations": 3,
+            "omissions": [
+              "iglft",
+              "iplft",
+              "ipsft",
+              "pgwbx"
+            ],
+            "plate": "gear",
+            "steps": 16,
+            "unknown": [],
+            "violations": 6
+          },
+          "S02A18I22": {
+            "durations": 12,
+            "omissions": [
+              "isbn"
+            ],
+            "plate": "general",
+            "steps": 18,
+            "unknown": [],
+            "violations": 2
+          },
+          "S02A22I23": {
+            "durations": 20,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 42,
+            "unknown": [],
+            "violations": 0
+          },
+          "S02A24I23": {
+            "durations": 5,
+            "omissions": [
+              "iirn",
+              "isbn",
+              "iusn"
+            ],
+            "plate": "general",
+            "steps": 12,
+            "unknown": [],
+            "violations": 2
+          },
+          "S02A28I31": {
+            "durations": 7,
+            "omissions": [
+              "iibn",
+              "iirn",
+              "isbn",
+              "iusn"
+            ],
+            "plate": "general",
+            "steps": 23,
+            "unknown": [
+              "igsft",
+              "iplft",
+              "sftg",
+              "sspg"
+            ],
+            "violations": 3
+          },
+          "S02A30I31": {
+            "durations": 6,
+            "omissions": [
+              "iglft",
+              "igsft",
+              "ipsft",
+              "pgwbx",
+              "sntft"
+            ],
+            "plate": "gear",
+            "steps": 19,
+            "unknown": [
+              "iibn",
+              "isbn",
+              "sntsb",
+              "sspn"
+            ],
+            "violations": 0
+          },
+          "S02A34I32": {
+            "durations": 7,
+            "omissions": [
+              "igsft"
+            ],
+            "plate": "gear",
+            "steps": 15,
+            "unknown": [],
+            "violations": 2
+          },
+          "S02A35I32": {
+            "durations": 1,
+            "omissions": [
+              "iibn",
+              "iirn",
+              "isbn",
+              "sntn",
+              "sspn"
+            ],
+            "plate": "general",
+            "steps": 2,
+            "unknown": [
+              "sftg"
+            ],
+            "violations": 0
+          },
+          "S04A04I01": {
+            "durations": 7,
+            "omissions": [
+              "ibacb"
+            ],
+            "plate": "cylinder",
+            "steps": 19,
+            "unknown": [],
+            "violations": 2
+          },
+          "S04A05I01": {
+            "durations": 8,
+            "omissions": [
+              "iglft"
+            ],
+            "plate": "gear",
+            "steps": 25,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A06I01": {
+            "durations": 5,
+            "omissions": [
+              "sntn",
+              "sspn"
+            ],
+            "plate": "general",
+            "steps": 7,
+            "unknown": [],
+            "violations": 0
+          },
+          "S04A10I24": {
+            "durations": 23,
+            "omissions": [
+              "iglft",
+              "iplft"
+            ],
+            "plate": "gear",
+            "steps": 55,
+            "unknown": [
+              "rhw",
+              "sntn",
+              "sntsb"
+            ],
+            "violations": 10
+          },
+          "S04A12I24": {
+            "durations": 12,
+            "omissions": [
+              "iibn",
+              "iirn",
+              "isbn",
+              "iusn"
+            ],
+            "plate": "general",
+            "steps": 23,
+            "unknown": [],
+            "violations": 9
+          },
+          "S04A16I25": {
+            "durations": 13,
+            "omissions": [
+              "iglft",
+              "igsft",
+              "ipsft"
+            ],
+            "plate": "gear",
+            "steps": 35,
+            "unknown": [],
+            "violations": 11
+          },
+          "S04A18I25": {
+            "durations": 5,
+            "omissions": [
+              "iibn",
+              "isbn"
+            ],
+            "plate": "general",
+            "steps": 9,
+            "unknown": [],
+            "violations": 3
+          },
+          "S04A22I26": {
+            "durations": 16,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 40,
+            "unknown": [
+              "ibscb",
+              "ickcb",
+              "scccb",
+              "sntn",
+              "sntsb",
+              "sspn"
+            ],
+            "violations": 3
+          },
+          "S04A24I26": {
+            "durations": 12,
+            "omissions": [
+              "iibn",
+              "iirn",
+              "iusn"
+            ],
+            "plate": "general",
+            "steps": 23,
+            "unknown": [],
+            "violations": 2
+          },
+          "S04A28I31": {
+            "durations": 6,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 18,
+            "unknown": [
+              "sspn"
+            ],
+            "violations": 0
+          },
+          "S04A30I31": {
+            "durations": 2,
+            "omissions": [
+              "iibn",
+              "isbn",
+              "iusn",
+              "sntn",
+              "sspn"
+            ],
+            "plate": "general",
+            "steps": 10,
+            "unknown": [
+              "pckbx",
+              "sshc"
+            ],
+            "violations": 2
+          },
+          "S04A34I32": {
+            "durations": 6,
+            "omissions": [
+              "iglft",
+              "igsft",
+              "ipsft",
+              "sntft"
+            ],
+            "plate": "gear",
+            "steps": 15,
+            "unknown": [
+              "ibscb",
+              "sntsb"
+            ],
+            "violations": 0
+          },
+          "S04A36I32": {
+            "durations": 9,
+            "omissions": [
+              "iibn",
+              "iirn",
+              "isbn"
+            ],
+            "plate": "general",
+            "steps": 15,
+            "unknown": [
+              "ickcb"
+            ],
+            "violations": 5
+          },
+          "S05A04I01": {
+            "durations": 16,
+            "omissions": [
+              "ibacb"
+            ],
+            "plate": "cylinder",
+            "steps": 34,
+            "unknown": [
+              "pgwbx"
+            ],
+            "violations": 4
+          },
+          "S05A05I01": {
+            "durations": 9,
+            "omissions": [
+              "iglft"
+            ],
+            "plate": "gear",
+            "steps": 20,
+            "unknown": [],
+            "violations": 0
+          },
+          "S05A06I01": {
+            "durations": 5,
+            "omissions": [
+              "iibn",
+              "iusn"
+            ],
+            "plate": "general",
+            "steps": 16,
+            "unknown": [
+              "pgwbx",
+              "scccb"
+            ],
+            "violations": 1
+          },
+          "S19A04I01": {
+            "durations": 4,
+            "omissions": [
+              "iibn",
+              "iirn",
+              "isbn",
+              "iusn"
+            ],
+            "plate": "general",
+            "steps": 14,
+            "unknown": [
+              "sftg",
+              "sshc"
+            ],
+            "violations": 4
+          },
+          "S19A05I01": {
+            "durations": 8,
+            "omissions": [
+              "iglft",
+              "ipsft"
+            ],
+            "plate": "gear",
+            "steps": 23,
+            "unknown": [],
+            "violations": 2
+          },
+          "S19A06I01": {
+            "durations": 6,
+            "omissions": [
+              "ibacb"
+            ],
+            "plate": "cylinder",
+            "steps": 18,
+            "unknown": [],
+            "violations": 1
+          },
+          "S22A04I01": {
+            "durations": 23,
+            "omissions": [],
+            "plate": "gear",
+            "steps": 30,
+            "unknown": [],
+            "violations": 1
+          },
+          "S22A05I01": {
+            "durations": 5,
+            "omissions": [
+              "ibacb"
+            ],
+            "plate": "cylinder",
+            "steps": 12,
+            "unknown": [],
+            "violations": 3
+          },
+          "S22A06I01": {
+            "durations": 4,
+            "omissions": [
+              "sspn"
+            ],
+            "plate": "general",
+            "steps": 10,
+            "unknown": [],
+            "violations": 0
+          },
+          "S24A04I01": {
+            "durations": 7,
+            "omissions": [
+              "iglft",
+              "iplft"
+            ],
+            "plate": "gear",
+            "steps": 18,
+            "unknown": [],
+            "violations": 3
+          },
+          "S24A05I01": {
+            "durations": 3,
+            "omissions": [
+              "ibacb",
+              "ickcb"
+            ],
+            "plate": "cylinder",
+            "steps": 16,
+            "unknown": [
+              "sftg",
+              "sspg"
+            ],
+            "violations": 5
+          },
+          "S24A06I01": {
+            "durations": 5,
+            "omissions": [
+              "iibn",
+              "iirn"
+            ],
+            "plate": "general",
+            "steps": 10,
+            "unknown": [],
+            "violations": 0
+          },
+          "S26A04I01": {
+            "durations": 2,
+            "omissions": [
+              "iglft",
+              "igsft",
+              "iplft",
+              "ipsft"
+            ],
+            "plate": "gear",
+            "steps": 16,
+            "unknown": [
+              "ibscb",
+              "ickcb",
+              "scccb"
+            ],
+            "violations": 5
+          },
+          "S26A05I01": {
+            "durations": 15,
+            "omissions": [
+              "ibacb"
+            ],
+            "plate": "cylinder",
+            "steps": 35,
+            "unknown": [],
+            "violations": 5
+          },
+          "S26A06I01": {
+            "durations": 7,
+            "omissions": [
+              "iirn",
+              "sspn"
+            ],
+            "plate": "general",
+            "steps": 13,
+            "unknown": [],
+            "violations": 2
+          }
+        },
+        "steps": 845
+      },
+      "recordings": 41,
+      "seed": 0,
+      "synthetic": {
+        "duration": {
+          "applicable": 41,
+          "clean_flagged": 41,
+          "clean_steps_flagged": 363,
+          "detected": 41,
+          "false_alarm_ci95": [
+            0.9143295511310926,
+            1.0
+          ],
+          "false_alarm_rate": 1.0,
+          "precision": 0.5,
+          "recall": 1.0,
+          "recall_ci95": [
+            0.9143295511310926,
+            1.0
+          ],
+          "recordings": [
+            {
+              "detected": true,
+              "recording": "S02A04I01",
+              "target": 26
+            },
+            {
+              "detected": true,
+              "recording": "S02A05I01",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S02A06I01",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S02A10I21",
+              "target": 30
+            },
+            {
+              "detected": true,
+              "recording": "S02A12I21",
+              "target": 18
+            },
+            {
+              "detected": true,
+              "recording": "S02A16I22",
+              "target": 9
+            },
+            {
+              "detected": true,
+              "recording": "S02A18I22",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S02A22I23",
+              "target": 34
+            },
+            {
+              "detected": true,
+              "recording": "S02A24I23",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S02A28I31",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S02A30I31",
+              "target": 10
+            },
+            {
+              "detected": true,
+              "recording": "S02A34I32",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S02A35I32",
+              "target": 0
+            },
+            {
+              "detected": true,
+              "recording": "S04A04I01",
+              "target": 14
+            },
+            {
+              "detected": true,
+              "recording": "S04A05I01",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S04A06I01",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S04A10I24",
+              "target": 48
+            },
+            {
+              "detected": true,
+              "recording": "S04A12I24",
+              "target": 15
+            },
+            {
+              "detected": true,
+              "recording": "S04A16I25",
+              "target": 15
+            },
+            {
+              "detected": true,
+              "recording": "S04A18I25",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S04A22I26",
+              "target": 27
+            },
+            {
+              "detected": true,
+              "recording": "S04A24I26",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S04A28I31",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S04A30I31",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S04A34I32",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S04A36I32",
+              "target": 9
+            },
+            {
+              "detected": true,
+              "recording": "S05A04I01",
+              "target": 8
+            },
+            {
+              "detected": true,
+              "recording": "S05A05I01",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S05A06I01",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S19A04I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S19A05I01",
+              "target": 9
+            },
+            {
+              "detected": true,
+              "recording": "S19A06I01",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S22A04I01",
+              "target": 21
+            },
+            {
+              "detected": true,
+              "recording": "S22A05I01",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S22A06I01",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S24A04I01",
+              "target": 17
+            },
+            {
+              "detected": true,
+              "recording": "S24A05I01",
+              "target": 12
+            },
+            {
+              "detected": true,
+              "recording": "S24A06I01",
+              "target": 9
+            },
+            {
+              "detected": true,
+              "recording": "S26A04I01",
+              "target": 14
+            },
+            {
+              "detected": true,
+              "recording": "S26A05I01",
+              "target": 5
+            },
+            {
+              "detected": true,
+              "recording": "S26A06I01",
+              "target": 1
+            }
+          ],
+          "step_false_alarm_ci95": [
+            0.3966015187229476,
+            0.46320742560777317
+          ],
+          "step_false_alarm_rate": 0.42958579881656805
+        },
+        "omission": {
+          "applicable": 36,
+          "clean_flagged": 37,
+          "detected": 36,
+          "false_alarm_ci95": [
+            0.7745202448096945,
+            0.9614035402470386
+          ],
+          "false_alarm_rate": 0.9024390243902439,
+          "precision": 0.4931506849315068,
+          "recall": 1.0,
+          "recall_ci95": [
+            0.9035781695514236,
+            1.0
+          ],
+          "recordings": [
+            {
+              "detected": true,
+              "recording": "S02A05I01",
+              "target": "pgwbx"
+            },
+            {
+              "detected": true,
+              "recording": "S02A06I01",
+              "target": "iusn"
+            },
+            {
+              "detected": true,
+              "recording": "S02A10I21",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S02A12I21",
+              "target": "iusn"
+            },
+            {
+              "detected": true,
+              "recording": "S02A16I22",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S02A18I22",
+              "target": "iirn"
+            },
+            {
+              "detected": true,
+              "recording": "S02A22I23",
+              "target": "iglft"
+            },
+            {
+              "detected": true,
+              "recording": "S02A24I23",
+              "target": "iibn"
+            },
+            {
+              "detected": true,
+              "recording": "S02A30I31",
+              "target": "sspg"
+            },
+            {
+              "detected": true,
+              "recording": "S02A34I32",
+              "target": "ipsft"
+            },
+            {
+              "detected": true,
+              "recording": "S02A35I32",
+              "target": "iusn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A04I01",
+              "target": "ickcb"
+            },
+            {
+              "detected": true,
+              "recording": "S04A05I01",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S04A06I01",
+              "target": "iirn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A10I24",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S04A18I25",
+              "target": "sspn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A22I26",
+              "target": "pgwbx"
+            },
+            {
+              "detected": true,
+              "recording": "S04A24I26",
+              "target": "isbn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A28I31",
+              "target": "ipsft"
+            },
+            {
+              "detected": true,
+              "recording": "S04A30I31",
+              "target": "iirn"
+            },
+            {
+              "detected": true,
+              "recording": "S04A34I32",
+              "target": "iplft"
+            },
+            {
+              "detected": true,
+              "recording": "S04A36I32",
+              "target": "iusn"
+            },
+            {
+              "detected": true,
+              "recording": "S05A05I01",
+              "target": "sspg"
+            },
+            {
+              "detected": true,
+              "recording": "S05A06I01",
+              "target": "iirn"
+            },
+            {
+              "detected": true,
+              "recording": "S19A04I01",
+              "target": "sntn"
+            },
+            {
+              "detected": true,
+              "recording": "S19A05I01",
+              "target": "pgwbx"
+            },
+            {
+              "detected": true,
+              "recording": "S19A06I01",
+              "target": "ibscb"
+            },
+            {
+              "detected": true,
+              "recording": "S22A04I01",
+              "target": "ipsft"
+            },
+            {
+              "detected": true,
+              "recording": "S22A05I01",
+              "target": "ickcb"
+            },
+            {
+              "detected": true,
+              "recording": "S22A06I01",
+              "target": "isbn"
+            },
+            {
+              "detected": true,
+              "recording": "S24A04I01",
+              "target": "igsft"
+            },
+            {
+              "detected": true,
+              "recording": "S24A05I01",
+              "target": "scccb"
+            },
+            {
+              "detected": true,
+              "recording": "S24A06I01",
+              "target": "isbn"
+            },
+            {
+              "detected": true,
+              "recording": "S26A04I01",
+              "target": "sspg"
+            },
+            {
+              "detected": true,
+              "recording": "S26A05I01",
+              "target": "ickcb"
+            },
+            {
+              "detected": true,
+              "recording": "S26A06I01",
+              "target": "sntn"
+            }
+          ]
+        },
+        "order": {
+          "applicable": 27,
+          "clean_flagged": 30,
+          "clean_steps_flagged": 121,
+          "detected": 27,
+          "false_alarm_ci95": [
+            0.5806617472399707,
+            0.8430519471866331
+          ],
+          "false_alarm_rate": 0.7317073170731707,
+          "precision": 0.47368421052631576,
+          "recall": 1.0,
+          "recall_ci95": [
+            0.8754409628553641,
+            1.0
+          ],
+          "recordings": [
+            {
+              "detected": true,
+              "recording": "S02A04I01",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S02A10I21",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S02A16I22",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S02A22I23",
+              "target": 0
+            },
+            {
+              "detected": true,
+              "recording": "S02A34I32",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S04A04I01",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S04A05I01",
+              "target": 7
+            },
+            {
+              "detected": true,
+              "recording": "S04A06I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S04A10I24",
+              "target": 36
+            },
+            {
+              "detected": true,
+              "recording": "S04A16I25",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S04A22I26",
+              "target": 6
+            },
+            {
+              "detected": true,
+              "recording": "S04A24I26",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S04A28I31",
+              "target": 12
+            },
+            {
+              "detected": true,
+              "recording": "S05A04I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S05A05I01",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S05A06I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S19A05I01",
+              "target": 16
+            },
+            {
+              "detected": true,
+              "recording": "S19A06I01",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S22A04I01",
+              "target": 2
+            },
+            {
+              "detected": true,
+              "recording": "S22A05I01",
+              "target": 3
+            },
+            {
+              "detected": true,
+              "recording": "S22A06I01",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S24A04I01",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S24A05I01",
+              "target": 14
+            },
+            {
+              "detected": true,
+              "recording": "S24A06I01",
+              "target": 4
+            },
+            {
+              "detected": true,
+              "recording": "S26A04I01",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S26A05I01",
+              "target": 1
+            },
+            {
+              "detected": true,
+              "recording": "S26A06I01",
+              "target": 6
+            }
+          ],
+          "step_false_alarm_ci95": [
+            0.1211908469233056,
+            0.16842926594580918
+          ],
+          "step_false_alarm_rate": 0.14319526627218934
+        }
+      }
+    }
+  },
+  "wrong": {
+    "detected": 0,
+    "false_pred_segments": 0,
+    "gt_segments": 16,
+    "per_recording": {
+      "S02A12I21": {
+        "detected": 0,
+        "false_pred": 0,
+        "gt": 1,
+        "pred": 0
+      },
+      "S02A35I32": {
+        "detected": 0,
+        "false_pred": 0,
+        "gt": 1,
+        "pred": 0
+      },
+      "S04A22I26": {
+        "detected": 0,
+        "false_pred": 0,
+        "gt": 2,
+        "pred": 0
+      },
+      "S04A28I31": {
+        "detected": 0,
+        "false_pred": 0,
+        "gt": 2,
+        "pred": 0
+      },
+      "S22A04I01": {
+        "detected": 0,
+        "false_pred": 0,
+        "gt": 7,
+        "pred": 0
+      },
+      "S22A05I01": {
+        "detected": 0,
+        "false_pred": 0,
+        "gt": 1,
+        "pred": 0
+      },
+      "S26A05I01": {
+        "detected": 0,
+        "false_pred": 0,
+        "gt": 2,
+        "pred": 0
+      }
+    },
+    "precision": null,
+    "precision_ci95": [
+      0.0,
+      0.0
+    ],
+    "pred_segments": 0,
+    "recall": 0.0,
+    "recall_ci95": [
+      0.0,
+      0.19361341827271994
+    ],
+    "recording_level": {
+      "gt": {
+        "recordings_with_wrong": [
+          "S02A12I21",
+          "S02A35I32",
+          "S04A22I26",
+          "S04A28I31",
+          "S22A04I01",
+          "S22A05I01",
+          "S26A05I01"
+        ],
+        "with_wrong": {
+          "any": 5,
+          "duration": 5,
+          "omission": 1,
+          "order": 2,
+          "recordings": 7
+        },
+        "without_wrong": {
+          "any": 21,
+          "duration": 18,
+          "omission": 3,
+          "order": 5,
+          "recordings": 34
+        }
+      },
+      "pred": {
+        "recordings_with_wrong": [
+          "S02A12I21",
+          "S02A35I32",
+          "S04A22I26",
+          "S04A28I31",
+          "S22A04I01",
+          "S22A05I01",
+          "S26A05I01"
+        ],
+        "with_wrong": {
+          "any": 7,
+          "duration": 7,
+          "omission": 4,
+          "order": 5,
+          "recordings": 7
+        },
+        "without_wrong": {
+          "any": 34,
+          "duration": 34,
+          "omission": 33,
+          "order": 25,
+          "recordings": 34
+        }
+      }
+    },
+    "underpowered": true
+  }
+}
