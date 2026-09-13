@@ -336,6 +336,11 @@ def test_predict_reproduces_the_training_run_from_its_checkpoints(tmp_path: Path
     assert set(result["metrics"]["runs"]) == set(trained["metrics"]["runs"])
     assert len(result["config"]["split_sha256"]) == 64
     assert (out / "tables.md").read_text(encoding="utf-8").startswith("Development result on `val`")
+    from sop_monitor.havid_predict import compare_runs
+
+    gate = compare_runs([(tmp_path / "run", out)])
+    assert gate["all_identical"] is True
+    assert gate["pairs"][0]["metric_deltas"]["fusion_causal"]["f1@10"] == 0.0
     with pytest.raises(FileExistsError):
         predict_havid_tas(
             checkpoints,

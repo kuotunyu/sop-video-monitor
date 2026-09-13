@@ -142,3 +142,48 @@ def predict_havid_tas(
     )
     (out_dir / "tables.md").write_text(tables, encoding="utf-8", newline="\n")
     return {"config": config, "metrics": metrics, "tables": tables}
+
+
+def compare_runs(pairs: list[tuple[Path, Path]], split: str = "val") -> dict[str, object]:
+    """Reproducibility gate: frame agreement per prediction column and metric differences.
+
+    Each pair is ``(committed run, retrained run)``; both must predict the same frames.
+    """
+    from sop_monitor.baseline import load_metrics, read_predictions
+
+    out: dict[str, object] = {"split": split, "pairs": []}
+    identical = True
+    for committed, retrained in pairs:
+        a = read_predictions(committed / f"predictions_{split}.csv")
+        b = read_predictions(retrained / f"predictions_{split}.csv")
+        if [(r.video_id, r.frame, r.gt) for r in a] != [(r.video_id, r.frame, r.gt) for r in b]:
+            raise ValueError(f"{committed} and {retrained} cover different frames")
+        columns = sorted(set(a[0].preds) & set(b[0].preds))
+        agreement = {
+            column: sum(x.preds[column] == y.preds[column] for x, y in zip(a, b, strict=True))
+            / len(a)
+            for column in columns
+        }
+        metrics_a = load_metrics(committed)["runs"]
+        metrics_b = load_metrics(retrained)["runs"]
+        deltas = {
+            column: {
+                key: metrics_b[column][key]["point"] - metrics_a[column][key]["point"]
+                for key in ("mof", "edit", "f1@10", "f1@25", "f1@50")
+            }
+            for column in columns
+            if column in metrics_a and column in metrics_b
+        }
+        same = all(value == 1.0 for value in agreement.values())
+        identical = identical and same
+        out["pairs"].append(  # type: ignore[union-attr]
+            {
+                "committed": committed.as_posix(),
+                "retrained": retrained.as_posix(),
+                "identical": same,
+                "frame_agreement": agreement,
+                "metric_deltas": deltas,
+            }
+        )
+    out["all_identical"] = identical
+    return out

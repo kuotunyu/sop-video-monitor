@@ -488,6 +488,33 @@ def predict_havid_tas_cmd(
     typer.echo(f"-> {out}")
 
 
+@app.command("compare-runs")
+def compare_runs_cmd(
+    pair: Annotated[list[str], typer.Option(help="COMMITTED_RUN=RETRAINED_RUN (repeatable)")],
+    out: Annotated[Path, typer.Option(help="gate.json to write")],
+    split: Annotated[str, typer.Option(help="Prediction table to compare")] = "val",
+) -> None:
+    """Reproducibility gate: frame agreement and metric deltas between committed and retrained runs."""
+    from sop_monitor.havid_predict import compare_runs
+
+    pairs = []
+    for spec in pair:
+        committed, sep, retrained = spec.partition("=")
+        if not sep:
+            typer.echo(f"--pair must be COMMITTED=RETRAINED: {spec!r}")
+            raise typer.Exit(code=1)
+        pairs.append((Path(committed), Path(retrained)))
+    gate = compare_runs(pairs, split)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(gate, indent=2, sort_keys=True) + chr(10), encoding="utf-8")
+    for entry in gate["pairs"]:  # type: ignore[union-attr]
+        worst = min(entry["frame_agreement"].values())
+        typer.echo(
+            f"{entry['retrained']}: identical={entry['identical']} min agreement {worst:.4f}"
+        )
+    typer.echo(f"all identical: {gate['all_identical']} -> {out}")
+
+
 @app.command("summarise-havid-seeds")
 def summarise_havid_seeds_cmd(
     run: Annotated[list[Path], typer.Option(help="train-havid-tas run directories, one per seed")],
