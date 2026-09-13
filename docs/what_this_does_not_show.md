@@ -4,8 +4,10 @@ Written against the state of 2026-09-14. Each line names the evidence that is mi
 
 ## Generalisation
 
-- **No test-split number.** HA-ViD and IndustReal each have a hashed, frozen test split that was
-  never read. All results are on validation subjects that also drove model and setting selection.
+- **One test evaluation, seven subjects.** The HA-ViD test subjects were evaluated once
+  (`reports/havid_test_v1.md`), 41 recordings; IndustReal's test split was never read. Every other
+  number is on validation subjects that also drove model and setting selection. The L = 45 test row
+  was added after the val results and is not a pre-registered result.
 - **Six validation subjects.** HA-ViD val has 6 subjects and 18 recordings; bootstrap intervals are
   wide and seed noise (0.3–2.7 points) is as large as most differences between variants.
 - **One laboratory, one product.** HA-ViD is one assembly box on one workbench with three fixed
@@ -16,8 +18,10 @@ Written against the state of 2026-09-14. Each line names the evidence that is mi
 
 ## Recognition
 
-- **The recogniser is weak.** Causal fusion F1@10 is ≈ 30 on primitive tasks; its sequences miss
-  and fragment steps. Any statement about deployable SOP monitoring waits for a better recogniser.
+- **The recogniser is weak.** Causal fusion F1@10 is 27–29 on the test subjects without delay and
+  33–34 with a 3 s delay; its sequences miss and fragment steps, and every predicted test recording
+  is flagged by the SOP checks. Any statement about deployable SOP monitoring waits for a better
+  recogniser.
 - **No atomic-action (219-class) results, no ASFormer, no fine-tuned or video (clip) features.**
 - **No real-time measurement.** Training and feature extraction times are recorded; throughput of a
   streaming pipeline (RTSP replay, decode, ring buffer, batching) on the RTX 4090 is not measured

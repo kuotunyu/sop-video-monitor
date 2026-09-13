@@ -1,8 +1,9 @@
 # Model card — sop-video-monitor (development build)
 
-Status on 2026-09-14: every number below is a **development result on a validation split**. No
-model has been evaluated on a frozen test split, and no trained weights are published or stored in
-this repository. Exact values, intervals and per-video rows live in the linked `reports/`
+Status on 2026-09-14: the HA-ViD line has **one formal result**, the single evaluation of the frozen
+test subjects under a pre-registered protocol (`reports/havid_test_v1.md`); every other number is a
+development result on a validation split. No trained weights are published or stored in this
+repository. Exact values, intervals and per-video rows live in the linked `reports/`
 directories and are recomputed from committed prediction tables by `sop-monitor reproduce-lite`.
 
 ## Intended use
@@ -30,12 +31,31 @@ forbid it), and any claim about error types the datasets do not annotate.
 
 | dataset | role | licence | split used for the numbers below |
 |---|---|---|---|
-| HA-ViD (Zheng, Lee, Lu, NeurIPS 2023 D&B) | main | CC BY-NC 4.0 | frozen subject-wise split `splits/ha-vid/`: train 17 subjects / 143 recordings, **val 6 subjects / 18 recordings**, test 7 subjects / 41 recordings (hashed, never read) |
+| HA-ViD (Zheng, Lee, Lu, NeurIPS 2023 D&B) | main | CC BY-NC 4.0 | frozen subject-wise split `splits/ha-vid/`: train 17 subjects / 143 recordings, **val 6 subjects / 18 recordings**, test 7 subjects / 41 recordings (hashed; evaluated once, `reports/havid_test_v1.md`) |
 | IndustReal (Schoonbeek et al., WACV 2024) | metric donor, development | Apache-2.0 | participant-disjoint official split, **val** only; test never read |
 
 HA-ViD facts measured on the delivered data (`reports/havid_audit.md`): 203 annotated recordings
 × 3 views, h264 1280×720 at 15 fps, frame counts equal to the annotations, 67 native `wrong`
 segments of which 16 fall in the test subjects.
+
+## Evaluation (formal tier, HA-ViD held-out subjects, evaluated once)
+
+Protocol `docs/havid_test_protocol.md`; networks retrained with checkpoints and verified identical
+to the dev runs (`reports/havid_final_gate/`); primitive tasks, mean fusion, mean ± std over seeds
+0–2 (`reports/havid_test_v1.md`):
+
+| run | delay | F1@10 left | F1@10 right | Edit left | Edit right | mandatory-step frame recall |
+|---|---|---|---|---|---|---|
+| causal L = 0 | 0 s | 26.9 ± 1.8 | 28.8 ± 0.4 | 32.1 ± 0.8 | 32.8 ± 0.9 | 28.5 % |
+| causal L = 90 (pre-registered L\*) | 6 s | 30.5 ± 0.1 | 30.2 ± 1.1 | 32.8 ± 0.7 | 34.8 ± 0.9 | 35.5 % |
+| causal L = 45 (added after val, not pre-registered) | 3 s | 32.9 ± 1.9 | 34.1 ± 1.2 | 33.6 ± 2.4 | 35.6 ± 1.2 | 40.3 % |
+| offline (not an online result) | — | 39.7 ± 1.0 | 42.2 ± 0.2 | 38.5 ± 0.9 | 40.7 ± 1.1 | 46.4 % |
+
+SOP checks on test: on ground-truth sequences 100 % recall of synthetic violations, with 7 / 41
+(order), 4 / 41 (omission) and 23 / 41 (duration) clean recordings flagged; on predicted sequences
+every recording is flagged at every delay (order false alarms 78 % at L = 0, 50 % at L = 45).
+Native `wrong`: 0 of 16 detected. Online replay at the pre-registered confirmation length (8
+frames): 9.7–11.7 alarms per recording on predicted streams, first alarm after a median of 20–26 s.
 
 ## Evaluation (development tier, val)
 
@@ -59,7 +79,8 @@ IndustReal PSR (`reports/industreal_dev_v11_psr_epochsel_f1`, three seeds): POS 
 F1 0.821 ± 0.004, mean delay 23.6 s.
 
 For scale only, not comparable: the HA-ViD paper reports MS-TCN primitive-task F1@10 36.6 / 34.7
-(left / right) on its official test subjects with I3D features, one view, offline.
+(left / right) on the same official test subjects with I3D features, one view, offline, trained on
+all official train subjects.
 
 ## Known failure modes
 
@@ -69,6 +90,11 @@ For scale only, not comparable: the HA-ViD paper reports MS-TCN primitive-task F
   recording; smoothing does not recover missed steps (`reports/havid_dev_v6_sop_smoothed`).
 - Causality costs ≈ 12–13 F1@10 points against the offline twin; seed noise is 0.3–2.7 points, so
   single-seed differences below ≈ 3 points are not evidence.
+- Short "insert" steps are missed even offline (test mandatory-step frame recall 2–16 % for several of
+  them at the best online delay); a whole test recording (S02A35I32) is predicted as a pause in five
+  of nine runs.
+- More look-ahead is not always better: a 6 s output delay is worse than 3 s on val and test.
+- The duration windows learned on train flag 56 % of clean test recordings (44 % on val).
 - The learned precedence graph encodes the train subjects' orderings; stage-2/3 instruction
   variants and freer stage-1 routes produce order findings that are not errors.
 

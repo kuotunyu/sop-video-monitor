@@ -2,11 +2,13 @@
 
 Everything under `reports/` is a **development result** on a *validation* split — IndustReal's
 (metric-donor dataset, spec 3.1) or HA-ViD's (`splits/ha-vid/val.csv`): real videos, real model
-outputs, but val is also where the protocol was iterated. There is no formal (frozen test split)
-result. The HA-ViD delivery is audited in [`havid_audit.md`](havid_audit.md) (W1) and the first
+outputs, but val is also where the protocol was iterated. The one exception is the **formal**
+HA-ViD test evaluation, [`havid_test_v1.md`](havid_test_v1.md) and the `havid_test_v1_*`
+directories: the frozen test subjects, evaluated once under `docs/havid_test_protocol.md`. The HA-ViD delivery is audited in [`havid_audit.md`](havid_audit.md) (W1) and the first
 HA-ViD development runs are listed in their own table below.
 
-Start here: for HA-ViD (the main dataset) read **`havid_audit.md`**, then
+Start here: for HA-ViD (the main dataset) read **`havid_test_v1.md`** (held-out subjects) and
+**`havid_audit.md`**, then
 **`havid_dev_v7_tas_seeds_lh/`** (recogniser, three seeds), **`havid_dev_v8_sop_sheet/`** (SOP
 checks), **`havid_dev_v9_step_recall/`** (output delay) and **`havid_dev_v10_sop_online/`** (online
 checks); for IndustReal, **`industreal_dev_v11_psr_epochsel_f1/`** is the current best
@@ -54,6 +56,17 @@ paper's B3 reports POS 0.797 / F1 0.883 / delay 22.4 s on the test split.
 | `havid_dev_v9_step_recall/` | Val frame recall per instruction-sheet step at L = 0 / 15 / 45 / 90 and offline (README covers all of v9) | mandatory-step frames 32.8 → 45.0 → 49.7 → 43.4 % (offline 55.8 %): a 3 s delay closes about three quarters of the gap; some insert steps stay unrecognised even offline | current recogniser diagnosis; L\* = 90 by the pre-registered rule, L = 45 added as an amendment |
 | `havid_dev_v10_sop_online/` | The SOP checks run frame by frame on ground truth and on every look-ahead stream, confirmation length m ∈ {1, 4, 8, 15, 30} | online = offline findings on 16 / 18 gt recordings (2 adjacent same-label pairs) and 18 / 18 predicted; predicted streams still flag 13.7–14 of 14 clean recordings; m = 8 cuts alarms 18.9 → 11.8 per recording at L = 0; first alarms 15–25 s into the task | m\* = 8 by the pre-registered rule |
 | `havid_final_gate/` | Do the checkpointed final networks reproduce the committed dev runs? | L = 0 with offline twins: 6 / 6 runs identical frame by frame on every prediction column | reproducibility gate of `docs/havid_test_protocol.md` |
+
+## HA-ViD test evaluation (formal, held-out subjects, evaluated once)
+
+| run | contents | verdict |
+|---|---|---|
+| `havid_test_v1.md` | the report: protocol adherence, all tables, reading | L = 45 (added after val) best online row: F1@10 32.9 / 34.1; L = 0 26.9 / 28.8; pre-registered L\* = 90 30.5 / 30.2; offline 39.7 / 42.2; every predicted recording flagged by the SOP checks; native `w` 0 / 16 |
+| `havid_test_v1_tas_L{0,45,90}_{lh,rh}_s{0,1,2}/` | test predictions of the 18 checkpointed networks | inputs |
+| `havid_test_v1_seeds_L{0,45,90}_{lh,rh}/` | mean ± std over seeds | recogniser tables |
+| `havid_test_v1_sop_L{0,45,90}_s{0,1,2}/` | SOP checks, synthetic and native tables | SOP tables |
+| `havid_test_v1_online/` | frame-by-frame replay, m = 1 and m\* = 8 | online alarm table |
+| `havid_test_v1_step_recall/` | per-step frame recall | step table |
 
 For scale only (official test subjects, I3D, single view, no fusion; not our split): the HA-ViD
 paper's Table 3 reports MS-TCN primitive-task F1@10 36.6 (left hand) / 34.7 (right hand) averaged

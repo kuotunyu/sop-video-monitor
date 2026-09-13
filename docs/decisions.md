@@ -267,3 +267,15 @@ gated like the others and labelled in every test table as "added after the val r
 pre-registered". The protocol file records the amendment; L\* = 90 remains the pre-registered
 online operating point.
 
+## 2026-09-14 — the HA-ViD test split has been evaluated; it is spent
+
+`make havid-test LSTAR=90 MSTAR=8 LEXTRA=45` ran once from commit `21f9b55` after all 18 final
+networks passed the reproducibility gate (`reports/havid_test_v1.md`). Only incident: the last
+stage (per-step recall) hit a Makefile quoting bug and was completed by hand with the protocol's
+groups; it reads finished prediction tables and selects nothing. Headline (held-out subjects, mean
+over three seeds): causal L = 0 F1@10 26.9 / 28.8, L = 90 (pre-registered) 30.5 / 30.2, L = 45
+(declared amendment) 32.9 / 34.1, offline 39.7 / 42.2; every predicted test recording is flagged
+by the SOP checks; native `w` 0 of 16. Consequences: the test split is not used again for any
+selection; further HA-ViD development (better recogniser, duration windows, which the test shows to
+generalise worst) continues on val, and any future test claim needs a new held-out source.
+

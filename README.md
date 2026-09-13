@@ -72,13 +72,24 @@ CLI `sop-monitor` 的命令依流程分組：
 
 ### 結果
 
-所有結果都是 IndustReal 或 HA-ViD validation split 上的**開發結果**；哪個 run 回答哪個問題、哪個已被取代、哪個是負面結果，
-見 [`reports/README.md`](reports/README.md) 的總表。**正式研究成果：無。**
+**正式結果（HA-ViD held-out subjects，只評估一次）**：[`reports/havid_test_v1.md`](reports/havid_test_v1.md)，依事先登記的
+[`docs/havid_test_protocol.md`](docs/havid_test_protocol.md) 執行。primitive task、三視角 mean fusion、三個 seed 的 mean ± std：
+
+| 設定 | 輸出延遲 | F1@10 左手 | F1@10 右手 | 必要步驟 frame recall |
+|---|---|---|---|---|
+| causal L = 0 | 0 s | 26.9 ± 1.8 | 28.8 ± 0.4 | 28.5 % |
+| causal L = 90（事先登記的 L\*） | 6 s | 30.5 ± 0.1 | 30.2 ± 1.1 | 35.5 % |
+| causal L = 45（看過 val 後追加，非事先登記） | 3 s | 32.9 ± 1.9 | 34.1 ± 1.2 | 40.3 % |
+| offline（非線上結果） | — | 39.7 ± 1.0 | 42.2 ± 0.2 | 46.4 % |
+
+SOP 檢查在 ground truth 上找得到所有 synthetic 違規，但預測序列在每個延遲下都把每支 test 錄影標記為有偏差；原生 `w` 偵測 0 / 16。
+其餘都是 IndustReal 或 HA-ViD validation split 上的**開發結果**；哪個 run 回答哪個問題、哪個已被取代、哪個是負面結果，
+見 [`reports/README.md`](reports/README.md) 的總表。
 
 ## 還沒有什麼
 
-- HA-ViD 的線上 PSR 式指標（completion 定義未定）、aa 層；辨識器目前是 causal fusion F1@10 約 30（三 seed 平均），是整條線的瓶頸。
-- Frozen test split 上的任何數字（IndustReal 與 HA-ViD 皆需要明確決定後一次性執行）。
+- HA-ViD 的線上 PSR 式指標（completion 定義未定）、aa 層；辨識器（test 上 causal F1@10 27–34）是整條線的瓶頸，短的 insert 步驟連 offline 都認不出來。
+- IndustReal 的 test split（開發用資料集，不評估）；HA-ViD test 已用過一次，不能再拿來選模型或設定。
 - RTSP 重播（mediamtx，需要下載執行檔）、跨行程的 shared-memory ring buffer、線上辨識頭接進串流（W4 剩餘）；解碼執行緒、batch collector、watchdog 與量測工具已完成，曲線待機器空閒時量測。
 - ASFormer、學習式 fusion、VideoMAE-V2 clip 特徵、任何圖（W2–W3）；三視角 late fusion 與單視角對照已在 `reports/havid_dev_v1`–`v7`。
 - W3 剩餘：更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟；`v8` 的說明書粒度把 ground truth 的順序誤報降到 4/18，但預測序列仍全數被標記）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
