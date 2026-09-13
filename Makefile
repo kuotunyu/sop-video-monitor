@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary review-queue review-ui
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary review-queue review-ui stream-bench-decode stream-bench-dinov2
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -142,3 +142,11 @@ review-queue:  ## Deviation queue of the v8 SOP run's recogniser output (artifac
 
 review-ui:  ## Local review page on http://127.0.0.1:8765/ for the v8 queue (set REVIEWER).
 	$(UV) run sop-monitor review-ui --queue artifacts/review/v8_pred_queue.jsonl --decisions artifacts/review/v8_pred_decisions.jsonl --reviewer "$(REVIEWER)"
+
+# ---- W4 streaming benchmark (needs an otherwise idle machine) ----------------------------------
+
+stream-bench-decode:  ## Decode + resize + buffering only: 1-24 streams of HA-ViD val video at 15 fps (reports/stream_bench_v1_decode).
+	$(UV) run sop-monitor stream-bench --consumer decode --stream 1 --stream 3 --stream 6 --stream 12 --stream 24 --out reports/stream_bench_v1_decode
+
+stream-bench-dinov2:  ## Decode + DINOv2 ViT-B/14 embedding on the GPU: 1-12 streams at 15 fps (reports/stream_bench_v1_dinov2).
+	$(UV) run sop-monitor stream-bench --consumer dinov2 --stream 1 --stream 3 --stream 6 --stream 9 --stream 12 --out reports/stream_bench_v1_dinov2

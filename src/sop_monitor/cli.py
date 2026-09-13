@@ -450,6 +450,89 @@ def build_review_queue_cmd(
     typer.echo(f"{len(items)} items {dict(Counter(i.kind for i in items))} -> {out}")
 
 
+@app.command("stream-bench")
+def stream_bench_cmd(
+    out: Annotated[Path, typer.Option(help="Output directory (bench.json, tables.md)")],
+    consumer: Annotated[str, typer.Option(help="decode | dinov2")] = "decode",
+    stream: Annotated[
+        list[int] | None, typer.Option(help="Numbers of concurrent streams (repeatable)")
+    ] = None,
+    speed: Annotated[
+        list[float] | None, typer.Option(help="Replay speed relative to 15 fps (repeatable)")
+    ] = None,
+    policy: Annotated[str, typer.Option(help="wait | drop_oldest | adaptive")] = "drop_oldest",
+    capacity: Annotated[int, typer.Option(help="Ring-buffer slots per stream")] = 16,
+    max_batch: Annotated[int, typer.Option()] = 16,
+    max_wait_ms: Annotated[float, typer.Option()] = 20.0,
+    duration_s: Annotated[float, typer.Option(help="Measured seconds per point")] = 20.0,
+    warmup_s: Annotated[float, typer.Option()] = 5.0,
+    split_csv: Annotated[Path, typer.Option(help="Videos to replay")] = Path(
+        "splits/ha-vid/val.csv"
+    ),
+    rgb_dir: Annotated[Path, typer.Option()] = Path("data/external/ha-vid/HAViD_rgb"),
+    model: Annotated[
+        str, typer.Option(help="DINOv2 variant for --consumer dinov2")
+    ] = "dinov2_vitb14",
+    device: Annotated[str, typer.Option(help="auto | cuda | cpu")] = "auto",
+) -> None:
+    """Throughput, latency and dropped frames of the streaming pipeline over a stream x speed grid."""
+    from sop_monitor.features import FRAME_SIZE, resolve_device
+    from sop_monitor.review import allowed_videos
+    from sop_monitor.stream.bench import (
+        dinov2_consumer,
+        render_bench_tables,
+        run_grid,
+        video_sources,
+        write_bench,
+    )
+    from sop_monitor.stream.ring_buffer import DropPolicy
+
+    if "test" in split_csv.stem:
+        typer.echo("the benchmark never replays the frozen test split")
+        raise typer.Exit(code=1)
+    videos = [path for _vid, path in sorted(allowed_videos(split_csv, rgb_dir).items())]
+    if not videos:
+        typer.echo(f"no videos of {split_csv} under {rgb_dir}")
+        raise typer.Exit(code=1)
+    if consumer == "decode":
+        consume = lambda batch: None  # noqa: E731
+        device = "none"
+    elif consumer == "dinov2":
+        device = resolve_device(device)
+        consume = dinov2_consumer(model, device)
+    else:
+        typer.echo("--consumer must be decode or dinov2")
+        raise typer.Exit(code=1)
+    points = run_grid(
+        video_sources(videos, fps=15.0, size=FRAME_SIZE),
+        consume,
+        streams=stream or [1, 3, 6, 9, 12],
+        speeds=speed or [1.0],
+        duration_s=duration_s,
+        warmup_s=warmup_s,
+        policy=DropPolicy(policy),
+        capacity=capacity,
+        max_batch=max_batch,
+        max_wait_s=max_wait_ms / 1000.0,
+    )
+    config = {
+        "consumer": consumer,
+        "model": model if consumer == "dinov2" else None,
+        "device": device,
+        "policy": policy,
+        "capacity": capacity,
+        "max_batch": max_batch,
+        "max_wait_ms": max_wait_ms,
+        "duration_s": duration_s,
+        "warmup_s": warmup_s,
+        "frame_size_wh": list(FRAME_SIZE),
+        "source_fps": 15.0,
+        "videos": [path.name for path in videos],
+    }
+    payload = write_bench(out, config, points)
+    typer.echo(render_bench_tables(payload))
+
+
 @app.command("review-ui")
 def review_ui_cmd(
     queue: Annotated[Path, typer.Option(help="Queue JSONL from build-review-queue")],
