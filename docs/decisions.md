@@ -164,3 +164,14 @@ predicted step count in line with the ground truth (354 → 189 on val) and halv
 step false alarms, but every val recording still misses 1–4 mandatory steps and all 18 stay
 flagged. Decision: smoothing stays an option (off by default); the deployable violation numbers
 wait for a better recogniser, not for more post-processing.
+
+## 2026-09-14 — HA-ViD comparisons need three seeds
+
+`reports/havid_dev_v7_tas_seeds_{lh,rh}` repeat the v3 protocol with seeds 1 and 2. The standard
+deviation over seeds is 0.3–2.7 points on every metric, as large as every single-seed difference
+reported until now; the v1 → v3 left-hand gain (+2.9 F1@10 on seed 0) shrinks to +1.4 on the
+three-seed mean. Decision: from now on a HA-ViD recogniser change is reported as mean ± std over
+seeds 0–2 against the v7 numbers, and a difference smaller than about 3 points is not called an
+improvement. Fusion: no rule dominates (geometric best on F1@10 for both hands, confidence-weighted
+best on Edit), and fusion adds only +0.5 / +1.4 F1@10 over the best single causal view; the
+causal-vs-offline gap (≈ 12–13 points) is the real lever.
