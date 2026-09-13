@@ -238,3 +238,13 @@ seeds and SOP knowledge, the two selection rules, a reproducibility gate for the
 networks, the test steps and the reporting rules. The IndustReal test split stays unevaluated,
 because IndustReal is the development and metric-donor dataset of this project.
 
+## 2026-09-14 — look-ahead L* = 90 frames, by the pre-registered rule
+
+Rule (`docs/havid_test_protocol.md` §2): the smallest L in {15, 45, 90} whose val mandatory-step
+frame recall (causal mean fusion, both hands and seeds 0–2 pooled) reaches 90 % of the offline mean
+fusion's, else 90. Val values: offline 55.77 % (threshold 50.19 %), L = 0 32.84 %, L = 15 45.02 %,
+L = 45 49.74 %. Neither 15 nor 45 reaches the threshold (45 misses it by 0.45 points), so
+L* = 90 frames (a 6 s output delay) whatever L = 90 scores; the rule is applied as written rather
+than relaxed after seeing a near miss. Computed with the then-committed code before the L = 90
+seed-2 runs finished; the full table follows in `reports/havid_dev_v9_step_recall`.
+
