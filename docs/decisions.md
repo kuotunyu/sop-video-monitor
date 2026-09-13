@@ -228,3 +228,13 @@ frame f at time f + L, and the last L frames repeat the final output, which repr
 three fusion rules). The plate is passed in rather than recognised: an assembly station knows its
 work order, and the offline runs also take the plate from the annotation. The frame-to-deviation
 path is therefore checkable against the offline run of the same checkpoints, frame by frame.
+
+## 2026-09-14 — the HA-ViD test split will be evaluated once, under a pre-registered protocol
+
+The owner delegated the decision on the frozen test split. It will be evaluated once, after the
+look-ahead and confirmation-length settings are chosen on val by rules written down before the
+remaining val results exist: `docs/havid_test_protocol.md` fixes the features, recogniser, fusion,
+seeds and SOP knowledge, the two selection rules, a reproducibility gate for the retrained
+networks, the test steps and the reporting rules. The IndustReal test split stays unevaluated,
+because IndustReal is the development and metric-donor dataset of this project.
+
