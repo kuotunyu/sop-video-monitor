@@ -213,3 +213,18 @@ alarms) and both selections are unchanged. With `min_frames=1` online and offlin
 equal on 500 random two-hand sequences at both granularities; the one documented exception is two
 adjacent segments with the same label, which a frame stream cannot separate (149 of 5,871
 annotation boundaries).
+
+## 2026-09-14 — the streaming recogniser recomputes the causal prefix; the plate is an input
+
+`sop_monitor/online_head.py` runs the per-view causal MS-TCN++ checkpoints of a
+`train-havid-tas --checkpoint-dir` run on a growing stream. Each push recomputes the network on
+the prefix seen so far and keeps the posteriors of the new time steps. Causality makes this exact
+(the output at frame t depends on frames up to t), and the MS-TCN++ receptive field of over
+10,000 frames exceeds every HA-ViD recording, so a shorter sliding window would change the output.
+Caching per-layer convolution state would make each push constant-time; it is deferred until the
+measured compute per chunk says it matters. A network trained with look-ahead L emits the label of
+frame f at time f + L, and the last L frames repeat the final output, which reproduces
+`advance_outputs` exactly (tested with look-ahead 0, 2, 5 and 120, chunk sizes 1 to 200, all
+three fusion rules). The plate is passed in rather than recognised: an assembly station knows its
+work order, and the offline runs also take the plate from the annotation. The frame-to-deviation
+path is therefore checkable against the offline run of the same checkpoints, frame by frame.
