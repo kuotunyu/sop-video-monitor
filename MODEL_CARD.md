@@ -82,6 +82,14 @@ For scale only, not comparable: the HA-ViD paper reports MS-TCN primitive-task F
 (left / right) on the same official test subjects with I3D features, one view, offline, trained on
 all official train subjects.
 
+## Runtime (one machine: Windows 11, RTX 4090, replayed files)
+
+- Frame branch: 24 concurrent 15 fps streams decoded and embedded by DINOv2 ViT-B/14 without falling
+  behind, p95 latency 71 ms; sources fall behind at 36 (`reports/stream_bench_v1_dinov2`).
+- Whole online path for one station (three views, mp4 → DINOv2 → six causal heads → fusion →
+  monitor): 0.32 × real time, decoding 55 % of it; streamed labels equal the offline evaluation on
+  all but 0.03 % of frames (float16 ties) (`reports/havid_dev_v11_online_head_features`).
+
 ## Known failure modes
 
 - The causal recogniser's most frequent error on every run is a real step predicted as a pause

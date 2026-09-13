@@ -90,7 +90,7 @@ SOP 檢查在 ground truth 上找得到所有 synthetic 違規，但預測序列
 
 - HA-ViD 的線上 PSR 式指標（completion 定義未定）、aa 層；辨識器（test 上 causal F1@10 27–34）是整條線的瓶頸，短的 insert 步驟連 offline 都認不出來。
 - IndustReal 的 test split（開發用資料集，不評估）；HA-ViD test 已用過一次，不能再拿來選模型或設定。
-- RTSP 重播（mediamtx，需要下載執行檔）、跨行程的 shared-memory ring buffer、線上辨識頭接進串流（W4 剩餘）；解碼執行緒、batch collector、watchdog 與量測工具已完成，曲線待機器空閒時量測。
+- RTSP 重播（mediamtx 未安裝）、跨行程的 shared-memory ring buffer、多站同時跑辨識頭的並行量測（W4 剩餘）。已量測：一張 RTX 4090 可即時解碼並抽特徵 24 路 15 fps 攝影機（`reports/stream_bench_v1_dinov2`），單站三視角從 mp4 到偏差為 0.32 倍即時（`reports/havid_dev_v11_online_head_features`）。
 - ASFormer、學習式 fusion、VideoMAE-V2 clip 特徵、任何圖（W2–W3）；三視角 late fusion 與單視角對照已在 `reports/havid_dev_v1`–`v7`。
 - W3 剩餘：更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟；`v8` 的說明書粒度把 ground truth 的順序誤報降到 4/18，但預測序列仍全數被標記）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
 - VLM verifier（W5 剩餘；需要下載模型權重）；偏差佇列與複核介面已完成（`docs/review.md`），尚無真人複核結果。

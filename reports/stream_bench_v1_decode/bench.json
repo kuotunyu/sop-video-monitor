@@ -1,0 +1,1066 @@
+{
+  "config": {
+    "capacity": 16,
+    "consumer": "decode",
+    "device": "none",
+    "duration_s": 20.0,
+    "frame_size_wh": [
+      392,
+      224
+    ],
+    "max_batch": 16,
+    "max_wait_ms": 20.0,
+    "model": null,
+    "policy": "drop_oldest",
+    "source_fps": 15.0,
+    "videos": [
+      "S01A04I01M0.mp4",
+      "S01A04I01S1.mp4",
+      "S01A04I01S2.mp4",
+      "S01A05I01M0.mp4",
+      "S01A05I01S1.mp4",
+      "S01A05I01S2.mp4",
+      "S01A06I01M0.mp4",
+      "S01A06I01S1.mp4",
+      "S01A06I01S2.mp4",
+      "S08A04I01M0.mp4",
+      "S08A04I01S1.mp4",
+      "S08A04I01S2.mp4",
+      "S08A05I01M0.mp4",
+      "S08A05I01S1.mp4",
+      "S08A05I01S2.mp4",
+      "S08A06I01M0.mp4",
+      "S08A06I01S1.mp4",
+      "S08A06I01S2.mp4",
+      "S10A04I01M0.mp4",
+      "S10A04I01S1.mp4",
+      "S10A04I01S2.mp4",
+      "S10A05I01M0.mp4",
+      "S10A05I01S1.mp4",
+      "S10A05I01S2.mp4",
+      "S10A06I01M0.mp4",
+      "S10A06I01S1.mp4",
+      "S10A06I01S2.mp4",
+      "S12A04I01M0.mp4",
+      "S12A04I01S1.mp4",
+      "S12A04I01S2.mp4",
+      "S12A05I01M0.mp4",
+      "S12A05I01S1.mp4",
+      "S12A05I01S2.mp4",
+      "S12A06I01M0.mp4",
+      "S12A06I01S1.mp4",
+      "S12A06I01S2.mp4",
+      "S18A04I01M0.mp4",
+      "S18A04I01S1.mp4",
+      "S18A04I01S2.mp4",
+      "S18A05I01M0.mp4",
+      "S18A05I01S1.mp4",
+      "S18A05I01S2.mp4",
+      "S18A06I01M0.mp4",
+      "S18A06I01S1.mp4",
+      "S18A06I01S2.mp4",
+      "S30A04I01M0.mp4",
+      "S30A04I01S1.mp4",
+      "S30A04I01S2.mp4",
+      "S30A05I01M0.mp4",
+      "S30A05I01S1.mp4",
+      "S30A05I01S2.mp4",
+      "S30A06I01M0.mp4",
+      "S30A06I01S1.mp4",
+      "S30A06I01S2.mp4"
+    ],
+    "warmup_s": 5.0
+  },
+  "machine": {
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.13",
+    "torch": "2.13.0+cu130"
+  },
+  "measured_at": "2026-09-14T06:52:31+0800",
+  "points": [
+    {
+      "cameras": 1,
+      "capacity": 16,
+      "consumed": 376,
+      "consumer_busy_fraction": 1.6478374294624707e-05,
+      "drop_rate": 0.0,
+      "duration_s": 25.0,
+      "latency_ms": {
+        "max": 52.21569999412168,
+        "p50": 24.151149998942856,
+        "p95": 49.11433500528801,
+        "p99": 50.08570099424104
+      },
+      "max_batch": 16,
+      "mean_batch": 1.0026666666666666,
+      "occupancy_max": 0.0625,
+      "occupancy_mean": 0.006048387096774193,
+      "offered_fps": 15.0,
+      "per_camera": {
+        "stream00": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        }
+      },
+      "policy": "drop_oldest",
+      "produced": 376,
+      "put_timeouts": 0,
+      "skipped_frames": 0,
+      "speed": 1.0,
+      "stalls": [],
+      "target_fps_per_camera": 15.0,
+      "throughput_fps": 15.0
+    },
+    {
+      "cameras": 3,
+      "capacity": 16,
+      "consumed": 1128,
+      "consumer_busy_fraction": 1.8222060345563666e-05,
+      "drop_rate": 0.0,
+      "duration_s": 25.0,
+      "latency_ms": {
+        "max": 52.094500002567656,
+        "p50": 20.789800000784453,
+        "p95": 49.317564986267826,
+        "p99": 50.85177899731207
+      },
+      "max_batch": 16,
+      "mean_batch": 2.641686182669789,
+      "occupancy_max": 0.0625,
+      "occupancy_mean": 0.005712365591397849,
+      "offered_fps": 45.0,
+      "per_camera": {
+        "stream00": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream01": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream02": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        }
+      },
+      "policy": "drop_oldest",
+      "produced": 1131,
+      "put_timeouts": 0,
+      "skipped_frames": 0,
+      "speed": 1.0,
+      "stalls": [],
+      "target_fps_per_camera": 15.0,
+      "throughput_fps": 45.0
+    },
+    {
+      "cameras": 6,
+      "capacity": 16,
+      "consumed": 2256,
+      "consumer_busy_fraction": 1.87992859346382e-05,
+      "drop_rate": 0.0,
+      "duration_s": 25.0,
+      "latency_ms": {
+        "max": 51.64029999286868,
+        "p50": 21.501450006326195,
+        "p95": 48.346804999164306,
+        "p99": 50.35182200022973
+      },
+      "max_batch": 16,
+      "mean_batch": 5.09255079006772,
+      "occupancy_max": 0.0625,
+      "occupancy_mean": 0.005565356182795698,
+      "offered_fps": 90.0,
+      "per_camera": {
+        "stream00": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream01": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream02": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream03": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream04": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream05": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        }
+      },
+      "policy": "drop_oldest",
+      "produced": 2262,
+      "put_timeouts": 0,
+      "skipped_frames": 0,
+      "speed": 1.0,
+      "stalls": [],
+      "target_fps_per_camera": 15.0,
+      "throughput_fps": 90.0
+    },
+    {
+      "cameras": 12,
+      "capacity": 16,
+      "consumed": 4507,
+      "consumer_busy_fraction": 2.0620816473150844e-05,
+      "drop_rate": 0.0,
+      "duration_s": 25.0,
+      "latency_ms": {
+        "max": 51.10199999762699,
+        "p50": 23.020900000119582,
+        "p95": 46.06165999575751,
+        "p99": 49.77027200773591
+      },
+      "max_batch": 16,
+      "mean_batch": 9.105050505050505,
+      "occupancy_max": 0.0625,
+      "occupancy_mean": 0.004976851851851852,
+      "offered_fps": 180.0,
+      "per_camera": {
+        "stream00": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream01": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream02": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream03": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream04": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream05": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream06": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream07": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream08": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream09": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream10": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream11": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        }
+      },
+      "policy": "drop_oldest",
+      "produced": 4512,
+      "put_timeouts": 0,
+      "skipped_frames": 0,
+      "speed": 1.0,
+      "stalls": [],
+      "target_fps_per_camera": 15.0,
+      "throughput_fps": 180.35
+    },
+    {
+      "cameras": 24,
+      "capacity": 16,
+      "consumed": 9024,
+      "consumer_busy_fraction": 4.1407760805315894e-05,
+      "drop_rate": 0.0,
+      "duration_s": 25.0,
+      "latency_ms": {
+        "max": 50.96169999160338,
+        "p50": 14.32310000382131,
+        "p95": 34.929390004253946,
+        "p99": 49.14093500556192
+      },
+      "max_batch": 16,
+      "mean_batch": 10.978102189781023,
+      "occupancy_max": 0.059895833333333336,
+      "occupancy_mean": 0.005197790148448044,
+      "offered_fps": 360.0,
+      "per_camera": {
+        "stream00": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream01": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream02": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream03": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream04": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream05": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream06": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream07": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream08": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream09": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream10": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream11": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream12": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream13": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream14": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream15": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream16": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream17": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream18": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream19": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream20": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream21": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream22": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream23": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        }
+      },
+      "policy": "drop_oldest",
+      "produced": 9048,
+      "put_timeouts": 0,
+      "skipped_frames": 0,
+      "speed": 1.0,
+      "stalls": [],
+      "target_fps_per_camera": 15.0,
+      "throughput_fps": 360.4
+    },
+    {
+      "cameras": 36,
+      "capacity": 16,
+      "consumed": 13536,
+      "consumer_busy_fraction": 4.2779309106467064e-05,
+      "drop_rate": 0.0,
+      "duration_s": 25.0,
+      "latency_ms": {
+        "max": 65.61189999047201,
+        "p50": 14.10530000430299,
+        "p95": 33.84925500577083,
+        "p99": 48.70659499923929
+      },
+      "max_batch": 16,
+      "mean_batch": 11.915492957746478,
+      "occupancy_max": 0.059027777777777776,
+      "occupancy_mean": 0.006556289521228546,
+      "offered_fps": 540.0,
+      "per_camera": {
+        "stream00": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream01": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream02": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream03": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream04": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream05": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream06": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream07": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream08": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream09": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream10": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream11": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream12": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream13": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream14": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream15": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream16": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream17": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream18": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream19": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream20": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream21": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream22": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream23": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream24": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream25": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream26": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream27": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream28": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream29": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream30": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream31": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream32": {
+          "error": null,
+          "produced": 377,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream33": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream34": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream35": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        }
+      },
+      "policy": "drop_oldest",
+      "produced": 13547,
+      "put_timeouts": 0,
+      "skipped_frames": 0,
+      "speed": 1.0,
+      "stalls": [],
+      "target_fps_per_camera": 15.0,
+      "throughput_fps": 540.2
+    },
+    {
+      "cameras": 48,
+      "capacity": 16,
+      "consumed": 17998,
+      "consumer_busy_fraction": 4.5166809622077606e-05,
+      "drop_rate": 0.0,
+      "duration_s": 25.0,
+      "latency_ms": {
+        "max": 53.914000003715046,
+        "p50": 14.460949998465367,
+        "p95": 36.362099992402364,
+        "p99": 46.07767499910555
+      },
+      "max_batch": 16,
+      "mean_batch": 14.825370675453048,
+      "occupancy_max": 0.048177083333333336,
+      "occupancy_mean": 0.00644343707133059,
+      "offered_fps": 720.0,
+      "per_camera": {
+        "stream00": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream01": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream02": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream03": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream04": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream05": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream06": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream07": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream08": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream09": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream10": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream11": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream12": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream13": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream14": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream15": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream16": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream17": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream18": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream19": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream20": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream21": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream22": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream23": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream24": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream25": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream26": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream27": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream28": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream29": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream30": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream31": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream32": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream33": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream34": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream35": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream36": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream37": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream38": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream39": {
+          "error": null,
+          "produced": 376,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream40": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream41": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream42": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream43": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream44": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream45": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream46": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        },
+        "stream47": {
+          "error": null,
+          "produced": 375,
+          "put_timeouts": 0,
+          "skipped_frames": 0
+        }
+      },
+      "policy": "drop_oldest",
+      "produced": 18032,
+      "put_timeouts": 0,
+      "skipped_frames": 0,
+      "speed": 1.0,
+      "stalls": [],
+      "target_fps_per_camera": 15.0,
+      "throughput_fps": 720.3
+    }
+  ]
+}

@@ -1,0 +1,555 @@
+{
+  "config": {
+    "checkpoints": {
+      "lh": "artifacts/checkpoints/havid_final_L45_lh_s0",
+      "rh": "artifacts/checkpoints/havid_final_L45_rh_s0"
+    },
+    "chunk": 15,
+    "device": "cuda",
+    "features_dir": null,
+    "granularity": "sheet",
+    "graphs_dir": "sop/ha-vid/sheet",
+    "lookahead": {
+      "lh": 45,
+      "rh": 45
+    },
+    "min_frames": 8,
+    "mode": "video",
+    "model": "dinov2_vitb14",
+    "rule": ""
+  },
+  "machine": {
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.13",
+    "torch": "2.13.0+cu130"
+  },
+  "recordings": {
+    "S08A04I01": {
+      "agreement_with_checkpoint_run": {
+        "lh": 1.0,
+        "rh": 1.0
+      },
+      "deviations": [
+        {
+          "detected_at": 236,
+          "end_frame": 228,
+          "evidence": {
+            "duration_s": 2.1333333333333333,
+            "kind": "too_short",
+            "window_s": [
+              2.602666666666667,
+              24.298666666666662
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 2.6,
+          "start_frame": 197,
+          "step": "sspg"
+        },
+        {
+          "detected_at": 560,
+          "end_frame": 552,
+          "evidence": {
+            "duration_s": 0.8666666666666667,
+            "kind": "too_short",
+            "window_s": [
+              1.4666666666666666,
+              20.11333333333333
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.3333333333333333,
+          "start_frame": 540,
+          "step": "sftg"
+        },
+        {
+          "detected_at": 626,
+          "end_frame": 618,
+          "evidence": {
+            "duration_s": 0.8,
+            "kind": "too_short",
+            "window_s": [
+              1.4666666666666666,
+              20.11333333333333
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.2666666666666666,
+          "start_frame": 607,
+          "step": "sftg"
+        },
+        {
+          "detected_at": 644,
+          "end_frame": 636,
+          "evidence": {
+            "duration_s": 1.2,
+            "kind": "too_short",
+            "window_s": [
+              1.2673333333333332,
+              12.028666666666666
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.6666666666666667,
+          "start_frame": 619,
+          "step": "iplft"
+        },
+        {
+          "detected_at": 718,
+          "end_frame": 710,
+          "evidence": {
+            "duration_s": 0.6,
+            "kind": "too_short",
+            "window_s": [
+              1.7333333333333334,
+              7.166666666666666
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.0666666666666667,
+          "start_frame": 702,
+          "step": "iglft"
+        },
+        {
+          "detected_at": 744,
+          "end_frame": 736,
+          "evidence": {
+            "duration_s": 1.2666666666666666,
+            "kind": "too_short",
+            "window_s": [
+              1.7333333333333334,
+              7.166666666666666
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.7333333333333334,
+          "start_frame": 718,
+          "step": "iglft"
+        },
+        {
+          "detected_at": 840,
+          "end_frame": 832,
+          "evidence": {
+            "duration_s": 0.5333333333333333,
+            "kind": "too_short",
+            "window_s": [
+              1.38,
+              5.226666666666666
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.0,
+          "start_frame": 825,
+          "step": "ipsft"
+        },
+        {
+          "detected_at": 854,
+          "end_frame": 846,
+          "evidence": {
+            "duration_s": 0.9333333333333333,
+            "kind": "too_short",
+            "window_s": [
+              1.7333333333333334,
+              7.166666666666666
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.4,
+          "start_frame": 833,
+          "step": "iglft"
+        },
+        {
+          "detected_at": 976,
+          "end_frame": 968,
+          "evidence": {
+            "duration_s": 1.3333333333333333,
+            "kind": "too_short",
+            "window_s": [
+              2.602666666666667,
+              24.298666666666662
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.8,
+          "start_frame": 949,
+          "step": "sspg"
+        },
+        {
+          "detected_at": 1038,
+          "end_frame": 1030,
+          "evidence": {
+            "duration_s": 0.6666666666666666,
+            "kind": "too_short",
+            "window_s": [
+              2.602666666666667,
+              24.298666666666662
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.1333333333333333,
+          "start_frame": 1021,
+          "step": "sspg"
+        }
+      ],
+      "frames": 1124,
+      "latency": {
+        "chunks": 75,
+        "compute_s_max": 0.11114740000630263,
+        "compute_s_p50": 0.07908630000019912,
+        "compute_s_p95": 0.10237432999711017,
+        "decode_s_total": 13.082227399863768,
+        "frames": 1124,
+        "monitor_s_total": 0.0029912000754848123,
+        "real_time_factor": 0.08078607384305668,
+        "recognise_s_total": 6.0505785998975625,
+        "wall_real_time_factor": 0.318991509341676,
+        "wall_s": 23.903097100002924
+      },
+      "plate": "gear"
+    },
+    "S10A04I01": {
+      "agreement_with_checkpoint_run": {
+        "lh": 0.9994100294985251,
+        "rh": 0.9994100294985251
+      },
+      "deviations": [
+        {
+          "detected_at": 516,
+          "end_frame": null,
+          "evidence": {
+            "missing_predecessors": [
+              "igsft"
+            ]
+          },
+          "kind": "order",
+          "latency_s": 0.4666666666666667,
+          "start_frame": 509,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 600,
+          "end_frame": 592,
+          "evidence": {
+            "duration_s": 0.8666666666666667,
+            "kind": "too_short",
+            "window_s": [
+              1.7333333333333334,
+              7.166666666666666
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.3333333333333333,
+          "start_frame": 580,
+          "step": "iglft"
+        },
+        {
+          "detected_at": 600,
+          "end_frame": null,
+          "evidence": {
+            "missing_predecessors": [
+              "igsft"
+            ]
+          },
+          "kind": "order",
+          "latency_s": 0.4666666666666667,
+          "start_frame": 593,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 610,
+          "end_frame": 602,
+          "evidence": {
+            "duration_s": 0.6666666666666666,
+            "kind": "too_short",
+            "window_s": [
+              1.1560000000000001,
+              21.095999999999997
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.1333333333333333,
+          "start_frame": 593,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 635,
+          "end_frame": null,
+          "evidence": {
+            "missing_predecessors": [
+              "igsft"
+            ]
+          },
+          "kind": "order",
+          "latency_s": 0.4666666666666667,
+          "start_frame": 628,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 769,
+          "end_frame": 761,
+          "evidence": {
+            "duration_s": 2.066666666666667,
+            "kind": "too_short",
+            "window_s": [
+              2.602666666666667,
+              24.298666666666662
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 2.533333333333333,
+          "start_frame": 731,
+          "step": "sspg"
+        },
+        {
+          "detected_at": 769,
+          "end_frame": null,
+          "evidence": {
+            "missing_predecessors": [
+              "igsft"
+            ]
+          },
+          "kind": "order",
+          "latency_s": 0.4666666666666667,
+          "start_frame": 762,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 779,
+          "end_frame": 771,
+          "evidence": {
+            "duration_s": 0.6666666666666666,
+            "kind": "too_short",
+            "window_s": [
+              1.1560000000000001,
+              21.095999999999997
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.1333333333333333,
+          "start_frame": 762,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 831,
+          "end_frame": null,
+          "evidence": {
+            "missing_predecessors": [
+              "igsft"
+            ]
+          },
+          "kind": "order",
+          "latency_s": 0.4666666666666667,
+          "start_frame": 824,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 847,
+          "end_frame": null,
+          "evidence": {
+            "missing_predecessors": [
+              "igsft"
+            ]
+          },
+          "kind": "order",
+          "latency_s": 0.4666666666666667,
+          "start_frame": 840,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 1207,
+          "end_frame": null,
+          "evidence": {
+            "missing_predecessors": [
+              "igsft"
+            ]
+          },
+          "kind": "order",
+          "latency_s": 0.4666666666666667,
+          "start_frame": 1200,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 1299,
+          "end_frame": 1291,
+          "evidence": {
+            "duration_s": 2.466666666666667,
+            "kind": "too_short",
+            "window_s": [
+              2.602666666666667,
+              24.298666666666662
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 2.933333333333333,
+          "start_frame": 1255,
+          "step": "sspg"
+        },
+        {
+          "detected_at": 1534,
+          "end_frame": null,
+          "evidence": {
+            "missing_predecessors": [
+              "igsft"
+            ]
+          },
+          "kind": "order",
+          "latency_s": 0.4666666666666667,
+          "start_frame": 1527,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 1640,
+          "end_frame": null,
+          "evidence": {
+            "missing_predecessors": [
+              "igsft"
+            ]
+          },
+          "kind": "order",
+          "latency_s": 0.4666666666666667,
+          "start_frame": 1633,
+          "step": "sntft"
+        },
+        {
+          "detected_at": 1694,
+          "end_frame": null,
+          "evidence": {},
+          "kind": "omission",
+          "latency_s": null,
+          "start_frame": null,
+          "step": "igsft"
+        },
+        {
+          "detected_at": 1694,
+          "end_frame": null,
+          "evidence": {},
+          "kind": "omission",
+          "latency_s": null,
+          "start_frame": null,
+          "step": "ipsft"
+        },
+        {
+          "detected_at": 1694,
+          "end_frame": null,
+          "evidence": {},
+          "kind": "omission",
+          "latency_s": null,
+          "start_frame": null,
+          "step": "pgwbx"
+        }
+      ],
+      "frames": 1695,
+      "latency": {
+        "chunks": 113,
+        "compute_s_max": 0.1451194000110263,
+        "compute_s_p50": 0.0845668999972986,
+        "compute_s_p95": 0.13447648000437767,
+        "decode_s_total": 19.643320099959965,
+        "frames": 1695,
+        "monitor_s_total": 0.004044800065457821,
+        "real_time_factor": 0.08684532389387827,
+        "recognise_s_total": 9.809476799942786,
+        "wall_real_time_factor": 0.32795039911505114,
+        "wall_s": 37.05839510000078
+      },
+      "plate": "gear"
+    },
+    "S18A05I01": {
+      "agreement_with_checkpoint_run": {
+        "lh": 1.0,
+        "rh": 0.9978494623655914
+      },
+      "deviations": [
+        {
+          "detected_at": 155,
+          "end_frame": 147,
+          "evidence": {
+            "duration_s": 0.9333333333333333,
+            "kind": "too_short",
+            "window_s": [
+              2.1786666666666665,
+              10.877333333333326
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.4,
+          "start_frame": 134,
+          "step": "iusn"
+        },
+        {
+          "detected_at": 236,
+          "end_frame": 228,
+          "evidence": {
+            "duration_s": 1.6666666666666667,
+            "kind": "too_short",
+            "window_s": [
+              1.7006666666666668,
+              8.951333333333336
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 2.1333333333333333,
+          "start_frame": 204,
+          "step": "isbn"
+        },
+        {
+          "detected_at": 268,
+          "end_frame": 260,
+          "evidence": {
+            "duration_s": 1.4,
+            "kind": "too_short",
+            "window_s": [
+              1.7006666666666668,
+              8.951333333333336
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.8666666666666667,
+          "start_frame": 240,
+          "step": "isbn"
+        },
+        {
+          "detected_at": 320,
+          "end_frame": 312,
+          "evidence": {
+            "duration_s": 0.8666666666666667,
+            "kind": "too_short",
+            "window_s": [
+              1.2,
+              16.273333333333333
+            ]
+          },
+          "kind": "duration",
+          "latency_s": 1.3333333333333333,
+          "start_frame": 300,
+          "step": "sntn"
+        },
+        {
+          "detected_at": 464,
+          "end_frame": null,
+          "evidence": {},
+          "kind": "omission",
+          "latency_s": null,
+          "start_frame": null,
+          "step": "sspn"
+        }
+      ],
+      "frames": 465,
+      "latency": {
+        "chunks": 31,
+        "compute_s_max": 0.059709499997552484,
+        "compute_s_p50": 0.05251630001293961,
+        "compute_s_p95": 0.05908120000822237,
+        "decode_s_total": 5.56554009996762,
+        "frames": 465,
+        "monitor_s_total": 0.0011137000401504338,
+        "real_time_factor": 0.05076691935790868,
+        "recognise_s_total": 1.5726608000550186,
+        "wall_real_time_factor": 0.29630168709686144,
+        "wall_s": 9.185352300002705
+      },
+      "plate": "general"
+    }
+  }
+}

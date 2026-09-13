@@ -24,7 +24,7 @@ Every hit was read in context; the verdicts are below.
 | robustness to unseen error types | no | `docs/what_this_does_not_show.md` "Synthetic violations are not real violations"; SOP reports keep synthetic and native tables apart | HA-ViD native `wrong`: 67 segments, 0 of 12 detected on val (`havid_dev_v8`) and 0 of 16 on the test subjects (`havid_test_v1`) — the README table's "HA-ViD `wrong` 段數未公布" is now measured, and the permitted wording still applies |
 | a VLM can detect errors | no | `README.md` lists the VLM verifier as not built; `docs/review.md` reserves `second_opinion` as not implemented | no VLM has been run |
 | commercially usable | no | `MODEL_CARD.md` licence section and `docs/what_this_does_not_show.md`: HA-ViD derivatives are CC BY-NC 4.0 | `docs/decisions/0001-dataset-and-licences.md`, `sop/ha-vid/NOTICE.md` |
-| real-time on arbitrary hardware | no | the only "real-time" mentions are the README table itself; `docs/what_this_does_not_show.md` states that no streaming throughput is measured | W4 not built; all timings are training / extraction wall times on one RTX 4090 |
+| real-time on arbitrary hardware | no | real-time numbers are stated for one RTX 4090 and replayed files only, with the curve (`reports/stream_bench_v1_dinov2`, `havid_dev_v11_online_head_*`); `docs/what_this_does_not_show.md` lists what is not measured | 24 streams decoded and embedded at 15 fps on one machine; one station end to end at 0.32 × real time |
 | synthetic violations = real violations | no | synthetic and native tables are separate in every SOP report, and the synthetic table's heading says "synthetic" | `reports/havid_dev_v4`–`v8` `tables.md` |
 
 ## Wording rules the audit checks for

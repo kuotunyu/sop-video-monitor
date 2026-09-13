@@ -23,9 +23,12 @@ Written against the state of 2026-09-14. Each line names the evidence that is mi
   is flagged by the SOP checks. Any statement about deployable SOP monitoring waits for a better
   recogniser.
 - **No atomic-action (219-class) results, no ASFormer, no fine-tuned or video (clip) features.**
-- **No real-time measurement.** Training and feature extraction times are recorded; throughput of a
-  streaming pipeline (RTSP replay, decode, ring buffer, batching) on the RTX 4090 is not measured
-  (W4 not built). "Causal" means the model uses no future frames, not that it runs in real time.
+- **Real-time on one machine only, and only for replayed files.** On one RTX 4090, 24 paced 15 fps
+  streams are decoded and embedded without falling behind (`reports/stream_bench_v1_dinov2`), and
+  one station's three cameras run from mp4 to deviations at 0.32 × real time
+  (`reports/havid_dev_v11_online_head_features`). Nothing is measured with live cameras, RTSP,
+  network jitter, other GPUs, or several stations' heads at once. The streamed heads recompute the
+  prefix, so their cost grows with the recording length.
 
 ## SOP checks and errors
 
