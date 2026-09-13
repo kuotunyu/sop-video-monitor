@@ -143,6 +143,38 @@ def segments_from_frames(pairs: Iterable[tuple[int, str]]) -> list[TemporalSegme
     return segments
 
 
+def smooth_segments(segments: Sequence[TemporalSegment], min_frames: int) -> list[TemporalSegment]:
+    """Absorb every segment shorter than ``min_frames`` into its predecessor (the first one into
+    its successor) and merge the same-label neighbours that result; ``min_frames <= 1`` is a no-op.
+
+    Meant for predicted per-hand segments: a recogniser's blips shorter than the shortest step in
+    the training annotations (their 1st percentile) cannot be steps, and a short gap inside a step
+    should not split it. Ground truth is never smoothed.
+    """
+    if min_frames <= 1 or not segments:
+        return list(segments)
+    kept: list[TemporalSegment] = []
+    pending_start: int | None = None
+    for s in segments:
+        if s.n_frames < min_frames:
+            if kept:
+                last = kept[-1]
+                kept[-1] = TemporalSegment(last.start, s.end, last.label)
+            else:
+                pending_start = s.start if pending_start is None else pending_start
+            continue
+        start = s.start if pending_start is None else pending_start
+        pending_start = None
+        if kept and kept[-1].label == s.label and kept[-1].end + 1 == start:
+            kept[-1] = TemporalSegment(kept[-1].start, s.end, s.label)
+        else:
+            kept.append(TemporalSegment(start, s.end, s.label))
+    if pending_start is not None:  # every segment was short: keep the longest label as one segment
+        longest = max(segments, key=lambda s: (s.n_frames, -s.start))
+        kept.append(TemporalSegment(segments[0].start, segments[-1].end, longest.label))
+    return kept
+
+
 def gt_segments(
     temporal_zip: Path, recordings: Iterable[str]
 ) -> dict[str, dict[str, list[TemporalSegment]]]:
@@ -155,9 +187,10 @@ def gt_segments(
 
 
 def predicted_segments(
-    run_dirs: Mapping[str, Path], run_name: str
+    run_dirs: Mapping[str, Path], run_name: str, min_frames: int = 0
 ) -> dict[str, dict[str, list[TemporalSegment]]]:
-    """Per-hand predicted segments of one run column from two per-hand run directories."""
+    """Per-hand predicted segments of one run column from two per-hand run directories,
+    optionally smoothed with :func:`smooth_segments`."""
     per_hand: dict[str, dict[str, list[TemporalSegment]]] = {}
     for hand, run_dir in run_dirs.items():
         config = json.loads((run_dir / "config.json").read_text(encoding="utf-8"))
@@ -165,7 +198,10 @@ def predicted_segments(
         frames: dict[str, list[tuple[int, str]]] = defaultdict(list)
         for row in read_predictions(run_dir / "predictions_val.csv"):
             frames[row.video_id].append((row.frame, labels[str(row.preds[run_name])]))
-        per_hand[hand] = {rec: segments_from_frames(pairs) for rec, pairs in frames.items()}
+        per_hand[hand] = {
+            rec: smooth_segments(segments_from_frames(pairs), min_frames)
+            for rec, pairs in frames.items()
+        }
     recordings = set(per_hand["lh"])
     if recordings != set(per_hand["rh"]):
         raise ValueError("the two per-hand runs cover different recordings")
@@ -677,11 +713,12 @@ def run_havid_sop(
     run_name: str,
     out_dir: Path,
     seed: int = 0,
+    min_segment_frames: int = 0,
 ) -> dict[str, object]:
     """Build the val step sequences (ground truth and predicted), evaluate, write the run directory."""
     val = sorted({row["recording"] for row in read_split(split_dir / "val.csv")})
     gt = gt_segments(temporal_zip, val)
-    pred = predicted_segments(run_dirs, run_name)
+    pred = predicted_segments(run_dirs, run_name, min_segment_frames)
     if set(pred) != set(gt):
         raise ValueError("predicted recordings differ from the val split")
     gt_sequences = sequences_of(gt)
@@ -695,6 +732,7 @@ def run_havid_sop(
         "prediction_runs": {hand: p.as_posix() for hand, p in run_dirs.items()},
         "run": run_name,
         "seed": seed,
+        "min_segment_frames": min_segment_frames,
         "fps": FPS,
         "val_recordings": len(val),
     }
@@ -847,6 +885,9 @@ def learn_havid_sop(
     return {
         "recordings": len(train),
         "plates": dict(Counter(plates.values())),
+        "step_frames_q01": int(
+            np.quantile([s.n_frames for steps in sequences.values() for s in steps], 0.01)
+        ),
         "graphs": {
             plate: {
                 "nodes": len(graphs[plate].nodes_of("PT")),

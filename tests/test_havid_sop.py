@@ -305,3 +305,15 @@ def test_synthetic_table_reports_per_step_false_alarms() -> None:
     assert table["synthetic"]["order"]["step_false_alarm_rate"] == pytest.approx(1 / 8)
     assert table["synthetic"]["duration"]["clean_steps_flagged"] == 0
     assert "clean_steps_flagged" not in table["synthetic"]["omission"]
+
+
+def test_smooth_segments_absorbs_blips_and_merges_neighbours() -> None:
+    from sop_monitor.havid_sop import smooth_segments
+
+    segments = [S(0, 9, "a"), S(10, 11, "b"), S(12, 20, "a"), S(21, 22, "c"), S(23, 40, "d")]
+    assert smooth_segments(segments, 0) == segments
+    assert smooth_segments(segments, 3) == [S(0, 22, "a"), S(23, 40, "d")]  # c joins a
+    # a leading blip joins its successor; an all-blip sequence keeps the longest label
+    assert smooth_segments([S(0, 1, "x"), S(2, 9, "y")], 3) == [S(0, 9, "y")]
+    assert smooth_segments([S(0, 1, "x"), S(2, 3, "y"), S(4, 4, "z")], 3) == [S(0, 4, "x")]
+    assert smooth_segments([], 5) == []

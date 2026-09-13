@@ -72,7 +72,7 @@ CLI `sop-monitor` 的命令依流程分組：
 - Frozen test split 上的任何數字（IndustReal 與 HA-ViD 皆需要明確決定後一次性執行）。
 - RTSP 重播（mediamtx）、decode thread、batch collector、watchdog、shared-memory ring buffer、backpressure 曲線（W4）。
 - ASFormer、late fusion、VideoMAE-V2 clip 特徵、view-ablation、任何圖（W2–W3）。
-- W3 剩餘：以說明書的 step 粒度合併同一子組件的螺絲步驟、預測序列先做 segment smoothing／最短時長解碼再進檢查、偏差佇列；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
+- W3 剩餘：以說明書的 step 粒度合併同一子組件的螺絲步驟、偏差佇列、更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
 - 複核 UI、deviation queue、VLM verifier（W5）。
 - `MODEL_CARD.md`、`docs/claims_audit.md`、`docs/what_this_does_not_show.md`（W6）；GitHub／Hugging Face 上尚未發布。
 

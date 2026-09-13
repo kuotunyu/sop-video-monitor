@@ -747,7 +747,10 @@ def learn_havid_sop_cmd(
         high_q,
         min_agreement=min_agreement,
     )
-    typer.echo(f"{summary['recordings']} train recordings, plates {summary['plates']}")
+    typer.echo(
+        f"{summary['recordings']} train recordings, plates {summary['plates']}, "
+        f"1st percentile of step length {summary['step_frames_q01']} frames"
+    )
     for plate, info in summary["graphs"].items():  # type: ignore[union-attr]
         typer.echo(
             f"{plate}: {info['nodes']} steps, {info['edges']} edges, "
@@ -795,12 +798,25 @@ def havid_sop_cmd(
     split_dir: Annotated[Path, typer.Option()] = Path("splits/ha-vid"),
     graphs: Annotated[Path, typer.Option(help="Learned JSON directory")] = Path("sop/ha-vid"),
     seed: Annotated[int, typer.Option()] = 0,
+    min_segment_frames: Annotated[
+        int,
+        typer.Option(
+            help="Absorb predicted segments shorter than this into their neighbour (0 = off)"
+        ),
+    ] = 0,
 ) -> None:
     """Val step sequences (ground truth and predicted), SOP checks, synthetic violations, native w."""
     from sop_monitor.havid_sop import render_sop_tables, run_havid_sop
 
     payload = run_havid_sop(
-        temporal, split_dir, graphs, {"lh": pred_lh, "rh": pred_rh}, run_name, out, seed
+        temporal,
+        split_dir,
+        graphs,
+        {"lh": pred_lh, "rh": pred_rh},
+        run_name,
+        out,
+        seed,
+        min_segment_frames,
     )
     typer.echo(render_sop_tables(payload))
     typer.echo(f"-> {out}")

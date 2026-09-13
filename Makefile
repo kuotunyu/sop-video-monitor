@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -84,7 +84,7 @@ tune-havid-sop:  ## Leave-one-subject-out grid over (min support, min agreement)
 	$(UV) run sop-monitor tune-havid-sop --temporal $(HAVID)/HAViD_temporalAnnotation.zip --split-dir splits/ha-vid --out reports/havid_dev_v5_sop_tuned/oof.json
 
 havid-sop-v5:  ## havid_dev_v5: the v4 evaluation with the knowledge learned under the settings tune-havid-sop selected (sop/ha-vid/tuned; set SUPPORT, AGREEMENT, LOWQ, HIGHQ).
-	$(UV) run sop-monitor learn-havid-sop --temporal $(HAVID)/HAViD_temporalAnnotation.zip --split-dir splits/ha-vid --out sop/ha-vid/tuned --min-support $(or $(SUPPORT),20) --min-agreement $(or $(AGREEMENT),0.9) --low-q $(or $(LOWQ),0.01) --high-q $(or $(HIGHQ),0.99)
+	$(UV) run sop-monitor learn-havid-sop --temporal $(HAVID)/HAViD_temporalAnnotation.zip --split-dir splits/ha-vid --out sop/ha-vid/tuned --min-support $(or $(SUPPORT),20) --min-agreement $(or $(AGREEMENT),1.0) --low-q $(or $(LOWQ),0.01) --high-q $(or $(HIGHQ),0.99)
 	$(UV) run sop-monitor havid-sop --pred-lh reports/havid_dev_v3_tas_f1sel_lh --pred-rh reports/havid_dev_v3_tas_f1sel_rh --run-name fusion_causal --graphs sop/ha-vid/tuned --out reports/havid_dev_v5_sop_tuned
 
 havid-tas-i3d:  ## havid_dev_v2: the same protocol on the official I3D features (control).
@@ -111,3 +111,6 @@ psr-train:  ## industreal_dev_v5: fit on the 36 train recordings, in-sample deco
 
 psr-nested:  ## industreal_dev_v6: nested decoder selection, seeds 0-2, no latency budget.
 	$(UV) run sop-monitor train-psr --features $(FEATURES_VITS) --psr-dir $(INDUSTREAL)/psr --train-split splits/industreal/train.csv --eval-split splits/industreal/val.csv --selection nested --seed 0 --seed 1 --seed 2 --out reports/industreal_dev_v6_psr_nested
+
+havid-sop-v6:  ## havid_dev_v6: v5 knowledge with the predicted segments smoothed (blips shorter than the train 1st-percentile step length, 11 frames, absorbed).
+	$(UV) run sop-monitor havid-sop --pred-lh reports/havid_dev_v3_tas_f1sel_lh --pred-rh reports/havid_dev_v3_tas_f1sel_rh --run-name fusion_causal --graphs sop/ha-vid/tuned --min-segment-frames 11 --out reports/havid_dev_v6_sop_smoothed

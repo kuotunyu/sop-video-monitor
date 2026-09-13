@@ -155,3 +155,12 @@ support-3 files that v4 reproduces. On val this halves the ground-truth order fa
 unchanged at 100 %; the predicted sequences of the v3 recogniser are still flagged everywhere, so
 the next SOP work is instruction-sheet step granularity and segment smoothing before the checks,
 not the rule.
+
+## 2026-09-13 — post-hoc smoothing of predicted sequences does not rescue the SOP checks
+
+`havid-sop --min-segment-frames 11` (the train 1st-percentile step length) absorbs the v3
+recogniser's blips before the checks (`reports/havid_dev_v6_sop_smoothed`). It brings the
+predicted step count in line with the ground truth (354 → 189 on val) and halves the duration
+step false alarms, but every val recording still misses 1–4 mandatory steps and all 18 stay
+flagged. Decision: smoothing stays an option (off by default); the deployable violation numbers
+wait for a better recogniser, not for more post-processing.
