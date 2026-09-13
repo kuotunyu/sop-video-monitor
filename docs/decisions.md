@@ -137,3 +137,21 @@ trigger B foresaw. Consequence: the synthetic table is the headline violation ta
 synthetic); the native table stays a count with a Wilson interval; the next SOP work is
 per-variant or majority-rule graphs and a k-of-n duration rule, and the recogniser (F1@10 ≈ 30)
 is the bottleneck for the deployable numbers.
+
+## 2026-09-13 — SOP knowledge is selected out of fold on train; the majority rule is rejected
+
+`tune-havid-sop` runs leave-one-subject-out over the 17 train subjects for min support ∈ {3, 5,
+10, 20} × min agreement ∈ {1.0, 0.95, 0.9, 0.8} and duration quantiles {[5, 95], [2, 98],
+[1, 99]} %, with a selection rule fixed before val is read (coverage minus recording-level false
+alarms; narrowest duration window with ≤ 5 % step false alarms, else the widest). Result
+(`reports/havid_dev_v5_sop_tuned/oof.json`): every agreement threshold below 1.0 raises the
+out-of-fold false alarms at every support (support 20: 32 % → 40–54 %), so edges must be
+universal; support 20 with the strict rule keeps 26 of 78 edges and scores best (coverage 90 %,
+recording false alarms 32 %, step false alarms 5.6 %). No duration window reaches 5 % step false
+alarms ([1, 99] % gives 6.6 %); the widest is used. Decision: `sop/ha-vid/tuned/` (support 20,
+agreement 1.0, [1, 99] %) is the HA-ViD SOP knowledge from now on; `sop/ha-vid/` keeps the
+support-3 files that v4 reproduces. On val this halves the ground-truth order false alarms
+(16 → 8 of 18; 8.5 % of steps) and trims the duration ones (14 → 11; 6.0 % of steps) with recall
+unchanged at 100 %; the predicted sequences of the v3 recogniser are still flagged everywhere, so
+the next SOP work is instruction-sheet step granularity and segment smoothing before the checks,
+not the rule.

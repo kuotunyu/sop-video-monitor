@@ -1,0 +1,192 @@
+{
+  "duration": [
+    {
+      "high_q": 0.95,
+      "low_q": 0.05,
+      "step_false_alarm_rate": 0.15280777537796977,
+      "steps": 1852
+    },
+    {
+      "high_q": 0.98,
+      "low_q": 0.02,
+      "step_false_alarm_rate": 0.08585313174946005,
+      "steps": 1852
+    },
+    {
+      "high_q": 0.99,
+      "low_q": 0.01,
+      "step_false_alarm_rate": 0.06587473002159827,
+      "steps": 1852
+    }
+  ],
+  "order": [
+    {
+      "coverage": 0.986013986013986,
+      "edges_full_train": 78,
+      "min_agreement": 1.0,
+      "min_support": 3,
+      "recording_false_alarm_rate": 0.9300699300699301,
+      "recordings": 143,
+      "score": 0.05594405594405594,
+      "step_false_alarm_rate": 0.36825053995680346
+    },
+    {
+      "coverage": 0.986013986013986,
+      "edges_full_train": 81,
+      "min_agreement": 0.95,
+      "min_support": 3,
+      "recording_false_alarm_rate": 0.9300699300699301,
+      "recordings": 143,
+      "score": 0.05594405594405594,
+      "step_false_alarm_rate": 0.408207343412527
+    },
+    {
+      "coverage": 0.986013986013986,
+      "edges_full_train": 83,
+      "min_agreement": 0.9,
+      "min_support": 3,
+      "recording_false_alarm_rate": 0.9440559440559441,
+      "recordings": 143,
+      "score": 0.04195804195804198,
+      "step_false_alarm_rate": 0.47570194384449244
+    },
+    {
+      "coverage": 1.0,
+      "edges_full_train": 89,
+      "min_agreement": 0.8,
+      "min_support": 3,
+      "recording_false_alarm_rate": 0.986013986013986,
+      "recordings": 143,
+      "score": 0.013986013986013957,
+      "step_false_alarm_rate": 0.5615550755939525
+    },
+    {
+      "coverage": 0.9790209790209791,
+      "edges_full_train": 53,
+      "min_agreement": 1.0,
+      "min_support": 5,
+      "recording_false_alarm_rate": 0.8321678321678322,
+      "recordings": 143,
+      "score": 0.14685314685314688,
+      "step_false_alarm_rate": 0.1652267818574514
+    },
+    {
+      "coverage": 0.9790209790209791,
+      "edges_full_train": 56,
+      "min_agreement": 0.95,
+      "min_support": 5,
+      "recording_false_alarm_rate": 0.8391608391608392,
+      "recordings": 143,
+      "score": 0.1398601398601399,
+      "step_false_alarm_rate": 0.2068034557235421
+    },
+    {
+      "coverage": 0.9790209790209791,
+      "edges_full_train": 61,
+      "min_agreement": 0.9,
+      "min_support": 5,
+      "recording_false_alarm_rate": 0.8811188811188811,
+      "recordings": 143,
+      "score": 0.09790209790209792,
+      "step_false_alarm_rate": 0.2818574514038877
+    },
+    {
+      "coverage": 1.0,
+      "edges_full_train": 70,
+      "min_agreement": 0.8,
+      "min_support": 5,
+      "recording_false_alarm_rate": 0.951048951048951,
+      "recordings": 143,
+      "score": 0.04895104895104896,
+      "step_false_alarm_rate": 0.37742980561555073
+    },
+    {
+      "coverage": 0.916083916083916,
+      "edges_full_train": 38,
+      "min_agreement": 1.0,
+      "min_support": 10,
+      "recording_false_alarm_rate": 0.7132867132867133,
+      "recordings": 143,
+      "score": 0.2027972027972027,
+      "step_false_alarm_rate": 0.1285097192224622
+    },
+    {
+      "coverage": 0.916083916083916,
+      "edges_full_train": 41,
+      "min_agreement": 0.95,
+      "min_support": 10,
+      "recording_false_alarm_rate": 0.7202797202797203,
+      "recordings": 143,
+      "score": 0.19580419580419572,
+      "step_false_alarm_rate": 0.17116630669546437
+    },
+    {
+      "coverage": 0.9370629370629371,
+      "edges_full_train": 46,
+      "min_agreement": 0.9,
+      "min_support": 10,
+      "recording_false_alarm_rate": 0.7832167832167832,
+      "recordings": 143,
+      "score": 0.15384615384615385,
+      "step_false_alarm_rate": 0.24892008639308855
+    },
+    {
+      "coverage": 1.0,
+      "edges_full_train": 54,
+      "min_agreement": 0.8,
+      "min_support": 10,
+      "recording_false_alarm_rate": 0.8881118881118881,
+      "recordings": 143,
+      "score": 0.11188811188811187,
+      "step_false_alarm_rate": 0.3304535637149028
+    },
+    {
+      "coverage": 0.9020979020979021,
+      "edges_full_train": 26,
+      "min_agreement": 1.0,
+      "min_support": 20,
+      "recording_false_alarm_rate": 0.32167832167832167,
+      "recordings": 143,
+      "score": 0.5804195804195804,
+      "step_false_alarm_rate": 0.056155507559395246
+    },
+    {
+      "coverage": 0.9020979020979021,
+      "edges_full_train": 33,
+      "min_agreement": 0.95,
+      "min_support": 20,
+      "recording_false_alarm_rate": 0.3986013986013986,
+      "recordings": 143,
+      "score": 0.5034965034965035,
+      "step_false_alarm_rate": 0.1101511879049676
+    },
+    {
+      "coverage": 0.9090909090909091,
+      "edges_full_train": 27,
+      "min_agreement": 0.9,
+      "min_support": 20,
+      "recording_false_alarm_rate": 0.42657342657342656,
+      "recordings": 143,
+      "score": 0.4825174825174825,
+      "step_false_alarm_rate": 0.18304535637149028
+    },
+    {
+      "coverage": 0.986013986013986,
+      "edges_full_train": 34,
+      "min_agreement": 0.8,
+      "min_support": 20,
+      "recording_false_alarm_rate": 0.5384615384615384,
+      "recordings": 143,
+      "score": 0.4475524475524476,
+      "step_false_alarm_rate": 0.2267818574514039
+    }
+  ],
+  "protocol": "leave-one-subject-out on the train split; unperturbed held-out sequences",
+  "selected": {
+    "high_q": 0.99,
+    "low_q": 0.01,
+    "min_agreement": 1.0,
+    "min_support": 20
+  },
+  "subjects": 17
+}

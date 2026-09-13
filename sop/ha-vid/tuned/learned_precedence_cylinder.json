@@ -1,0 +1,80 @@
+{
+  "edges": {
+    "precedesPT": [
+      [
+        "ibacb",
+        "scccb"
+      ],
+      [
+        "ibscb",
+        "ibacb"
+      ],
+      [
+        "ickcb",
+        "scccb"
+      ],
+      [
+        "ickcb",
+        "sshc1dh"
+      ],
+      [
+        "ickcb",
+        "sshc2dh"
+      ],
+      [
+        "ickcb",
+        "sshc3dh"
+      ],
+      [
+        "ickcb",
+        "sshc4dh"
+      ],
+      [
+        "pckbx",
+        "sshc1dh"
+      ],
+      [
+        "pckbx",
+        "sshc3dh"
+      ],
+      [
+        "scccb",
+        "lck"
+      ]
+    ]
+  },
+  "nodes": {
+    "ibacb": "PrimitiveTask",
+    "ibscb": "PrimitiveTask",
+    "icbck": "PrimitiveTask",
+    "iccck": "PrimitiveTask",
+    "ickcb": "PrimitiveTask",
+    "ickcc": "PrimitiveTask",
+    "ishc1": "PrimitiveTask",
+    "ishc2": "PrimitiveTask",
+    "ishc3": "PrimitiveTask",
+    "ishc4": "PrimitiveTask",
+    "ishck": "PrimitiveTask",
+    "lck": "PrimitiveTask",
+    "pbabs": "PrimitiveTask",
+    "pbsba": "PrimitiveTask",
+    "pcbbx": "PrimitiveTask",
+    "pckbx": "PrimitiveTask",
+    "pcsbx": "PrimitiveTask",
+    "scbcc": "PrimitiveTask",
+    "scccb": "PrimitiveTask",
+    "sshc1": "PrimitiveTask",
+    "sshc1dh": "PrimitiveTask",
+    "sshc1dp": "PrimitiveTask",
+    "sshc2": "PrimitiveTask",
+    "sshc2dh": "PrimitiveTask",
+    "sshc2dp": "PrimitiveTask",
+    "sshc3": "PrimitiveTask",
+    "sshc3dh": "PrimitiveTask",
+    "sshc3dp": "PrimitiveTask",
+    "sshc4": "PrimitiveTask",
+    "sshc4dh": "PrimitiveTask",
+    "sshc4dp": "PrimitiveTask"
+  },
+  "source": "learned from 39 HA-ViD train recordings of the cylinder plate (min support 20, min agreement 1.0)"
+}
