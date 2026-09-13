@@ -248,3 +248,22 @@ L* = 90 frames (a 6 s output delay) whatever L = 90 scores; the rule is applied 
 than relaxed after seeing a near miss. Computed with the then-committed code before the L = 90
 seed-2 runs finished; the full table follows in `reports/havid_dev_v9_step_recall`.
 
+## 2026-09-14 — confirmation length m* = 8 frames; L = 90 turned out dominated by L = 45, so L = 45 is added to the test as a declared amendment
+
+**m\*.** Rule (`docs/havid_test_protocol.md` §2), on `reports/havid_dev_v10_sop_online` at L = 90,
+seeds 0–2: ground-truth recordings flagged at m = 1 are 9 of 18, so m may flag at most 10. m = 1, 4
+and 8 flag 9, 9 and 10; m = 15 and 30 flag 11 and 16. Among the admissible values the predicted
+streams raise 12.8, 10.5 and 9.1 alarms per recording, so m\* = 8 frames (0.47 s). Every clean
+predicted recording is still flagged at every m and look-ahead; m changes how many alarms, not
+whether a recording is flagged.
+
+**L = 90 is worse than L = 45.** With all three seeds (`reports/havid_dev_v9_*`), L = 90 falls below
+L = 45 on mandatory-step frame recall (43.4 vs 49.7 %), all-step recall (38.1 vs 43.2 %), F1@10
+(left 33.4 vs 36.4, right 30.9 vs 32.5) and MoF, at twice the delay. The pre-registered fallback
+("else 90") assumed that more look-ahead never hurts; it does. L\* stays 90 because the protocol
+says so and changing a rule after seeing its outcome is exactly what pre-registration forbids.
+Because the test has not been read, one row is **added** before it: causal L = 45, trained and
+gated like the others and labelled in every test table as "added after the val results, not
+pre-registered". The protocol file records the amendment; L\* = 90 remains the pre-registered
+online operating point.
+

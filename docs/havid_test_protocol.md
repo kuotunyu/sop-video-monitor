@@ -74,3 +74,14 @@ the test uses the retrained networks; the difference is named in the test report
 - After the run, `docs/claims_audit.md` and `docs/what_this_does_not_show.md` are updated; only then
   may the wording "on HA-ViD's fixed three views, held-out subjects" be used, and only for these
   rows.
+
+## 6. Amendment (2026-09-14, before any test data were read)
+
+Applied selections: L\* = 90 frames, m\* = 8 frames (`docs/decisions.md`, 2026-09-14).
+With all val seeds, L = 90 turned out worse than L = 45 on every recogniser and step-recall metric,
+so the fallback of §2 picked a dominated setting. L\* is **not** changed. One row is added to §4
+and §5: causal L = 45, three seeds, both hands, retrained with checkpoints, passed through the same
+reproducibility gate, evaluated in the same single test run, and labelled "added after the val
+results, not pre-registered" wherever it appears. The test rows are therefore L = 0, L\* = 90,
+offline, and the declared amendment L = 45.
+
