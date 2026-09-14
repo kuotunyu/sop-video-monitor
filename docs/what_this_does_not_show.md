@@ -58,6 +58,15 @@ Written against the state of 2026-09-14. Each line names the evidence that is mi
 - **No static result figures.** Results are tables; the only figures are the animated mechanism
   figures under `docs/assets/` and the Mermaid structure diagrams.
 
+## Non-goals (design spec §2)
+
+- No object-detection main line and no bounding boxes as the primary output; HA-ViD's CVAT boxes
+  are only an aid in the review UI.
+- No real cameras, no DeepStream, no edge deployment.
+- No multi-node or distributed training; every number comes from one RTX 4090.
+- No chase of the HA-ViD leaderboard: the official test bundle does not state its subject rule and is
+  not comparable with this project's subject-wise split.
+
 ## Scope and licences
 
 - **No commercial use** is possible with the HA-ViD derivatives (CC BY-NC 4.0).
