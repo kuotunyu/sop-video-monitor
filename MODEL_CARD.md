@@ -110,6 +110,7 @@ all official train subjects.
 
 Code: Apache-2.0. HA-ViD derivatives are non-commercial (CC BY-NC 4.0): the cached features, any
 trained weights, the learned procedure knowledge in `sop/ha-vid/` and the committed HA-ViD
-prediction and step tables under `reports/havid_*`. Raw videos, annotations, feature caches and
+prediction and step tables under `reports/havid_*`, and the animated timeline figure
+`docs/assets/sop_timeline.gif` drawn from those tables. Raw videos, annotations, feature caches and
 weights are not in the repository. Feature caches record the extractor, weights hash, torch version
 and GPU in their `meta.json`; every run directory records its configuration and runtime.

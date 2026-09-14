@@ -279,3 +279,17 @@ by the SOP checks; native `w` 0 of 16. Consequences: the test split is not used 
 selection; further HA-ViD development (better recogniser, duration windows, which the test shows to
 generalise worst) continues on val, and any future test claim needs a new held-out source.
 
+## 2026-09-14 — figures are animations rendered from the committed tables, with Manim in its own dependency group
+
+The repository had no figure. `figures/` holds five Manim Community scenes and `make figures`
+renders them to `docs/assets/*.gif` (800 px, 12 fps, palette-optimised by ffmpeg without dithering:
+Manim's own GIF export dithers the dark surface into noise and is about a hundred times larger).
+The timeline figure is not drawn by hand: `sop_monitor.figures.load_timeline` reads a SOP run's step
+table and an online replay's deviation table, so it shows the same alarms as the reports and stays
+honest about them (the predicted stream of every val recording is flagged). Colours follow the
+data-viz reference palette: one hue for step bars, the reserved status colours plus a glyph and a
+label for alarms, the validated three categorical slots for the camera views. Manim lives in the
+`figures` dependency group, outside CI's install and outside `reproduce-lite`; the loaders in
+`sop_monitor.figures` import no Manim and are tested in CI. GIFs are the only binaries the hygiene
+test allows, and only under `docs/assets/`.
+

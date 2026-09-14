@@ -2,7 +2,7 @@
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-> **狀態：IndustReal 開發線已收斂到可重算的最佳設定；HA-ViD 已於 2026-09-12 取得並完成 W1 資料稽核與 split 凍結，val 上已有離線 TAS 基線（三 seed，`reports/havid_dev_v7_tas_seeds_*`）與從 train 學出的 SOP 檢查層（`reports/havid_dev_v8_sop_sheet`）；沒有任何正式（frozen test split）成果。**
+> **狀態：HA-ViD 的 frozen test split 已依事先登記的 protocol 評估過一次（[`reports/havid_test_v1.md`](reports/havid_test_v1.md)：held-out subjects 上 causal 辨識器 F1@10 27–34，offline 40–42；SOP 檢查在預測序列上仍把每支錄影標記為有偏差），之後不再使用；其餘 HA-ViD 與 IndustReal 數字都是 validation split 上的開發結果。**
 > 目前最佳開發結果（validation split，不是 headline）：frozen DINOv2 ViT-B/14 特徵 + causal MS-TCN++ state head +
 > procedure-prior decoder，decoder／延遲預算／訓練長度全部在 out-of-fold 上選，POS 0.642 ± 0.035、
 > F1 0.821 ± 0.004、mean delay 23.6 s（[`reports/industreal_dev_v11_psr_epochsel_f1/`](reports/industreal_dev_v11_psr_epochsel_f1/)）。
@@ -16,6 +16,10 @@ SOP 狀態機依 task precedence graph 檢查順序、時長與遺漏，把偏�
 只對被標記的片段提供非同步第二意見。所有辨識指標在 subject-wise 凍結測試集上附 bootstrap CI；串流層附
 backpressure 實測曲線。**以上是設計目標，不是現況。** 現況、決策與未完成清單見下方與
 [`docs/decisions.md`](docs/decisions.md)。
+
+![三路攝影機經 frozen DINOv2、每視角的 causal MS-TCN++、late fusion 進入線上 SOP 監控的動畫](docs/assets/pipeline.gif)
+
+*元件順序的示意動畫（`make figures`，Manim）；彈出的警報只是示意。真實資料的逐影格重播見下方[動畫圖說](#動畫圖說)。*
 
 ## 目前有什麼
 
@@ -46,6 +50,7 @@ backpressure 實測曲線。**以上是設計目標，不是現況。** 現況�
 | `havid_sop.py` | HA-ViD SOP 層：雙手 primitive-task 步驟序列、從標籤詞彙判斷 plate、從 train 學 precedence graph／必要步驟／時長界限、synthetic 順序／遺漏／時長違規表、原生 `w` 表；`reproduce-lite` 可從 CSV 重算 |
 | `online.py` | 線上 SOP 監控：逐影格輸入雙手標籤，run-length 最短時長確認、雙手步驟合併；順序／未知步驟在步驟確認時、過長在超過上界的當下、過短在步驟結束時、遺漏在錄影結束時送出，每筆偏差帶偵測影格與延遲；`min_frames=1` 時結果等於離線 `check_sequence`（同一影格開始的步驟視為同時） |
 | `online_head.py` | 線上辨識器：每個視角的 causal MS-TCN++ checkpoint 以串流方式接收特徵（causal 保證前綴推論等於整段推論）、逐影格 fusion、依 look-ahead 延遲輸出，雙手標籤齊了就送進線上 SOP 監控；可從快取特徵或解碼影片 + DINOv2 餵入，記錄每個 chunk 的運算延遲與相對 checkpoint run 的一致率 |
+| `figures.py` | 動畫圖的資料與樣式（不 import Manim）：從已 commit 的 `steps_*.csv` 與 `deviations_*.csv` 讀出步驟條與警報、狀態色與字形對照；場景在 `figures/`，`make figures` 渲染成 `docs/assets/*.gif` |
 | `havid_step_recall.py` | 辨識器在說明書步驟層級的診斷：每組 run（例如同一 look-ahead 的雙手 × 三 seed）與一個預測欄位，彙整每個 ground-truth 步驟的 val 影格中被預測成同一步驟的比例，並標出所屬 plate 與是否為必要步驟；`reproduce-lite` 從已 commit 的預測表重算 |
 | `havid_online.py` | 把 val 錄影的雙手標籤串流（ground truth 或 causal 辨識器輸出，含 look-ahead 輸出延遲）逐影格重播進線上 SOP 監控，對 min_frames 格點記錄每筆偏差的偵測影格；彙總旗標錄影數、每錄影警報數、首次警報時間、距錄影結束的提前量，並在 min_frames 1 對照離線檢查；`reproduce-lite` 從 CSV 重算 |
 | `review.py`、`review_page.py` | 偏差佇列與本機複核介面（W5）：SOP 檢查結果轉成佇列項目、三視角同步播放、接受／退回寫入 append-only JSONL、人工判定的 precision；只綁 127.0.0.1、只供應 val 影片（見 `docs/review.md`） |
@@ -91,10 +96,25 @@ SOP 檢查在 ground truth 上找得到所有 synthetic 違規，但預測序列
 - HA-ViD 的線上 PSR 式指標（completion 定義未定）、aa 層；辨識器（test 上 causal F1@10 27–34）是整條線的瓶頸，短的 insert 步驟連 offline 都認不出來。
 - IndustReal 的 test split（開發用資料集，不評估）；HA-ViD test 已用過一次，不能再拿來選模型或設定。
 - RTSP 重播（mediamtx 未安裝）、跨行程的 shared-memory ring buffer、多站同時跑辨識頭的並行量測（W4 剩餘）。已量測：一張 RTX 4090 可即時解碼並抽特徵 24 路 15 fps 攝影機（`reports/stream_bench_v1_dinov2`），單站三視角從 mp4 到偏差為 0.32 倍即時（`reports/havid_dev_v11_online_head_features`）。
-- ASFormer、學習式 fusion、VideoMAE-V2 clip 特徵、任何圖（W2–W3）；三視角 late fusion 與單視角對照已在 `reports/havid_dev_v1`–`v7`。
+- ASFormer、學習式 fusion、VideoMAE-V2 clip 特徵（W2–W3）；三視角 late fusion 與單視角對照已在 `reports/havid_dev_v1`–`v7`。靜態結果圖仍然沒有，只有 `docs/assets/` 的動畫。
 - W3 剩餘：更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟；`v8` 的說明書粒度把 ground truth 的順序誤報降到 4/18，但預測序列仍全數被標記）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
 - VLM verifier（W5 剩餘；需要下載模型權重）；偏差佇列與複核介面已完成（`docs/review.md`），尚無真人複核結果。
 - GitHub／Hugging Face 上尚未發布（W6 文件已寫：[`MODEL_CARD.md`](MODEL_CARD.md)、[`docs/claims_audit.md`](docs/claims_audit.md)、[`docs/what_this_does_not_show.md`](docs/what_this_does_not_show.md)）。
+
+## 動畫圖說
+
+五支 GIF 由 [`figures/`](figures/) 的 Manim 場景渲染（`make figures`）；每支的來源與授權見
+[`docs/assets/README.md`](docs/assets/README.md)。
+
+![val 錄影 S18A06I01 逐影格重播：ground truth 與預測的步驟條、每個警報在被偵測到的影格彈出](docs/assets/sop_timeline.gif)
+
+*從 `reports/havid_dev_v8_sop_sheet/steps_val.csv` 與 `havid_dev_v10_sop_online/deviations_val.csv` 直接畫出，不是手繪：ground truth 0 個警報，預測串流 10 個。這就是「辨識器是瓶頸」的樣子。*
+
+| 動畫 | 一句話 |
+|---|---|
+| ![causal 與 offline 的 receptive field](docs/assets/causal_padding.gif) | 左側 padding 的 dilated convolution 只看得到 ≤ t 的影格；對稱 padding 需要未來，所以不是線上結果 |
+| ![look-ahead 是固定的輸出延遲](docs/assets/look_ahead.gif) | 訓練 causal 網路在時間 t 說出第 t − L 影格的標籤：3 秒延遲收回大半差距，6 秒反而比 3 秒差（`reports/havid_dev_v9_step_recall`） |
+| ![ring buffer 的 WAIT 與 DROP_OLDEST](docs/assets/ring_buffer.gif) | 消費者比生產者慢時，WAIT 讓攝影機執行緒落後，DROP_OLDEST 保持緩衝新鮮並計數丟掉的影格 |
 
 ## 非目標與 claim ceiling（設計規格 §2，逐字）
 
@@ -132,6 +152,7 @@ make reproduce-lite   # 從已 commit 的預測表重算所有 run、檢查 tabl
 make psr              # 重跑 IndustReal 目前最佳設定（需要本機 IndustReal、PSR 標註與 ViT-B/14 特徵）
 make features-havid havid-tas-v3 havid-sop-v8   # HA-ViD：特徵 → 辨識器 → SOP 檢查（需要本機 HA-ViD）
 make review-queue review-ui REVIEWER=<name>      # 偏差佇列與本機複核介面（docs/review.md）
+uv sync --group figures && make figures          # 用 Manim 重新渲染 docs/assets/*.gif（需要 ffmpeg）
 make reproduce        # 完整路徑：audit → 特徵 → 離線 TAS → PSR 標註 → precedence graph → psr → reproduce-lite，約 1.5 h
 ```
 
