@@ -41,8 +41,8 @@ audit-havid:  ## HA-ViD W1 audit: temporal annotations x official split x probed
 freeze-havid:  ## Freeze splits/ha-vid from the official subject split (test = official test subjects, val = 6 light train subjects, seed 0).
 	$(UV) run sop-monitor freeze-splits --dataset ha-vid --official $(HAVID)/ActionSegmentation_data.zip --temporal $(HAVID)/HAViD_temporalAnnotation.zip --out-dir splits
 
-extract-psr:  ## Pull only the PSR label CSVs (+ JPEG name ranges) out of the six recording archives.
-	$(UV) run sop-monitor extract-psr-labels --archive $(INDUSTREAL)/val_p1.zip --archive $(INDUSTREAL)/val_p2.zip --archive $(INDUSTREAL)/train_p1.zip --archive $(INDUSTREAL)/train_p2.zip --archive $(INDUSTREAL)/train_p3.zip --archive $(INDUSTREAL)/train_p4.zip --out $(INDUSTREAL)/psr
+extract-psr:  ## Pull only the PSR label CSVs (+ JPEG name ranges) out of the six recording archives; skipped when psr/ already exists (the archives were deleted after extraction).
+	@test -d $(INDUSTREAL)/psr && echo "$(INDUSTREAL)/psr exists: skipping extraction" || $(UV) run sop-monitor extract-psr-labels --archive $(INDUSTREAL)/val_p1.zip --archive $(INDUSTREAL)/val_p2.zip --archive $(INDUSTREAL)/train_p1.zip --archive $(INDUSTREAL)/train_p2.zip --archive $(INDUSTREAL)/train_p3.zip --archive $(INDUSTREAL)/train_p4.zip --out $(INDUSTREAL)/psr
 
 # ---- IndustReal line (metric donor, development): features, learned knowledge, current best PSR ---
 

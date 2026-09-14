@@ -20,16 +20,19 @@ data/external/ha-vid/
                                   temporal_timestamps + collaboration_timestamps (read in place)
   ActionSegmentation_data.zip     official benchmark folder: view*/{groundTruth,splits,mapping.txt}
                                   + features/<video>.npy (I3D, 2048 x T, float64; 630 videos)
-  HAViD_rgb.zip                   all 3 222 blurred mp4s
-  HAViD_rgb/assembly_dataset_mp4_blurred/s01..s30/<video>.mp4   extracted from the zip
+  HAViD_rgb/assembly_dataset_mp4_blurred/s01..s30/<video>.mp4   all 3 222 blurred mp4s (the zip was
+                                  deleted after a verified extraction on 2026-09-14)
   How to read the file names.txt  id scheme (S<subject>A<attempt>I<stage><version><camera>)
-data/external/ha-vid-public/      instruction PDFs and the three OWL precedence graphs (public site)
+data/external/ha-vid-public/      instruction PDFs and the three OWL precedence graphs (public site; extracted,
+                                  zips deleted)
 data/external/industreal/
   rgb/<video_id>.mp4              86 videos from all_rgb_videos.zip (1280x720, mpeg4, 10 fps)
   labels/{train,val,test}.csv     action-recognition labels (participant-disjoint official split)
   psr/<recording>/                PSR_labels*.csv + rgb_index.json for the 52 train/val recordings,
                                   extracted from val_p1..2.zip and train_p1..4.zip by extract-psr-labels
-  *.zip                           the archives themselves (test_p1..3.zip were never downloaded)
+  (archives)                      all_rgb_videos.zip, val_p1..2.zip, train_p1..4.zip and the small zips were
+                                  deleted on 2026-09-14 after extraction; test_p1..3.zip were never downloaded.
+                                  data/manifest.json keeps their names, sizes and hashes as the download record
 artifacts/features/industreal/    DINOv2 frame-feature caches (dinov2_vit{s,b,l}14_s1), fp16 npz per video
 artifacts/features/ha-vid/       dinov2_vitb14_s1/ (483 train+val videos plus the 123 test videos, embedded
                                   once for the one-time test on 2026-09-14) and i3d_official/ (exported I3D)
