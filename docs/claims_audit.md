@@ -1,6 +1,6 @@
 # Claims audit
 
-The README's forbidden-claims table (design spec §2, quoted verbatim in `README.md`) lists seven
+The design spec's forbidden-claims table (§2, quoted verbatim in the appendix below) lists seven
 claims that must not appear in public text. This file records, for each one, whether the repository
 currently makes it, where the permitted wording is used instead, and the evidence the wording rests
 on. Re-run it before any publication.
@@ -44,3 +44,19 @@ Every hit was read in context; the verdicts are below.
   or setting selection. The IndustReal test split stays unevaluated (development dataset).
 - Add the reviewed precision of a deviation queue once a person has reviewed one.
 - Re-run this audit after any README or report change.
+
+## Appendix: the forbidden-claims table of the design spec (§2, verbatim, zh-TW)
+
+以下每一條在發佈前逐條核對；左欄任何一句出現在 README 即視為 blocker。
+
+| 禁止宣稱 | memo 證據 | README 允許的替代表述 |
+|---|---|---|
+| 真實工廠泛化 | 所有候選集皆為實驗室裝配台；ATTACH 由 person split 改 view split，平均準確率 57.4 → 30.4；unseen-view TAS 仍是 open problem（memo §4） | 「在 HA-ViD 固定三視角、held-out subjects 上」 |
+| 安全或合規保證 | IMPACT 每個 baseline 的 recovery-phase F1 接近零；HoloAssist 最佳模態 F 40.19（memo §4） | 「偏差為建議，一律需人工複核」 |
+| 未見錯誤型態的 robustness | IndustReal 僅 38 個 execution errors、14 個只在 val/test（memo §4）；HA-ViD `wrong` 段數未公布（memo §5） | 「僅涵蓋資料集已標註的錯誤型態與明示為 synthetic 的順序違規」 |
+| VLM 可偵測錯誤 | zero-shot Qwen2.5-VL-7B 在 MD-VQA 協定 F1 0.0，GRPO 後 53.8／48.0 且需 4×H100；ZeProM 需 4×H100 跑 87.8 分鐘（memo §2） | 「VLM 為非同步第二意見，獨立列表，不進主指標」 |
+| 商業可用 | HA-ViD CC BY-NC 4.0；IMPACT data CC BY-NC-SA 4.0（memo §1） | 「權重與快取特徵為 non-commercial 衍生物」 |
+| 任意硬體 real-time | 唯一同儕審查的產線系統 I3D + ActionFormer 僅 0.53× real-time，且資料私有（memo §3） | 「單張 RTX 4090 上 N 路 × M fps，附曲線」 |
+| 合成違規 = 真實違規 | memo §4 要求 synthetic 表獨立標示 | 兩表分開，表名與圖例含 synthetic |
+
+IndustReal 的數字不會進任何 HA-ViD 表格（設計規格 §3.3）；IndustReal 衍生物依 Apache-2.0 處理。

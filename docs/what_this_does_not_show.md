@@ -22,12 +22,17 @@ Written against the state of 2026-09-14. Each line names the evidence that is mi
   33–34 with a 3 s delay; its sequences miss and fragment steps, and every predicted test recording
   is flagged by the SOP checks. Any statement about deployable SOP monitoring waits for a better
   recogniser.
-- **No atomic-action (219-class) results, no ASFormer, no fine-tuned or video (clip) features.**
+- **No atomic-action (219-class) results, no ASFormer, no learned fusion, no fine-tuned or video
+  (clip) features.** The three parameter-free fusion rules and the single-view controls are in
+  `reports/havid_dev_v1`–`v7`.
+- **No HA-ViD online PSR-style metric.** Completion of a HA-ViD step is not defined the way
+  IndustReal's procedure states are; the online replay reports alarms and their timing instead.
 - **Real-time on one machine only, and only for replayed files.** On one RTX 4090, 24 paced 15 fps
   streams are decoded and embedded without falling behind (`reports/stream_bench_v1_dinov2`), and
   one station's three cameras run from mp4 to deviations at 0.32 × real time
-  (`reports/havid_dev_v11_online_head_features`). Nothing is measured with live cameras, RTSP,
-  network jitter, other GPUs, or several stations' heads at once. The streamed heads recompute the
+  (`reports/havid_dev_v11_online_head_features`). Nothing is measured with live cameras, RTSP
+  (mediamtx is not installed), a cross-process shared-memory ring buffer, network jitter, other
+  GPUs, or several stations' heads at once. The streamed heads recompute the
   prefix, so their cost grows with the recording length.
 
 ## SOP checks and errors
@@ -44,6 +49,14 @@ Written against the state of 2026-09-14. Each line names the evidence that is mi
 - **No human-reviewed precision yet.** The review queue and UI exist (`docs/review.md`); no reviewer
   has judged a queue, so there is no reviewed precision of the deviations.
 - **No VLM second opinion.** The queue reserves a field for it; nothing is implemented or evaluated.
+
+## Publication
+
+- **No published weights or features.** The code is public on GitHub; trained weights and the
+  feature caches are non-commercial HA-ViD derivatives and are not uploaded anywhere (no Hugging
+  Face artefact).
+- **No static result figures.** Results are tables; the only figures are the animated mechanism
+  figures under `docs/assets/` and the Mermaid structure diagrams.
 
 ## Scope and licences
 

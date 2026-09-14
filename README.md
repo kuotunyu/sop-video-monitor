@@ -14,8 +14,12 @@
 影片以 RTSP 重播進入系統，經 PyAV 解碼、共享 ring buffer、批次特徵抽取與每路 causal 分段頭產生即時步驟後驗；
 SOP 狀態機依 task precedence graph 檢查順序、時長與遺漏，把偏差推入佇列，由人工複核 UI 接受或退回，Qwen3-VL-8B
 只對被標記的片段提供非同步第二意見。所有辨識指標在 subject-wise 凍結測試集上附 bootstrap CI；串流層附
-backpressure 實測曲線。**以上是設計目標，不是現況。** 現況、決策與未完成清單見下方與
-[`docs/decisions.md`](docs/decisions.md)。
+backpressure 實測曲線。**以上是設計目標，不是現況。** 現況見下方的架構圖（虛線節點就是未做的部分），決策見
+[`docs/decisions.md`](docs/decisions.md)，未完成的項目與證據缺口見 [`docs/what_this_does_not_show.md`](docs/what_this_does_not_show.md)。
+
+不做的事：物件偵測主線與 bounding box 輸出（HA-ViD 的 CVAT boxes 只作複核 UI 的輔助視覺化）；真實攝影機、DeepStream 與 edge 部署；
+多節點或分散式訓練（所有數字來自單張 RTX 4090）；追 HA-ViD 官方 leaderboard（官方 test 未說明 subject 規則，與本專案的 subject-wise split 不可比）。
+哪些宣稱不能出現、各自可以怎麼寫，見 [`docs/claims_audit.md`](docs/claims_audit.md)，發佈前逐條核對。
 
 ![三路攝影機經 frozen DINOv2、每視角的 causal MS-TCN++、late fusion 進入線上 SOP 監控的動畫](docs/assets/pipeline.gif)
 
@@ -143,16 +147,6 @@ SOP 檢查在 ground truth 上找得到所有 synthetic 違規，但預測序列
 其餘都是 IndustReal 或 HA-ViD validation split 上的**開發結果**；哪個 run 回答哪個問題、哪個已被取代、哪個是負面結果，
 見 [`reports/README.md`](reports/README.md) 的總表。
 
-## 還沒有什麼
-
-- HA-ViD 的線上 PSR 式指標（completion 定義未定）、aa 層；辨識器（test 上 causal F1@10 27–34）是整條線的瓶頸，短的 insert 步驟連 offline 都認不出來。
-- IndustReal 的 test split（開發用資料集，不評估）；HA-ViD test 已用過一次，不能再拿來選模型或設定。
-- RTSP 重播（mediamtx 未安裝）、跨行程的 shared-memory ring buffer、多站同時跑辨識頭的並行量測（W4 剩餘）。已量測：一張 RTX 4090 可即時解碼並抽特徵 24 路 15 fps 攝影機（`reports/stream_bench_v1_dinov2`），單站三視角從 mp4 到偏差為 0.32 倍即時（`reports/havid_dev_v11_online_head_features`）。
-- ASFormer、學習式 fusion、VideoMAE-V2 clip 特徵（W2–W3）；三視角 late fusion 與單視角對照已在 `reports/havid_dev_v1`–`v7`。靜態結果圖仍然沒有，只有 `docs/assets/` 的動畫。
-- W3 剩餘：更好的辨識器（`v6` 證明預測序列的最短時長平滑救不回遺漏的步驟；`v8` 的說明書粒度把 ground truth 的順序誤報降到 4/18，但預測序列仍全數被標記）；synthetic 表與原生 `w` 表在 `reports/havid_dev_v4_sop_synthetic`（support 3）與 `v5_sop_tuned`（train 上 leave-one-subject-out 選出的 support 20、[1, 99] % 時長窗；多數決規則已試過、只增加誤報）。
-- VLM verifier（W5 剩餘；需要下載模型權重）；偏差佇列與複核介面已完成（`docs/review.md`），尚無真人複核結果。
-- GitHub／Hugging Face 上尚未發布（W6 文件已寫：[`MODEL_CARD.md`](MODEL_CARD.md)、[`docs/claims_audit.md`](docs/claims_audit.md)、[`docs/what_this_does_not_show.md`](docs/what_this_does_not_show.md)）。
-
 ## 動畫圖說
 
 五支 GIF 由 [`figures/`](figures/) 的 Manim 場景渲染（`make figures`）；每支的來源與授權見
@@ -167,31 +161,6 @@ SOP 檢查在 ground truth 上找得到所有 synthetic 違規，但預測序列
 | ![causal 與 offline 的 receptive field](docs/assets/causal_padding.gif) | 左側 padding 的 dilated convolution 只看得到 ≤ t 的影格；對稱 padding 需要未來，所以不是線上結果 |
 | ![look-ahead 是固定的輸出延遲](docs/assets/look_ahead.gif) | 訓練 causal 網路在時間 t 說出第 t − L 影格的標籤：3 秒延遲收回大半差距，6 秒反而比 3 秒差（`reports/havid_dev_v9_step_recall`） |
 | ![ring buffer 的 WAIT 與 DROP_OLDEST](docs/assets/ring_buffer.gif) | 消費者比生產者慢時，WAIT 讓攝影機執行緒落後，DROP_OLDEST 保持緩衝新鮮並計數丟掉的影格 |
-
-## 非目標與 claim ceiling（設計規格 §2，逐字）
-
-### 非目標
-
-- 不做物件偵測主線，不以 bounding box 為主要輸出；HA-ViD 的 CVAT boxes 只作複核 UI 的輔助視覺化。
-- 不接真實攝影機、不用 DeepStream、不做 edge 部署（v2 設計 §8：不採購 Jetson）。
-- 不做多節點或分散式訓練；所有數字來自單張 RTX 4090。
-- 不追 HA-ViD 官方 leaderboard：官方 test 為 123/609 videos 且未說明 subject 規則（memo §4），與本專案的 subject-wise split 不可比。
-
-### 禁止宣稱
-
-以下每一條在發佈前由 `docs/claims_audit.md` 逐條核對；左欄任何一句出現在 README 即視為 blocker。
-
-| 禁止宣稱 | memo 證據 | README 允許的替代表述 |
-|---|---|---|
-| 真實工廠泛化 | 所有候選集皆為實驗室裝配台；ATTACH 由 person split 改 view split，平均準確率 57.4 → 30.4；unseen-view TAS 仍是 open problem（memo §4） | 「在 HA-ViD 固定三視角、held-out subjects 上」 |
-| 安全或合規保證 | IMPACT 每個 baseline 的 recovery-phase F1 接近零；HoloAssist 最佳模態 F 40.19（memo §4） | 「偏差為建議，一律需人工複核」 |
-| 未見錯誤型態的 robustness | IndustReal 僅 38 個 execution errors、14 個只在 val/test（memo §4）；HA-ViD `wrong` 段數未公布（memo §5） | 「僅涵蓋資料集已標註的錯誤型態與明示為 synthetic 的順序違規」 |
-| VLM 可偵測錯誤 | zero-shot Qwen2.5-VL-7B 在 MD-VQA 協定 F1 0.0，GRPO 後 53.8／48.0 且需 4×H100；ZeProM 需 4×H100 跑 87.8 分鐘（memo §2） | 「VLM 為非同步第二意見，獨立列表，不進主指標」 |
-| 商業可用 | HA-ViD CC BY-NC 4.0；IMPACT data CC BY-NC-SA 4.0（memo §1） | 「權重與快取特徵為 non-commercial 衍生物」 |
-| 任意硬體 real-time | 唯一同儕審查的產線系統 I3D + ActionFormer 僅 0.53× real-time，且資料私有（memo §3） | 「單張 RTX 4090 上 N 路 × M fps，附曲線」 |
-| 合成違規 = 真實違規 | memo §4 要求 synthetic 表獨立標示 | 兩表分開，表名與圖例含 synthetic |
-
-IndustReal 的數字不會進任何 HA-ViD 表格（設計規格 §3.3）；IndustReal 衍生物依 Apache-2.0 處理。
 
 ## 開發
 
@@ -211,6 +180,5 @@ make reproduce        # 完整路徑：audit → 特徵 → 離線 TAS → PSR �
 
 `make` 目標與各 run 的重現命令列在 [`Makefile`](Makefile) 與各 `reports/*/README.md`。
 
-## 授權
-
-程式碼採 Apache-2.0（見 [LICENSE](LICENSE)）。資料集與其衍生物（特徵、權重、學到的 precedence graph）依各自授權，不由本 LICENSE 重新授權。
+程式碼採 Apache-2.0（[LICENSE](LICENSE)）；資料集及其衍生物（特徵快取、權重、學到的 precedence graph、`docs/assets/` 的時間軸 GIF）依各自授權，
+不由本 LICENSE 重新授權，細節見 [`MODEL_CARD.md`](MODEL_CARD.md) 的 Licence and provenance。
