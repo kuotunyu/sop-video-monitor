@@ -16,3 +16,8 @@ Makefile text eol=lf
 *.pt binary
 *.pth binary
 *.gif binary
+.gitignore text eol=lf
+.gitattributes text eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
