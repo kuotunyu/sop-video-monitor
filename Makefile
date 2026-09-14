@@ -1,7 +1,7 @@
 # Entry points (spec 8.3). `make reproduce-lite` is what CI runs on a clean checkout without data;
 # `make reproduce` is the full data + GPU path in dependency order.
 
-.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary havid-online-v10 havid-step-recall-v9 havid-final-L0 havid-final-lstar havid-test review-queue review-ui stream-bench-decode stream-bench-dinov2
+.PHONY: reproduce reproduce-lite test lint verify-splits audit audit-havid freeze-havid features features-vits extract-psr learn-sop psr psr-latency baseline mstcn psr-lopo psr-train psr-nested features-havid i3d-havid havid-tas havid-tas-v3 havid-tas-i3d learn-havid-sop havid-sop tune-havid-sop havid-sop-v5 havid-sop-v6 havid-tas-seeds havid-seeds-summary tune-havid-sop-sheet havid-sop-v8 havid-tas-lookahead havid-lookahead-summary havid-online-v10 havid-step-recall-v9 havid-final-L0 havid-final-lstar havid-test figures review-queue review-ui stream-bench-decode stream-bench-dinov2
 
 UV ?= uv
 INDUSTREAL ?= data/external/industreal
@@ -160,6 +160,11 @@ havid-test:  ## The one-time HA-ViD test run of docs/havid_test_protocol.md (set
 	for L in 0 $(LSTAR) $(LEXTRA); do for seed in 0 1 2; do $(UV) run sop-monitor havid-sop --split test --confirm-test --pred-lh reports/havid_test_v1_tas_L$${L}_lh_s$$seed --pred-rh reports/havid_test_v1_tas_L$${L}_rh_s$$seed --run-name fusion_causal --graphs sop/ha-vid/sheet --granularity sheet --out reports/havid_test_v1_sop_L$${L}_s$$seed || exit 1; done; done
 	src=""; for L in 0 $(LSTAR) $(LEXTRA); do for seed in 0 1 2; do src="$$src --source L$${L}_s$$seed=reports/havid_test_v1_tas_L$${L}_lh_s$$seed,reports/havid_test_v1_tas_L$${L}_rh_s$$seed,fusion_causal,$$L"; done; done; $(UV) run sop-monitor havid-online --split test --confirm-test --graphs sop/ha-vid/sheet --granularity sheet $$src --min-frames 1 $(if $(filter 1,$(MSTAR)),,--min-frames $(MSTAR)) --out reports/havid_test_v1_online
 	g0=""; gs=""; ge=""; for seed in 0 1 2; do for hand in lh rh; do g0="$$g0,reports/havid_test_v1_tas_L0_$${hand}_s$$seed"; gs="$$gs,reports/havid_test_v1_tas_L$(LSTAR)_$${hand}_s$$seed"; ge="$$ge,reports/havid_test_v1_tas_L$(LEXTRA)_$${hand}_s$$seed"; done; done; $(UV) run sop-monitor havid-step-recall --split test --confirm-test --group L0=fusion_causal@$${g0#,} --group L$(LSTAR)=fusion_causal@$${gs#,} $$(test -n "$(LEXTRA)" && echo "--group L$(LEXTRA)_amendment=fusion_causal@$${ge#,}") --group offline=fusion_offline@$${g0#,} --out reports/havid_test_v1_step_recall
+
+# ---- Figures (Manim; needs `uv sync --group figures` and ffmpeg on PATH) --------------------------
+
+figures:  ## Render the animated figures into docs/assets/*.gif (about 2 min; mp4 intermediates under artifacts/figures).
+	$(UV) run --group figures python figures/render.py
 
 # ---- W5 review (docs/review.md) -------------------------------------------------------------
 

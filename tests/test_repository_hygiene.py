@@ -37,6 +37,7 @@ DATA_SUFFIXES = {
     ".jpeg",
     ".png",
     ".h5",
+    ".gif",
 }
 
 
@@ -103,3 +104,23 @@ def test_every_commit_is_authored_by_the_owner_alone() -> None:
             trailers.append(sha[:7])
     assert foreign == [], f"commits by another author: {foreign[:5]}"
     assert trailers == [], f"commits with a co-author trailer: {trailers[:5]}"
+
+
+def test_every_image_referenced_by_the_docs_exists_and_is_small() -> None:
+    """README and docs embed only committed files under docs/assets/, each under 2.5 MB."""
+    import re
+
+    pattern = re.compile(r"!\[[^\]]*\]\(([^)\s]+)\)")
+    referenced: set[str] = set()
+    for path in [ROOT / "README.md", *sorted((ROOT / "docs").rglob("*.md"))]:
+        for target in pattern.findall(path.read_text(encoding="utf-8")):
+            if target.startswith("http"):
+                continue
+            resolved = (path.parent / target).resolve()
+            referenced.add(resolved.relative_to(ROOT).as_posix())
+    assert referenced, "no images are embedded"
+    for rel in sorted(referenced):
+        assert rel.startswith("docs/assets/"), rel
+        file = ROOT / rel
+        assert file.is_file(), rel
+        assert file.stat().st_size <= 2_500_000, f"{rel} is larger than 2.5 MB"

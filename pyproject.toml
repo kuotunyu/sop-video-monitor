@@ -49,6 +49,9 @@ baseline = [
   "torch==2.13.0",
   "torchvision==0.28.0",
 ]
+figures = [
+    "manim>=0.19",
+]
 
 [tool.uv.sources]
 torch = [
