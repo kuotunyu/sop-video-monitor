@@ -23,12 +23,11 @@ dependencies = [
   "PyYAML>=6,<7",
   "typer>=0.12,<1",
 ]
-# Heavy, data-path-only dependencies live in the `baseline` dependency group below so that
-# CI (`uv sync --all-extras --frozen`) never installs torch. Still planned, not yet added:
-#   W2-W3 heads       : causal MS-TCN++, ASFormer, late fusion (torch, already in `baseline`)
-#   W4 streaming      : mediamtx is a binary, not pip; PyAV is already in `baseline`
-#   W5 review / VLM   : fastapi, uvicorn, python-multipart; vllm or transformers for Qwen3-VL-8B
-#   W6 reports        : matplotlib, scipy
+# Heavy, data-path-only dependencies live in dependency groups so that CI
+# (`uv sync --all-extras --frozen`) installs neither torch nor Manim:
+#   baseline : torch + torchvision (CUDA 13.0 index) and PyAV — decoding, features, training, streaming
+#   figures  : Manim Community — the animated figures under docs/assets (needs ffmpeg on PATH)
+# The review UI is standard-library only; a VLM second opinion is not built (no dependency added).
 
 [project.optional-dependencies]
 dev = [

@@ -31,8 +31,9 @@ data/**
 !data/manifest.json
 data/external/ha-vid-public/
 
-# Training / streaming artifacts, feature caches, weights, checkpoints
+# Training / streaming artifacts, feature caches, weights, checkpoints, Manim's default output
 artifacts/
+media/
 checkpoints/
 runs/
 features/

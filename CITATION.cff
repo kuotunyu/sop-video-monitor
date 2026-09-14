@@ -6,3 +6,6 @@ version: 0.0.1
 license: Apache-2.0
 authors:
   - name: "kuotunyu"
+repository-code: "https://github.com/kuotunyu/sop-video-monitor"
+date-released: 2026-09-14
+abstract: "Multi-camera SOP sequence monitoring on HA-ViD: frozen DINOv2 features, one causal MS-TCN++ per view, learned precedence checks, an online deviation monitor with human review; one pre-registered held-out evaluation; every reported number recomputable from committed tables."

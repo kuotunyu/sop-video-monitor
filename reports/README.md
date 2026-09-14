@@ -188,15 +188,25 @@ erDiagram
 | `predictions_val.csv` (offline TAS runs: `industreal_dev_v1`, `v2`, all `havid_dev_*`) / `completions_val.csv` (`industreal_dev_v3`+) | the real model outputs next to the ground truth — the artefact everything else derives from | the training command |
 | `metrics.json` | metrics with participant-bootstrap CIs, per-video rows, seed summary, ground-truth sanity cases | `sop-monitor score-predictions --run <dir>` (no data, no GPU) |
 | `tables.md` | markdown rendering of `metrics.json` + `config.json` | `sop-monitor score-predictions --run <dir> --write` |
-| `psr_audit.json` (v3+) | per-recording PSR label cross-checks and frame offsets | the training command |
-| `sop_checks_<run>.json` (v6+) | precedence / omission checks of ground-truth and predicted completions against `sop/industreal/learned_precedence_*.json` | `sop-monitor check-psr-run` |
+| `psr_audit.json` (IndustReal v3+) | per-recording PSR label cross-checks and frame offsets | the training command |
+| `sop_checks_<run>.json` (IndustReal v6+) | precedence / omission checks of completions against `sop/industreal/learned_precedence_*.json` | `sop-monitor check-psr-run` |
+| `predictions_test.csv` (`havid_test_v1_tas_*`) | the one-time test predictions of the saved networks | `sop-monitor predict-havid-tas` (write-once) |
+| `seed_summary.json` (`*_seeds_*`, `*_lookahead_*`) | mean ± std over seeds of the listed runs | `sop-monitor summarise-havid-seeds` |
+| `steps_*.csv`, `wrong_*.csv`, `sop_checks.json`, `oof.json` (`havid_*_sop_*`) | step sequences per hand and source, native `w` segments, the SOP checks and synthetic tables, the out-of-fold tuning grid | `sop-monitor havid-sop`, `tune-havid-sop` |
+| `deviations_*.csv`, `recordings_*.csv`, `online.json` (`*_online`) | every online deviation with its detection frame; the replay summary | `sop-monitor havid-online` |
+| `step_recall.json` (`*_step_recall`) | frame recall per instruction-sheet step for groups of runs | `sop-monitor havid-step-recall` |
+| `gate_*.json` (`havid_final_gate`) | frame agreement between retrained and committed runs | `sop-monitor compare-runs` |
+| `online_head.json`, `stream_labels_val.csv` (`havid_dev_v11_*`) | streamed labels and per-chunk timings of the online head | `sop-monitor havid-online-head` |
+| `bench.json` (`stream_bench_*`) | streaming throughput / latency grid on one machine | `sop-monitor stream-bench` |
 
 `reports/data_audit.json` is the shared on-disk audit of the IndustReal copy and the HA-ViD
 public files (`sop-monitor audit-industreal`); `reports/havid_audit.json` + `havid_audit.md` audit
 the delivered HA-ViD archives (`sop-monitor audit-havid`). Neither is tied to a run.
 
-`sop-monitor reproduce-lite` (what CI runs) recomputes every `metrics.json`, `tables.md` and
-`sop_checks_*.json` from the committed tables and fails on any drift.
+`sop-monitor reproduce-lite` (what CI runs) recomputes every `metrics.json`, `tables.md`,
+`sop_checks*.json`, `seed_summary.json`, `online.json` and `step_recall.json` from the committed
+tables and fails on any drift; the timing files (`bench.json`, `online_head.json`, `gate_*.json`)
+are records of one machine and are not recomputed.
 
 ## Tiers, never mixed
 

@@ -31,8 +31,12 @@ data/external/industreal/
                                   extracted from val_p1..2.zip and train_p1..4.zip by extract-psr-labels
   *.zip                           the archives themselves (test_p1..3.zip were never downloaded)
 artifacts/features/industreal/    DINOv2 frame-feature caches (dinov2_vit{s,b,l}14_s1), fp16 npz per video
-artifacts/features/ha-vid/       dinov2_vitb14_s1/ (483 train+val videos, fp16) and i3d_official/ (exported
-                                  official I3D features); the 126 test videos are never embedded
+artifacts/features/ha-vid/       dinov2_vitb14_s1/ (483 train+val videos plus the 123 test videos, embedded
+                                  once for the one-time test on 2026-09-14) and i3d_official/ (exported I3D)
+artifacts/checkpoints/           havid_final_L{0,45,90}_{lh,rh}_s{0,1,2}/: the saved networks the test used
+artifacts/final_runs/            their training runs (identical to the committed dev runs, see
+                                  reports/havid_final_gate); predict-havid-tas reads their config.json
+artifacts/figures/               Manim mp4 intermediates of `make figures` (regenerated every run)
 artifacts/review/                deviation queues and review decisions (docs/review.md); they name val
                                   videos and carry reviewer names, so they stay local
 ```

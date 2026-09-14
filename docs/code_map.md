@@ -9,6 +9,7 @@
 | `video.py`、`features.py` | PyAV probe／循序解碼；官方 `facebookresearch/dinov2` 權重的 frozen frame embedding（ViT-S/B/L，`[CLS ; mean patch]`），fp16 快取，權重 SHA-256 記錄在 `meta.json` |
 | `industreal.py`、`splits.py` | IndustReal action 標註解析、participant-disjoint split 凍結與 test list SHA-256 契約（`splits/industreal/`）、標註 → 逐影格對齊 |
 | `industreal_psr.py` | PSR 標註解析與三個 CSV 的交叉核對、官方 state→step 規則轉錄、從 recording 壓縮檔只抽標註、JPEG 名稱位移偵測 |
+| `cli.py` | `sop-monitor` 的所有命令（Typer）；`reproduce-lite` 的各種 run 重算 hook 也在這裡 |
 | `havid.py` | HA-ViD id 與 HR-SAT 標籤解析、temporal／collaboration 標註（inclusive、連續）、官方 split／mapping／groundTruth 交叉核對（頭尾各裁 5 frames）、`wrong` 統計、mp4 probe 與三視角配對、subject-wise split 凍結 |
 | `havid_tas.py` | HA-ViD 離線 TAS 線：每個視角各訓 causal／非 causal MS-TCN++、三種不需調參的 late fusion（mean／幾何平均／信心加權）、以 recording 為鍵的預測表；官方 I3D 特徵匯出成同一種 npz 快取；可選 `--checkpoint-dir` 另存選定 epoch 的權重、標準化參數與 val posterior（`mstcn.load_checkpoint` 還原） |
 | `havid_predict.py` | 以 checkpoint run 存下的網路評分一個 split（不訓練、不選 epoch），輸出與訓練 run 同格式的目錄；拒絕寫入已存在的目錄，是 frozen test 唯一的評分路徑（`docs/havid_test_protocol.md`） |
