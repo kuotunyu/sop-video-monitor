@@ -85,3 +85,35 @@ reproducibility gate, evaluated in the same single test run, and labelled "added
 results, not pre-registered" wherever it appears. The test rows are therefore L = 0, L\* = 90,
 offline, and the declared amendment L = 45.
 
+## 7. The protocol as a diagram
+
+```mermaid
+flowchart TD
+    pre["pre-registered protocol<br/>(this file, before the sweep finished)"] --> sel["selections on val by the written rules<br/>L* and m*"]
+    sel --> dom{"dominated on val?"}
+    dom -->|"yes: declare it before the test"| add["amendment row,<br/>labelled not pre-registered"]
+    dom -->|no| retrain
+    add --> retrain["retrain every network<br/>with checkpoints"]
+    retrain --> gate{"identical to the<br/>dev runs?"}
+    gate -->|no| diff["report the difference,<br/>test with the retrained networks"]
+    gate -->|yes| run
+    diff --> run["make havid-test<br/>features → predict → SOP → replay → recall"]
+    run --> spent["reports/havid_test_v1_*<br/>the split is spent; the command refuses to rerun"]
+    classDef step fill:#e8f0fb,stroke:#2a78d6,stroke-width:2px,color:#111
+    classDef gate fill:#fde7c8,stroke:#b35c00,stroke-width:2px,color:#111
+    classDef final fill:#e6f6ef,stroke:#1baf7a,stroke-width:2px,color:#111
+    class pre,sel,add,retrain,diff,run step
+    class dom,gate gate
+    class spent final
+```
+
+```mermaid
+stateDiagram-v2
+    [*] --> Frozen: freeze-splits, SHA-256 committed
+    Frozen --> Evaluated: make havid-test, once, after the gate
+    Evaluated --> Spent: reports/havid_test_v1_* exist
+    Spent --> Spent: no further selection on it
+    note right of Frozen
+        never read by training, tuning or selection
+    end note
+```

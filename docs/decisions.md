@@ -293,3 +293,19 @@ label for alarms, the validated three categorical slots for the camera views. Ma
 `sop_monitor.figures` import no Manim and are tested in CI. GIFs are the only binaries the hygiene
 test allows, and only under `docs/assets/`.
 
+## 2026-09-14 — structure is drawn in Mermaid; the learned knowledge is drawn by code
+
+Fourteen Mermaid diagrams now sit in the Markdown next to the text they explain, all in types
+GitHub renders (flowchart, sequence, state, ER) and all rendered once in a browser before commit.
+Hand-drawn: the architecture with built / measured / not-built styling (README), data lineage,
+the run lineage and the table relations (`reports/README.md`), the protocol gate and the state of
+the test split (`docs/havid_test_protocol.md`), the monitor's two state machines
+(`docs/online_monitor.md`), the two streaming paths and the gap between them (`docs/streaming.md`),
+the component chain (`MODEL_CARD.md`). Generated: `docs/sop_knowledge.md`, one precedence graph
+per plate from `sop/ha-vid/sheet` by `sop-monitor export-sop-mermaid`, with a test that fails when
+the page is stale, so the documentation cannot describe knowledge the checks do not use. Rules:
+one idea per diagram, no result numbers in diagrams (tables keep those), every `classDef` sets a
+text colour, wide chains are drawn top-to-bottom because GitHub scales wide diagrams down until
+the text is unreadable. Manim keeps the time-evolving mechanisms (`docs/assets/*.gif`); Mermaid
+keeps structure.
+

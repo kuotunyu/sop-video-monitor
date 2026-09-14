@@ -23,6 +23,57 @@ backpressure 實測曲線。**以上是設計目標，不是現況。** 現況�
 
 ## 目前有什麼
 
+### 架構圖：實線＝已實作，綠＝已量測，虛線＝未做
+
+```mermaid
+flowchart TB
+    subgraph src["輸入"]
+        direction LR
+        mp4["HA-ViD mp4 重播<br/>3 視角 · 15 fps"]
+        rtsp["RTSP 重播<br/>mediamtx"]
+    end
+    subgraph st["串流層 stream/"]
+        direction LR
+        decode["ReplaySource<br/>每路一條解碼執行緒"]
+        ring["RingBuffer<br/>WAIT / DROP_OLDEST / ADAPTIVE"]
+        batch["BatchCollector + Watchdog"]
+        shm["跨行程 shared-memory ring"]
+    end
+    subgraph rc["辨識"]
+        direction LR
+        dino["frozen DINOv2 ViT-B/14<br/>features.py"]
+        heads["causal MS-TCN++<br/>3 視角 × 2 手，look-ahead L"]
+        fuse["late fusion<br/>online_head.py"]
+    end
+    subgraph sp["SOP 層"]
+        direction LR
+        know[("學到的 precedence /<br/>mandatory / duration<br/>sop/ha-vid/sheet")]
+        mon["OnlineSOPMonitor<br/>online.py"]
+    end
+    subgraph rv["複核"]
+        direction LR
+        queue["deviation queue<br/>review.py"]
+        ui["本機複核 UI<br/>127.0.0.1，只供應 val"]
+        vlm["VLM 第二意見"]
+    end
+    mp4 --> decode --> ring --> batch --> dino --> heads --> fuse --> mon --> queue --> ui
+    rtsp -.-> decode
+    ring -.-> shm
+    know --> mon
+    queue -.-> vlm
+    classDef built fill:#e8f0fb,stroke:#2a78d6,stroke-width:2px,color:#111
+    classDef measured fill:#e6f6ef,stroke:#1baf7a,stroke-width:2px,color:#111
+    classDef planned fill:#f4f4f2,stroke:#898781,stroke-width:2px,stroke-dasharray:6 4,color:#111
+    class mp4,dino,heads,know,mon,queue,ui built
+    class decode,ring,batch,fuse measured
+    class rtsp,shm,vlm planned
+```
+
+綠色節點的量測在 `reports/stream_bench_v1_dinov2`（24 路 15 fps 即時解碼加抽特徵）與
+`reports/havid_dev_v11_online_head_features`（單站三視角從 mp4 到偏差 0.32 倍即時）；串流層與辨識頭
+之間的接合尚未做，兩條路徑各自量測（[`docs/streaming.md`](docs/streaming.md)）。監控的狀態機見
+[`docs/online_monitor.md`](docs/online_monitor.md)，學到的 SOP 知識畫在 [`docs/sop_knowledge.md`](docs/sop_knowledge.md)。
+
 ### 資料
 
 | 資料集 | 角色 | 授權 | 本機狀態 |
@@ -50,6 +101,7 @@ backpressure 實測曲線。**以上是設計目標，不是現況。** 現況�
 | `havid_sop.py` | HA-ViD SOP 層：雙手 primitive-task 步驟序列、從標籤詞彙判斷 plate、從 train 學 precedence graph／必要步驟／時長界限、synthetic 順序／遺漏／時長違規表、原生 `w` 表；`reproduce-lite` 可從 CSV 重算 |
 | `online.py` | 線上 SOP 監控：逐影格輸入雙手標籤，run-length 最短時長確認、雙手步驟合併；順序／未知步驟在步驟確認時、過長在超過上界的當下、過短在步驟結束時、遺漏在錄影結束時送出，每筆偏差帶偵測影格與延遲；`min_frames=1` 時結果等於離線 `check_sequence`（同一影格開始的步驟視為同時） |
 | `online_head.py` | 線上辨識器：每個視角的 causal MS-TCN++ checkpoint 以串流方式接收特徵（causal 保證前綴推論等於整段推論）、逐影格 fusion、依 look-ahead 延遲輸出，雙手標籤齊了就送進線上 SOP 監控；可從快取特徵或解碼影片 + DINOv2 餵入，記錄每個 chunk 的運算延遲與相對 checkpoint run 的一致率 |
+| `sop_mermaid.py` | 從 `sop/ha-vid/*/` 的 JSON 生成 `docs/sop_knowledge.md` 的 Mermaid precedence graph（每個 plate 一張，必要步驟標色）；測試會在頁面過期時失敗 |
 | `figures.py` | 動畫圖的資料與樣式（不 import Manim）：從已 commit 的 `steps_*.csv` 與 `deviations_*.csv` 讀出步驟條與警報、狀態色與字形對照；場景在 `figures/`，`make figures` 渲染成 `docs/assets/*.gif` |
 | `havid_step_recall.py` | 辨識器在說明書步驟層級的診斷：每組 run（例如同一 look-ahead 的雙手 × 三 seed）與一個預測欄位，彙整每個 ground-truth 步驟的 val 影格中被預測成同一步驟的比例，並標出所屬 plate 與是否為必要步驟；`reproduce-lite` 從已 commit 的預測表重算 |
 | `havid_online.py` | 把 val 錄影的雙手標籤串流（ground truth 或 causal 辨識器輸出，含 look-ahead 輸出延遲）逐影格重播進線上 SOP 監控，對 min_frames 格點記錄每筆偏差的偵測影格；彙總旗標錄影數、每錄影警報數、首次警報時間、距錄影結束的提前量，並在 min_frames 1 對照離線檢查；`reproduce-lite` 從 CSV 重算 |
@@ -73,7 +125,7 @@ CLI `sop-monitor` 的命令依流程分組：
 | SOP graph | `export-sop`、`check-sop` |
 | 複核 | `build-review-queue`、`review-ui`、`review-summary` |
 | 串流 | `stream-bench` |
-| 重算 | `score-predictions`、`summarise-havid-seeds`、`havid-step-recall`、`reproduce-lite` |
+| 重算 | `score-predictions`、`summarise-havid-seeds`、`havid-step-recall`、`reproduce-lite`、`export-sop-mermaid` |
 
 ### 結果
 
@@ -153,6 +205,7 @@ make psr              # 重跑 IndustReal 目前最佳設定（需要本機 Indu
 make features-havid havid-tas-v3 havid-sop-v8   # HA-ViD：特徵 → 辨識器 → SOP 檢查（需要本機 HA-ViD）
 make review-queue review-ui REVIEWER=<name>      # 偏差佇列與本機複核介面（docs/review.md）
 uv sync --group figures && make figures          # 用 Manim 重新渲染 docs/assets/*.gif（需要 ffmpeg）
+make sop-knowledge-doc                           # 從 sop/ha-vid/sheet 重新生成 docs/sop_knowledge.md 的 Mermaid 圖
 make reproduce        # 完整路徑：audit → 特徵 → 離線 TAS → PSR 標註 → precedence graph → psr → reproduce-lite，約 1.5 h
 ```
 

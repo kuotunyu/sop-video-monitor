@@ -19,6 +19,14 @@ forbid it), and any claim about error types the datasets do not annotate.
 
 ## Components
 
+```mermaid
+flowchart TB
+    v["3 camera views<br/>15 fps"] --> f["frozen DINOv2 ViT-B/14"] --> h["causal MS-TCN++<br/>per view and hand"] --> u["late fusion (mean)"] --> m["online SOP monitor<br/>order / omission / duration"] --> q["deviation queue<br/>human review"]
+    k[("learned knowledge<br/>sop/ha-vid/sheet")] --> m
+    classDef c fill:#e8f0fb,stroke:#2a78d6,stroke-width:2px,color:#111
+    class v,f,h,u,m,q,k c
+```
+
 | component | what it is | where |
 |---|---|---|
 | frame features | frozen DINOv2 ViT-B/14 (`facebookresearch/dinov2`, `[CLS ; mean patch]`, 1536-d, fp16), weights SHA-256 `0b8b82f85de91b424aded121c7e1dcc2b7bc6d0adeea651bf73a13307fad8c73`; not fine-tuned | `src/sop_monitor/features.py` |

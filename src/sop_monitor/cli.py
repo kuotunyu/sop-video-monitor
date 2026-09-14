@@ -130,6 +130,21 @@ def check_sop(
     raise typer.Exit(code=0 if report.ok else 1)
 
 
+@app.command("export-sop-mermaid")
+def export_sop_mermaid_cmd(
+    graphs: Annotated[Path, typer.Option(help="Learned JSON directory")] = Path("sop/ha-vid/sheet"),
+    out: Annotated[Path, typer.Option(help="Markdown page to write")] = Path(
+        "docs/sop_knowledge.md"
+    ),
+) -> None:
+    """Draw the learned precedence graphs as Mermaid, one per plate (docs/sop_knowledge.md)."""
+    from sop_monitor.sop_mermaid import render_sop_knowledge
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(render_sop_knowledge(graphs), encoding="utf-8", newline=chr(10))
+    typer.echo(f"-> {out}")
+
+
 @app.command("export-sop")
 def export_sop(
     owl: Annotated[Path, typer.Option(help="HA-ViD precedence graph (OWL)")],
