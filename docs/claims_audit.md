@@ -6,7 +6,8 @@ currently makes it, where the permitted wording is used instead, and the evidenc
 on. Re-run it before any publication.
 
 Last audit: 2026-09-14, against `README.md`, `MODEL_CARD.md`, `docs/*.md` and every
-`reports/*/README.md` (plans under `docs/plans/` are working notes, not public claims).
+`reports/*/README.md` (plans under `docs/plans/` are local working notes kept outside the
+repository, not public claims).
 
 ## How the audit was run
 

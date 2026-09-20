@@ -2,7 +2,7 @@
 
 - 日期：2026-09-03
 - 狀態：accepted（依設計規格 §3；規格本身仍為草稿，數字凡標「提案」者待確認）
-- 依據：`docs/superpowers/specs/2026-09-03-sop-video-monitor-design.md` §3，其資料集事實與授權以研究 memo 為準
+- 依據：設計規格 `2026-09-03-sop-video-monitor-design.md`（維護者本地文件，未收入公開 repo）§3，其資料集事實與授權以研究 memo 為準
 
 ## 脈絡
 
