@@ -337,6 +337,7 @@ def review_summary(
 # ---- server -------------------------------------------------------------------------------------
 
 _RANGE = re.compile(r"bytes=(\d*)-(\d*)$")
+_CONTENT_LENGTH = re.compile(r"[0-9]+$")
 
 
 def parse_range(header: str | None, size: int) -> tuple[int, int] | None:
@@ -408,12 +409,18 @@ def make_handler(
             if self.path != "/api/decisions":
                 self._json({"error": "not found"}, HTTPStatus.NOT_FOUND)
                 return
-            length = int(self.headers.get("Content-Length") or 0)
-            if length > 10_000:
+            raw_length = (self.headers.get("Content-Length") or "0").strip()
+            if not _CONTENT_LENGTH.match(raw_length):
+                self._json({"error": "malformed Content-Length"}, HTTPStatus.BAD_REQUEST)
+                return
+            digits = raw_length.lstrip("0") or "0"
+            if len(digits) > 5 or int(digits) > 10_000:
                 self._json({"error": "payload too large"}, HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
                 return
             try:
-                payload = json.loads(self.rfile.read(length).decode("utf-8"))
+                payload = json.loads(self.rfile.read(int(digits)).decode("utf-8"))
+                if not isinstance(payload, dict):
+                    raise ValueError("decision must be a JSON object")
                 entry = store.record(
                     str(payload["id"]),
                     str(payload["decision"]),

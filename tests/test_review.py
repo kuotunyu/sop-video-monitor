@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import io
 import json
 import threading
 import urllib.error
 import urllib.request
+from email.message import Message
 from pathlib import Path
 
 import pytest
@@ -22,6 +24,7 @@ from sop_monitor.review import (
     DecisionStore,
     build_queue,
     describe_step,
+    make_handler,
     make_server,
     parse_range,
     read_jsonl,
@@ -188,3 +191,102 @@ def test_server_serves_items_decisions_and_only_split_videos(tmp_path: Path) -> 
         server.shutdown()
         server.server_close()
     assert read_jsonl(tmp_path / "d.jsonl")[0]["note"] == "seen"
+
+
+class _BoundedBody(io.RawIOBase):
+    """Body of a synthetic POST; an unbounded ``read(-1)`` fails the test instead of blocking."""
+
+    def __init__(self, body: bytes) -> None:
+        self._body = body
+
+    def read(self, size: int | None = -1) -> bytes:
+        if size is None or size < 0:
+            raise AssertionError(f"do_POST asked for an unbounded read: rfile.read({size!r})")
+        return self._body[: min(size, 4096)]
+
+
+def _decision_handler(tmp_path: Path) -> tuple[type, DecisionStore]:
+    """The real ``do_POST`` of ``make_handler`` over an in-memory socket and a temporary store."""
+    items = [{"id": "item0001", "kind": "order"}, {"id": "item0002", "kind": "omission"}]
+    store = DecisionStore(tmp_path / "decisions.jsonl", (str(item["id"]) for item in items))
+    handler = make_handler(items, store, {}, "<page/>", "r1")
+
+    class Synthetic(handler):  # type: ignore[valid-type,misc]
+        def __init__(self, content_length: str | None, body: bytes) -> None:
+            self.path = "/api/decisions"
+            self.headers = Message()
+            if content_length is not None:
+                self.headers["Content-Length"] = content_length
+            self.rfile = _BoundedBody(body)
+            self.wfile = io.BytesIO()
+            self.status: int | None = None
+
+        def send_response(self, code: object, message: object = None) -> None:
+            self.status = int(code)  # type: ignore[call-overload]
+
+        def send_header(self, keyword: object, value: object) -> None:
+            return
+
+        def end_headers(self) -> None:
+            return
+
+    return Synthetic, store
+
+
+def _post(handler: type, content_length: str | None, body: bytes) -> tuple[int | None, dict]:
+    request = handler(content_length, body)
+    request.do_POST()
+    return request.status, json.loads(request.wfile.getvalue())
+
+
+def test_post_decisions_rejects_malformed_content_length(tmp_path: Path) -> None:
+    handler, store = _decision_handler(tmp_path)
+    valid = b'{"id": "item0001", "decision": "accept"}'
+    for header in ("abc", "12.5", "0x10", "-1", "²"):
+        status, answer = _post(handler, header, valid)
+        assert (status, "error" in answer) == (400, True), (header, status, answer)
+    # digits over the cap stay 413, however many of them there are: never read, never int()-parsed
+    for header in ("10001", "9" * 6, "9" * 5000):
+        assert _post(handler, header, b"x")[0] == 413, header
+    assert _post(handler, None, b"")[0] == 400
+    assert _post(handler, "0", b"")[0] == 400
+    assert _post(handler, str(len(valid)), valid)[0] == 200
+    assert _post(handler, f"  {len(valid)}  ", valid)[0] == 200
+    assert [entry["id"] for entry in read_jsonl(store.path)] == ["item0001", "item0001"]
+
+
+def test_post_decisions_rejects_non_object_json_and_keeps_persisting(tmp_path: Path) -> None:
+    handler, store = _decision_handler(tmp_path)
+    non_objects = (
+        b"[]",
+        b'[{"id": "item0001", "decision": "accept"}]',
+        b'"item0001"',
+        b"3",
+        b"1.5",
+        b"null",
+        b"true",
+    )
+    for body in non_objects:
+        status, answer = _post(handler, str(len(body)), body)
+        assert (status, "error" in answer) == (400, True), (body, status, answer)
+    for body in (
+        b'{"id": "nope", "decision": "accept"}',
+        b'{"id": "item0001", "decision": "burn"}',
+        b'{"id": "item0001"}',
+        b"{}",
+        b"<html>",
+        b'{"id": "item0001"',
+    ):
+        assert _post(handler, str(len(body)), body)[0] == 400, body
+    assert read_jsonl(store.path) == []
+    accept = b'{"id": "item0001", "decision": "accept", "note": "ok"}'
+    reject = b'{"id": "item0002", "decision": "reject"}'
+    assert _post(handler, str(len(accept)), accept)[0] == 200
+    assert _post(handler, str(len(reject)), reject)[0] == 200
+    records = read_jsonl(store.path)
+    assert [(entry["id"], entry["decision"]) for entry in records] == [
+        ("item0001", "accept"),
+        ("item0002", "reject"),
+    ]
+    assert records[0]["note"] == "ok" and records[1]["reviewer"] == "r1"
+    assert sorted(store.latest()) == ["item0001", "item0002"]
